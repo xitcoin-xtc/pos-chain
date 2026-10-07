@@ -5,7 +5,7 @@ import (
 	"fmt"
 	gomath "math"
 
-	"github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	"cosmossdk.io/math"
 

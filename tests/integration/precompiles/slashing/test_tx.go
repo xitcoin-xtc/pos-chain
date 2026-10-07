@@ -5,10 +5,10 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/slashing"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/slashing"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

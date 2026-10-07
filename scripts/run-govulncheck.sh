@@ -62,14 +62,14 @@ require_module github.com/ethereum/go-ethereum v1.16.9
 require_module github.com/cometbft/cometbft v0.39.4
 require_module github.com/pion/dtls/v2 v2.2.12
 require_module golang.org/x/crypto v0.56.0
-require_replacement github.com/cosmos/cosmos-sdk github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
-require_replacement github.com/ethereum/go-ethereum github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
+require_replacement github.com/cosmos/cosmos-sdk github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
+require_replacement github.com/ethereum/go-ethereum github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 require_module github.com/pion/stun/v3 v3.1.5
 require_module github.com/pion/dtls/v3 v3.1.4
 require_module github.com/ProtonMail/go-crypto v1.4.1
 # Pin both archive and go.mod sums for evmd's already qualified root library.
 if [[ "$module_file" == "$repo_root/evmd/go.mod" ]]; then
-  root_sums="$(go list -m -f '{{.Sum}} {{.GoModSum}}' github.com/xitcoin-org/pos-chain)"
+  root_sums="$(go list -m -f '{{.Sum}} {{.GoModSum}}' github.com/xitcoin-xtc/pos-chain)"
   if [[ "$root_sums" != 'h1:XlNgJS1pkjUXWEfxbl+8+B+5KnmI/AOT2ggB9uy2low= h1:7EjObEwFuYAQRSd1W1j7D4hZCLB1SYLFazZHImpSZCE=' ]]; then
     echo 'evmd: root library checksums differ from the reviewed anchor' >&2
     exit 1

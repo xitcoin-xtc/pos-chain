@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 )
 
 func TestNewERC20Data(t *testing.T) {

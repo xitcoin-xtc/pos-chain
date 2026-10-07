@@ -16,12 +16,12 @@ import (
 
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	antetypes "github.com/xitcoin-org/pos-chain/ante/types"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	"github.com/xitcoin-org/pos-chain/utils"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	antetypes "github.com/xitcoin-xtc/pos-chain/ante/types"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -158,7 +158,7 @@ func (k Keeper) GetHashFn(ctx sdk.Context) vm.GetHashFunc {
 
 		case ctx.BlockHeight() > h:
 			// Case 2: The requested height is historical, query EIP-2935 contract storage for that
-			// see: https://github.com/xitcoin-org/pos-chain/issues/406
+			// see: https://github.com/xitcoin-xtc/pos-chain/issues/406
 			return k.GetHeaderHash(ctx, height)
 		default:
 			// Case 3: The requested height is greater than the latest one, return empty hash

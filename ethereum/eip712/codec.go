@@ -1,7 +1,7 @@
 package eip712
 
 import (
-	antetypes "github.com/xitcoin-org/pos-chain/ante/types"
+	antetypes "github.com/xitcoin-xtc/pos-chain/ante/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"

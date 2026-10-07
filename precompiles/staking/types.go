@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/math"

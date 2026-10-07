@@ -5,7 +5,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
 
 	errorsmod "cosmossdk.io/errors"
 

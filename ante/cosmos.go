@@ -2,9 +2,9 @@ package ante
 
 import (
 	ibcante "github.com/cosmos/ibc-go/v11/modules/core/ante"
-	cosmosante "github.com/xitcoin-org/pos-chain/ante/cosmos"
-	evmante "github.com/xitcoin-org/pos-chain/ante/evm"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cosmosante "github.com/xitcoin-xtc/pos-chain/ante/cosmos"
+	evmante "github.com/xitcoin-xtc/pos-chain/ante/evm"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"

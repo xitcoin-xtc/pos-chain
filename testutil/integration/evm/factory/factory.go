@@ -11,13 +11,13 @@ import (
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	chainutil "github.com/xitcoin-org/pos-chain/testutil"
-	basefactory "github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	chainutil "github.com/xitcoin-xtc/pos-chain/testutil"
+	basefactory "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 
 	errorsmod "cosmossdk.io/errors"

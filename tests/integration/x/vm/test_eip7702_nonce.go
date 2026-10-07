@@ -7,10 +7,10 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 
-	testKeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/keeper/testdata"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	testKeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/keeper/testdata"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // TestEIP7702NonceIncrement tests that when a user with EIP-7702 delegation

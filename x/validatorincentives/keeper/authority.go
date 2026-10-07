@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 // RequireAuthority rejects unset, empty or non-matching callers. The stored

@@ -5,8 +5,8 @@ import (
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/testutil/integration/base/network"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/base/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
 
 	errorsmod "cosmossdk.io/errors"
 

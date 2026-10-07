@@ -8,7 +8,7 @@ import (
 
 	rpcclient "github.com/cometbft/cometbft/rpc/client"
 
-	"github.com/xitcoin-org/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"

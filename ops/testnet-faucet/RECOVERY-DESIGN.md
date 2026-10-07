@@ -1,7 +1,7 @@
 # Faucet uncertain-result recovery design
 
 Status: implemented candidate; offline validation only, no deployment or transfer.
-Related acceptance coordination: https://github.com/xitcoin-org/pos-chain/issues/33.
+Related acceptance coordination: https://github.com/xitcoin-xtc/pos-chain/issues/33.
 G03 implementation is present alongside this design. Operational acceptance remains open.
 
 ## Observed boundary

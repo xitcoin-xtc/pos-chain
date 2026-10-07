@@ -2,7 +2,7 @@
 syntax = "proto3";
 package cosmos.evm.vm.v1;
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/vm/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/vm/types";
 
 // EventEthereumTx defines the event for an Ethereum transaction
 message EventEthereumTx {

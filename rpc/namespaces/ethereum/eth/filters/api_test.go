@@ -10,8 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/stretchr/testify/require"
 
-	filtermocks "github.com/xitcoin-org/pos-chain/rpc/namespaces/ethereum/eth/filters/mocks"
-	"github.com/xitcoin-org/pos-chain/rpc/stream"
+	filtermocks "github.com/xitcoin-xtc/pos-chain/rpc/namespaces/ethereum/eth/filters/mocks"
+	"github.com/xitcoin-xtc/pos-chain/rpc/stream"
 
 	"cosmossdk.io/log/v2"
 

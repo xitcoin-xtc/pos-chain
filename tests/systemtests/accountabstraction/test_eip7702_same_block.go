@@ -18,7 +18,7 @@ import (
 	"github.com/onsi/gomega"
 	"github.com/stretchr/testify/require"
 
-	suite "github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	suite "github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 )
 
 // RunEIP7702SameBlock tests an EIP-7702 SetCode tx (relayer-sent, user as

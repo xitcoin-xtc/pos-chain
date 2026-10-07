@@ -11,7 +11,7 @@ import (
 	cmttypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/ibc-go/v11/modules/core/keeper"
 	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 	"github.com/cosmos/ibc-go/v11/testing/simapp"

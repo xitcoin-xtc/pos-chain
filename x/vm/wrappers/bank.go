@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"

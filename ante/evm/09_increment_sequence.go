@@ -3,8 +3,8 @@ package evm
 import (
 	"math"
 
-	anteinterfaces "github.com/xitcoin-org/pos-chain/ante/interfaces"
-	"github.com/xitcoin-org/pos-chain/mempool"
+	anteinterfaces "github.com/xitcoin-xtc/pos-chain/ante/interfaces"
+	"github.com/xitcoin-xtc/pos-chain/mempool"
 
 	errorsmod "cosmossdk.io/errors"
 

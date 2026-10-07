@@ -3,7 +3,7 @@ package erc20
 import (
 	"context"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"

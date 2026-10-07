@@ -7,11 +7,11 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/crypto/tmhash"
 
-	evmmempool "github.com/xitcoin-org/pos-chain/mempool"
-	"github.com/xitcoin-org/pos-chain/mempool/reserver"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool/legacypool"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
+	evmmempool "github.com/xitcoin-xtc/pos-chain/mempool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/reserver"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool/legacypool"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/mempool"

@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xitcoin-org/pos-chain.git"
+    "url": "git+https://github.com/xitcoin-xtc/pos-chain.git"
   },
   "author": "Evmos Core Team",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/xitcoin-org/pos-chain/issues"
+    "url": "https://github.com/xitcoin-xtc/pos-chain/issues"
   },
-  "homepage": "https://github.com/xitcoin-org/pos-chain#readme",
+  "homepage": "https://github.com/xitcoin-xtc/pos-chain#readme",
   "type": "module",
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0"

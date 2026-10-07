@@ -67,7 +67,7 @@ describe("Hardhat Local Chain Compatibility Test", function () {
 
   it("Should fail if sender doesn’t have enough balance", async function () {
     console.log("▶️ Attempting transfer from addr1 with no tokens...");
-    // TODO: Update it to revertedWithCustomError when available (https://github.com/xitcoin-org/pos-chain/pull/289).
+    // TODO: Update it to revertedWithCustomError when available (https://github.com/xitcoin-xtc/pos-chain/pull/289).
     await expect(
       Token.connect(addr1).transfer(addr2.address, 99999)
     ).to.be.reverted;

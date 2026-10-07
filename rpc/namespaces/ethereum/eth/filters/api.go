@@ -15,10 +15,10 @@ import (
 
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/xitcoin-org/pos-chain/rpc/stream"
-	"github.com/xitcoin-org/pos-chain/rpc/types"
-	evmsrvconfig "github.com/xitcoin-org/pos-chain/server/config"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/rpc/stream"
+	"github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmsrvconfig "github.com/xitcoin-xtc/pos-chain/server/config"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
 
 	"cosmossdk.io/log/v2"
 

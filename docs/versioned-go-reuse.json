@@ -50,7 +50,7 @@
         "tests",
         "verify-sums"
       ],
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10342521086/zip"
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10342521086/zip"
     },
     {
       "file": "34828836438-versioned-go-root.zip",
@@ -69,7 +69,7 @@
         "tests",
         "verify-sums"
       ],
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10341961630/zip"
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10341961630/zip"
     },
     {
       "file": "34832506821-versioned-go-evmd.zip",
@@ -93,7 +93,7 @@
         "tests",
         "verify-sums"
       ],
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10343072526/zip"
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10343072526/zip"
     },
     {
       "file": "34832506821-versioned-go-root.zip",
@@ -112,7 +112,7 @@
         "source-scan",
         "verify-sums"
       ],
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10342707481/zip"
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10342707481/zip"
     }
   ],
   "mission_files": {

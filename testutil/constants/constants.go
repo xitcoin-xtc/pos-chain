@@ -1,9 +1,9 @@
 package constants
 
 import (
-	"github.com/xitcoin-org/pos-chain/server/config"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 )

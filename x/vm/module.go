@@ -12,9 +12,9 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/client/cli"
-	"github.com/xitcoin-org/pos-chain/x/vm/keeper"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/client/cli"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/keeper"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/core/appmodule"

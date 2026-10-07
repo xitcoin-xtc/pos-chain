@@ -9,12 +9,12 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/ginkgo/v2"
 
-	"github.com/xitcoin-org/pos-chain/crypto/hd"
-	"github.com/xitcoin-org/pos-chain/encoding"
-	"github.com/xitcoin-org/pos-chain/evmd/tests/ledger/mocks"
-	"github.com/xitcoin-org/pos-chain/server/config"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/crypto/hd"
+	"github.com/xitcoin-xtc/pos-chain/encoding"
+	"github.com/xitcoin-xtc/pos-chain/evmd/tests/ledger/mocks"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 
 	"cosmossdk.io/math"
 

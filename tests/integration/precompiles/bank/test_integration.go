@@ -13,17 +13,17 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	bank2 "github.com/xitcoin-org/pos-chain/precompiles/bank"
-	"github.com/xitcoin-org/pos-chain/precompiles/bank/testdata"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/utils"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	bank2 "github.com/xitcoin-xtc/pos-chain/precompiles/bank"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/bank/testdata"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/utils"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

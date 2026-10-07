@@ -6,8 +6,8 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xitcoin-org/pos-chain/evmd/cmd/evmd/cmd"
-	"github.com/xitcoin-org/pos-chain/evmd/config"
+	"github.com/xitcoin-xtc/pos-chain/evmd/cmd/evmd/cmd"
+	"github.com/xitcoin-xtc/pos-chain/evmd/config"
 )
 
 func main() {

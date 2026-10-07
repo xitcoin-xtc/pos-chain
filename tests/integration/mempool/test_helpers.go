@@ -7,9 +7,9 @@ import (
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
 
-	"github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkmath "cosmossdk.io/math"
 

@@ -1,7 +1,7 @@
 package network
 
 import (
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
 )
 
 // chainsWEVMOSHex is an utility map used to retrieve the WEVMOS contract

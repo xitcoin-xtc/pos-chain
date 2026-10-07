@@ -17,9 +17,9 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/store/snapshotmulti"
-	vmstoretypes "github.com/xitcoin-org/pos-chain/x/vm/store/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/store/snapshotmulti"
+	vmstoretypes "github.com/xitcoin-xtc/pos-chain/x/vm/store/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 

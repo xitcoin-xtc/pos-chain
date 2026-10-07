@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 // HandleUpdateParamsCommand validates the domain command before delegating to

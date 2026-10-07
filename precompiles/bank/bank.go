@@ -15,8 +15,8 @@ import (
 
 	_ "embed"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

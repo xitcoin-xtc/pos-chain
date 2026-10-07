@@ -3,11 +3,11 @@ package encoding
 import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
-	enccodec "github.com/xitcoin-org/pos-chain/encoding/codec"
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
+	enccodec "github.com/xitcoin-xtc/pos-chain/encoding/codec"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/cosmos/cosmos-sdk/client"

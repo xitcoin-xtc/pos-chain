@@ -1,6 +1,6 @@
 # SECURITY-ASSESSMENT
 
-Assessment date: **2026-09-14 UTC**. Scope: xitcoin-org/pos-chain PR44,
+Assessment date: **2026-09-14 UTC**. Scope: xitcoin-xtc/pos-chain PR44,
 starting head `41da8db5ada202b0bb0a27016ad11dac4b2068b5`, with the exact
 production sources, dependency locks and fixtures qualified at
 `5e24531951873ec8d0cf4403d118c45f47fa641e`. This is the current source of truth
@@ -27,7 +27,7 @@ signature of a reviewer, or independent approval is asserted.
 
 The previous mission's task required preserving 2026-09-05 while preparing a
 decision pack. Its reports extended this into a requirement for an independent
-reviewer designated by xitcoin-org. The earlier review task prohibited treating
+reviewer designated by xitcoin-xtc. The earlier review task prohibited treating
 the same author as independent; it did not itself require such a reviewer for
 this technical assessment. The current task expressly permits a justified
 technical update and requires finding the normative source of independence.
@@ -49,11 +49,11 @@ releasing PR44 here. Zero GitHub reviews existed at the initial live check.
 ## Exact inputs and acquired evidence
 
 - SDK required `github.com/cosmos/cosmos-sdk v0.54.4`, replaced by
-  `github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee`,
+  `github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee`,
   commit `52ff14a25bee524f0e48ae7f00664443bcb22335`, upstream base
   `dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6`.
 - Geth required `github.com/ethereum/go-ethereum v1.16.9`, replaced by
-  `github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4`,
+  `github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4`,
   commit `e09f79643cd464404876f3565ce0a8fd8c0aeb16`, Cosmos Geth base
   `d99d6fa2c8d98b7cd653de4a9386d2da3db8f25c`.
 - evmd consumes root `v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6`,
@@ -69,17 +69,17 @@ GitHub global advisory records were also checked. Global GitHub and Go ranges
 are not interchangeable with maintainer prose. No fork-name scanner silence
 is used as evidence of remediation.
 
-Acquired SDK continuation [34794203018](https://github.com/xitcoin-org/pos-chain/actions/runs/34794203018)
+Acquired SDK continuation [34794203018](https://github.com/xitcoin-xtc/pos-chain/actions/runs/34794203018)
 passed full unit tests and corrected crypto lint. The 135-case differential
 armor oracle passed against the published SDK. Geth root build/tests passed in
-[34788224704](https://github.com/xitcoin-org/pos-chain/actions/runs/34788224704);
+[34788224704](https://github.com/xitcoin-xtc/pos-chain/actions/runs/34788224704);
 keeper/tidy, lint, generation and baddeps continuation
-[34789811082](https://github.com/xitcoin-org/pos-chain/actions/runs/34789811082)
+[34789811082](https://github.com/xitcoin-xtc/pos-chain/actions/runs/34789811082)
 passed. Initial failures remain historical failures.
 
-Application baseline [34828836438](https://github.com/xitcoin-org/pos-chain/actions/runs/34828836438)
+Application baseline [34828836438](https://github.com/xitcoin-xtc/pos-chain/actions/runs/34828836438)
 passed root tests/build and evmd build/other packages, but failed Ledger/ERC20
-fixtures. [34832506821](https://github.com/xitcoin-org/pos-chain/actions/runs/34832506821)
+fixtures. [34832506821](https://github.com/xitcoin-xtc/pos-chain/actions/runs/34832506821)
 at `5e245319…` passed the corrected suites, graphs, sums and scans. Its
 symbol-bearing binary SHA256 is
 `ec80b322aaba119d711b80e87bb15b79550a1c9abb40bae74ea3eec0d46754f6`.

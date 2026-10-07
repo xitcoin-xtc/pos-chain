@@ -3,7 +3,7 @@ package snapshotkv
 import (
 	"fmt"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/store/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/store/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 )

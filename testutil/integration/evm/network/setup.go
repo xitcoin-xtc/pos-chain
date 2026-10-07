@@ -8,12 +8,12 @@ import (
 
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 
 	sdkmath "cosmossdk.io/math"

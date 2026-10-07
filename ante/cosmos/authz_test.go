@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/ante/cosmos"
-	"github.com/xitcoin-org/pos-chain/encoding"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/ante/cosmos"
+	"github.com/xitcoin-xtc/pos-chain/encoding"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

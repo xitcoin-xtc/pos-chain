@@ -22,8 +22,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	"github.com/xitcoin-org/pos-chain/crypto/secp256r1"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/crypto/secp256r1"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 var _ vm.PrecompiledContract = &Precompile{}

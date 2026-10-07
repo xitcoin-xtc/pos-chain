@@ -1,7 +1,7 @@
 package ante
 
 import (
-	evmante "github.com/xitcoin-org/pos-chain/ante/evm"
+	evmante "github.com/xitcoin-xtc/pos-chain/ante/evm"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

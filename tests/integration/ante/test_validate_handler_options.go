@@ -6,10 +6,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
-	evm "github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/ante"
-	antetypes "github.com/xitcoin-org/pos-chain/ante/types"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
+	evm "github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/ante"
+	antetypes "github.com/xitcoin-xtc/pos-chain/ante/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
 )
 
 //nolint:thelper // RunValidateHandlerOptionsTest is not a helper function; it's an externally called benchmark entry point

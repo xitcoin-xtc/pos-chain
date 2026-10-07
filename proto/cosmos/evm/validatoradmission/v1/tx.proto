@@ -5,7 +5,7 @@ import "amino/amino.proto";
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/validatoradmission/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types";
 
 // Msg defines Xitcoin Validator Admission actions.
 service Msg {

@@ -7,8 +7,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/suite"
 
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 type UnitTestSuite struct {

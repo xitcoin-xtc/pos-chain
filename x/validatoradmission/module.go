@@ -19,9 +19,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	"github.com/xitcoin-org/pos-chain/x/validatoradmission/client/cli"
-	"github.com/xitcoin-org/pos-chain/x/validatoradmission/keeper"
-	"github.com/xitcoin-org/pos-chain/x/validatoradmission/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/client/cli"
+	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/keeper"
+	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 )
 
 const consensusVersion = 1

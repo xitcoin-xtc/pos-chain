@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

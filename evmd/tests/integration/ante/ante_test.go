@@ -3,10 +3,10 @@ package ante
 import (
 	"testing"
 
-	evm "github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/evmd/tests/integration"
-	"github.com/xitcoin-org/pos-chain/tests/integration/ante"
-	testapp "github.com/xitcoin-org/pos-chain/testutil/app"
+	evm "github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/evmd/tests/integration"
+	"github.com/xitcoin-xtc/pos-chain/tests/integration/ante"
+	testapp "github.com/xitcoin-xtc/pos-chain/testutil/app"
 )
 
 func TestAnte_Integration(t *testing.T) {

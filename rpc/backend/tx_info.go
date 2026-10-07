@@ -20,12 +20,12 @@ import (
 	cmtrpcclient "github.com/cometbft/cometbft/rpc/client"
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	servertypes "github.com/xitcoin-org/pos-chain/server/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	"github.com/xitcoin-org/pos-chain/utils"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	servertypes "github.com/xitcoin-xtc/pos-chain/server/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/utils"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 

@@ -14,8 +14,8 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	"github.com/xitcoin-org/pos-chain/x/vm/types/mocks"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types/mocks"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

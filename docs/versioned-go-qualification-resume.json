@@ -9,8 +9,8 @@
       "node_id": "MDg6QXJ0aWZhY3QxMDM0MjUyMTA4Ng==",
       "name": "versioned-go-evmd",
       "size_in_bytes": 333663,
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10342521086",
-      "archive_download_url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10342521086/zip",
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10342521086",
+      "archive_download_url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10342521086/zip",
       "expired": false,
       "digest": "sha256:fd927f10ad7d4ca6e1a7850e2cfde76e2f5b36c964a6257469ffc77343db1103",
       "created_at": "2026-09-14T10:00:00Z",
@@ -29,8 +29,8 @@
       "node_id": "MDg6QXJ0aWZhY3QxMDM0MTk2MTYzMA==",
       "name": "versioned-go-root",
       "size_in_bytes": 202785,
-      "url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10341961630",
-      "archive_download_url": "https://api.github.com/repos/xitcoin-org/pos-chain/actions/artifacts/10341961630/zip",
+      "url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10341961630",
+      "archive_download_url": "https://api.github.com/repos/xitcoin-xtc/pos-chain/actions/artifacts/10341961630/zip",
       "expired": false,
       "digest": "sha256:22f935732bb56adf70722c213228540afe1df2e8737bd66be3ca4c44a5c61429",
       "created_at": "2026-09-14T09:52:01Z",
@@ -237,7 +237,7 @@
           "list",
           "-m",
           "-json",
-          "github.com/xitcoin-org/pos-chain/evmd@aa3ae5bf104e388faaab39c3fe64c9358202f338"
+          "github.com/xitcoin-xtc/pos-chain/evmd@aa3ae5bf104e388faaab39c3fe64c9358202f338"
         ],
         "exit_code": 0,
         "blocked": null,
@@ -250,7 +250,7 @@
           "mod",
           "edit",
           "-module=xitcoin.invalid/qualification",
-          "-require=github.com/xitcoin-org/pos-chain/evmd@v0.0.0-20260914093554-aa3ae5bf104e"
+          "-require=github.com/xitcoin-xtc/pos-chain/evmd@v0.0.0-20260914093554-aa3ae5bf104e"
         ],
         "exit_code": 0,
         "blocked": null,
@@ -264,7 +264,7 @@
           "-mod=mod",
           "-o",
           "/home/runner/work/pos-chain/pos-chain/versioned-evidence/xitcoind-symbols",
-          "github.com/xitcoin-org/pos-chain/evmd/cmd/evmd"
+          "github.com/xitcoin-xtc/pos-chain/evmd/cmd/evmd"
         ],
         "exit_code": 0,
         "blocked": null,
@@ -302,30 +302,30 @@
     "TestERC20KeeperTestSuite"
   ],
   "failed_test_packages": [
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration"
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration"
   ],
   "prior_evmd_tests_log_sha256": "dd9f6385d8cd5ca8eaeae2085439a2ccaf18b87f10e607d0e76c6f3ce5d9d9c5",
   "passed_evmd_packages": [
-    "github.com/xitcoin-org/pos-chain/evmd",
-    "github.com/xitcoin-org/pos-chain/evmd/cmd/evmd/cmd",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/ibc",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/ante",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/balance_handler",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/eip7702",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/eips",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/mempool",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/bank",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/bech32",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/common",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/distribution",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/erc20",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/gov",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/ics20",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/p256",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/slashing",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/staking",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/integration/precompiles/werc20",
-    "github.com/xitcoin-org/pos-chain/evmd/tests/ledger"
+    "github.com/xitcoin-xtc/pos-chain/evmd",
+    "github.com/xitcoin-xtc/pos-chain/evmd/cmd/evmd/cmd",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/ibc",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/ante",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/balance_handler",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/eip7702",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/eips",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/mempool",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/bank",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/bech32",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/common",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/distribution",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/erc20",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/gov",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/ics20",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/p256",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/slashing",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/staking",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/integration/precompiles/werc20",
+    "github.com/xitcoin-xtc/pos-chain/evmd/tests/ledger"
   ],
   "fixtures": {
     "tests/integration/wallets/test_ledger_suite.go": {

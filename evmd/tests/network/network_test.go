@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/stretchr/testify/suite"
 
-	cosmosevmnetwork "github.com/xitcoin-org/pos-chain/evmd/tests/network"
-	"github.com/xitcoin-org/pos-chain/server/config"
+	cosmosevmnetwork "github.com/xitcoin-xtc/pos-chain/evmd/tests/network"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
 )
 
 type IntegrationTestSuite struct {

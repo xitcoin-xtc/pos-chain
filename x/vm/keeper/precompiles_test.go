@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/stretchr/testify/mock"
 
-	statedbmocks "github.com/xitcoin-org/pos-chain/x/vm/statedb/mocks"
+	statedbmocks "github.com/xitcoin-xtc/pos-chain/x/vm/statedb/mocks"
 )
 
 func (suite *KeeperTestSuite) TestGetPrecompileRecipientCallHook() {

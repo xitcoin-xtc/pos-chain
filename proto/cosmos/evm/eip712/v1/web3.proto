@@ -4,7 +4,7 @@ package cosmos.evm.eip712.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/ethereum/eip712";
+option go_package = "github.com/xitcoin-xtc/pos-chain/ethereum/eip712";
 
 // ExtensionOptionsWeb3Tx is an extension option that specifies the typed chain
 // id, the fee payer as well as its signature data.

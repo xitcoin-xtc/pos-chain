@@ -9,13 +9,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/contracts"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	"github.com/xitcoin-org/pos-chain/x/vm"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/contracts"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

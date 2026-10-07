@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/xitcoin-org/pos-chain/x/validatoradmission/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 )
 
 func GetQueryCmd() *cobra.Command {

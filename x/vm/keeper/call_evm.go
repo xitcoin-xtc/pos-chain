@@ -10,10 +10,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/xitcoin-org/pos-chain/server/config"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 

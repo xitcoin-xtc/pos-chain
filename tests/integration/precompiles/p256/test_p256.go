@@ -11,8 +11,8 @@ import (
 
 	"github.com/cometbft/cometbft/crypto"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/p256"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/p256"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 var trueValue = common.LeftPadBytes(common.Big1.Bytes(), 32)

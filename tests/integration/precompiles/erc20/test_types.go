@@ -3,8 +3,8 @@ package erc20
 import (
 	"math/big"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/erc20"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 )
 
 //nolint:dupl // these tests are not duplicates

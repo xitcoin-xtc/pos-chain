@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/xitcoin-org/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/utils"
 
 	errorsmod "cosmossdk.io/errors"
 

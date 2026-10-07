@@ -6,8 +6,8 @@ import (
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // CheckTxTopics checks if all expected topics are present in the transaction response

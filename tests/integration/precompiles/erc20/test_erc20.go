@@ -3,7 +3,7 @@ package erc20
 import (
 	"math/big"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/erc20"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
 )
 
 func (s *PrecompileTestSuite) TestIsTransaction() {

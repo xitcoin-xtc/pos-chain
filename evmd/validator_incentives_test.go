@@ -8,8 +8,8 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	evmconfig "github.com/xitcoin-org/pos-chain/evmd/config"
-	validatorincentivestypes "github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	evmconfig "github.com/xitcoin-xtc/pos-chain/evmd/config"
+	validatorincentivestypes "github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 func TestValidatorIncentivesWiring(t *testing.T) {

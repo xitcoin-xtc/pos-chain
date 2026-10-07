@@ -11,11 +11,11 @@ import (
 
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	"github.com/xitcoin-org/pos-chain/server/config"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
