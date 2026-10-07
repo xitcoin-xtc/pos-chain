@@ -56,8 +56,8 @@ releasing PR44 here. Zero GitHub reviews existed at the initial live check.
   `github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4`,
   commit `e09f79643cd464404876f3565ce0a8fd8c0aeb16`, Cosmos Geth base
   `d99d6fa2c8d98b7cd653de4a9386d2da3db8f25c`.
-- evmd consumes root `v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6`,
-  commit `3280cdeee8f6d362c332572d14ae26a7ec75b8d4`; it is distinct from
+- evmd consumes root `v0.1.0-testnet.4.0.20261007125404-5eae6f93a37f`,
+  commit `5eae6f93a37facc99ebe4f3048c654390472a8b3`; it is distinct from
   the PR head. Root application sources/locks match that immutable anchor.
 - CometBFT `v0.39.4`, ProtonMail/go-crypto `v1.4.1`, STUN `v3.1.5`,
   DTLS `v3.1.4`; residual DTLS v2 `v2.2.12`, x/crypto `v0.56.0`.
@@ -202,3 +202,7 @@ bridge and validator-incentive release requirements remain separate. Public
 activation 11.2.8, PR21 and the frozen Cyberscope scope are preserved. No merge,
 deployment, transaction, real blockchain key or public restart is authorized
 by this assessment. PR44 does not close all Xitcoin work.
+
+## 2026-10-07 organisation rename
+
+The GitHub organisation was renamed from `xitcoin-org` to `xitcoin-xtc`. Module paths, fork replacement paths, links and the recorded checksums were rebound to the new name. The fork commits are unchanged and their trees are byte-identical under both names; the root library pin moved to the rename commit. No logic changed and no renewed security review was performed for this rebinding.

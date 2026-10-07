@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSESSMENT_SHA256 = 'a622b9235cc4a260a413c31c930dde8ef6a0f5b6e65208c7387a6b746799b24e'
+ASSESSMENT_SHA256 = '8ff999af550884af3fc54753793be44314ea205a093fd098565ac3059f28cc91'
 
 
 def verify(root=ROOT):

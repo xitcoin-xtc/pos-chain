@@ -9,13 +9,13 @@
   "scope": "PR44 exact qualified root/evmd inputs; no merge, deployment or general security clearance",
   "source_head": "41da8db5ada202b0bb0a27016ad11dac4b2068b5",
   "qualified_head": "5e24531951873ec8d0cf4403d118c45f47fa641e",
-  "assessment_sha256": "9e8d05dbf5817f17b5f6de0e382125b6c9dc7060a7710251bf871da1d4ca94a9",
-  "provenance_sha256": "574885d401b82d0de35c67254d1dc137a1c2461dca415607d66dcbe51ea7807e",
+  "assessment_sha256": "3d9937131d44ab88f80da51fedc4bea9460e2a70f2729c7afe36d34aa0f5ceae",
+  "provenance_sha256": "d4d006a3ef9bee5425f550299d61fe33bce366af3550c016668fa866e33e39dd",
   "lock_sha256": {
-    "go.mod": "38457b69b3d06e5878fcdd7abe6dc9967fbfea323c6a57a0b2e855f8e621bb24",
-    "go.sum": "a756b61150d7be25beb8d0d5ebc84eb3ddcb7ab482bcbc56b2a84011d6176958",
-    "evmd/go.mod": "ba4b33609d600e169cabb5dea24ac47dc50f50ce0b8b7cf08b4d90ef47265e5f",
-    "evmd/go.sum": "943873d94636a26bc2075b8c668d48f46ed7a1a8779268a22b65c036b970f26c"
+    "go.mod": "3921ab1dc46d75e404b692e527c9fe3fc8ea3d9687f6abcb0c88036127c9aea8",
+    "go.sum": "ee6e09d625f21be4e1267c47663a539f158c5b8f89f00bc83b9ac468bc8324c1",
+    "evmd/go.mod": "cc1dc7a59a206eb2c69a2dc82dad9b26ddd21519a012945b36098a053f59cdd5",
+    "evmd/go.sum": "8c6c9a69f54743b63dbcc7d4fea18a0ded3f1f42198daa008b543c1d94e91103"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
