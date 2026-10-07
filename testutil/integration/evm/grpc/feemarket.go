@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 )
 
 // GetBaseFee returns the base fee from the feemarket module.

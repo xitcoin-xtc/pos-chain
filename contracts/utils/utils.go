@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // LoadContractFromJSONFile is a helper method to convert the embedded bytes from a JSON file,

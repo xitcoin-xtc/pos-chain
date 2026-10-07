@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
 )
 
 // txWithMinerFee wraps a transaction with its gas price or effective miner gasTipCap

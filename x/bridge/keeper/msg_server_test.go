@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/xitcoin-org/pos-chain/x/bridge/types"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 func TestSubmitAttestationRejectsDefaultUnconfiguredBridge(t *testing.T) {

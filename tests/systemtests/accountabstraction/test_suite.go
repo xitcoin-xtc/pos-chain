@@ -20,7 +20,7 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	suite "github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	suite "github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 	"github.com/stretchr/testify/require"
 )
 

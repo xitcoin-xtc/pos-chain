@@ -6,8 +6,8 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/proto/tendermint/crypto"
 
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/tx"

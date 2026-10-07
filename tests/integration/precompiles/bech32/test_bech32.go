@@ -5,7 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/bech32"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/bech32"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

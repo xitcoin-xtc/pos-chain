@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/xitcoin-org/pos-chain/ante/evm"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/ante/evm"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

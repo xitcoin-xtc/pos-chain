@@ -3,7 +3,7 @@ package vm
 import (
 	"testing"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 func BenchmarkSetParams(b *testing.B) {

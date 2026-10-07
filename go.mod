@@ -1,4 +1,4 @@
-module github.com/xitcoin-org/pos-chain
+module github.com/xitcoin-xtc/pos-chain
 
 go 1.26.7
 
@@ -375,7 +375,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// Xitcoin-maintained Cosmos Geth; immutable revision.
 	// Upstream provenance is recorded in docs/go-fork-provenance.json.
-	github.com/ethereum/go-ethereum => github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
+	github.com/ethereum/go-ethereum => github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 	// Security Advisory https://github.com/advisories/GHSA-h395-qcrw-5vmq
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 	// replace broken goleveldb
@@ -386,4 +386,4 @@ replace (
 
 retract v0.4.0
 
-replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
+replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee

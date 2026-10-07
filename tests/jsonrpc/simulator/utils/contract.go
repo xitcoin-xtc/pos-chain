@@ -9,8 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/config"
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/types"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/config"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/types"
 )
 
 // TransferTokensToAccount transfers ERC20 tokens from owner to a specific account

@@ -9,10 +9,10 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/testutil"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

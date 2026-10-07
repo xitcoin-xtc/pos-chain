@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/xitcoin-org/pos-chain/ibc"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/ibc"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v11/modules/core/05-port/types"

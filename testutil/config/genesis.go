@@ -3,9 +3,9 @@ package config
 import (
 	"encoding/json"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // GenesisState of the blockchain is represented here as a map of raw json

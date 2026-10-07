@@ -6,9 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/erc20"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 )
 
 //nolint:dupl // this is not a duplicate of the approval events test

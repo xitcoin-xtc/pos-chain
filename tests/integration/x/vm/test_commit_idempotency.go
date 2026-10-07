@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/holiman/uint256"
 
-	vmkeeper "github.com/xitcoin-org/pos-chain/x/vm/keeper"
+	vmkeeper "github.com/xitcoin-xtc/pos-chain/x/vm/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

@@ -41,7 +41,7 @@ Expected values: `max_validators=258`, `bond_denom=axtc`.
 ## Genesis verification
 
 ```bash
-git clone --recurse-submodules https://github.com/xitcoin-org/pos-chain.git
+git clone --recurse-submodules https://github.com/xitcoin-xtc/pos-chain.git
 cd pos-chain/networks/xitcoin-testnet-v2-1
 sha256sum -c genesis.sha256
 ```

@@ -19,7 +19,7 @@ for name,expected in manifest['forks'].items():
  if (replacement.get('Path'),replacement.get('Version'))!=(expected['path'],expected['version']):errors.append(f'{name}: immutable fork replacement mismatch')
  if not replacement.get('Sum') or not replacement.get('GoModSum'):errors.append(f'{name}: missing Go-generated checksums')
  if (replacement.get('Sum'),replacement.get('GoModSum'))!=(expected.get('sum'),expected.get('go_mod_sum')):errors.append(f'{name}: checksums differ from published provenance')
-library=modules.get('github.com/xitcoin-org/pos-chain')
+library=modules.get('github.com/xitcoin-xtc/pos-chain')
 if library and not library.get('Main'):
  expected_root=manifest.get('root_library',{})
  if library.get('Version')!=expected_root.get('version') or library.get('Replace'):errors.append('evmd: root library is not pinned to the recorded published revision')

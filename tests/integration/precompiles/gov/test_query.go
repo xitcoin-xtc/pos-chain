@@ -7,10 +7,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/gov"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/gov"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
 
 	"cosmossdk.io/math"
 

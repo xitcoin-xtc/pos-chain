@@ -1,4 +1,4 @@
-module github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator
+module github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator
 
 go 1.25.0
 

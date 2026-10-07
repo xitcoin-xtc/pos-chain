@@ -1,11 +1,11 @@
 package utils
 
 import (
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"

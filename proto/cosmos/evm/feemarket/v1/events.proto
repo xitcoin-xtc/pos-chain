@@ -2,7 +2,7 @@
 syntax = "proto3";
 package cosmos.evm.feemarket.v1;
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/feemarket/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/feemarket/types";
 
 // EventFeeMarket is the event type for the feemarket module
 message EventFeeMarket {

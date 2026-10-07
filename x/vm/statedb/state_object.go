@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // Account is the Ethereum consensus representation of accounts.

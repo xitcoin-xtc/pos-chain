@@ -5,7 +5,7 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"

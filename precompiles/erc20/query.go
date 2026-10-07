@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	"github.com/xitcoin-org/pos-chain/ibc"
+	"github.com/xitcoin-xtc/pos-chain/ibc"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

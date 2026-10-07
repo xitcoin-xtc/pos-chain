@@ -8,7 +8,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-var meter = otel.Meter("github.com/xitcoin-org/pos-chain/mempool/internal/reaplist")
+var meter = otel.Meter("github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist")
 
 // reapListMetrics are reapListMetrics specific to the reaplist
 type reapListMetrics struct {

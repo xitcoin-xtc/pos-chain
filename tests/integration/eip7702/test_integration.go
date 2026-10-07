@@ -11,11 +11,11 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 func TestEIP7702IntegrationTestSuite(t *testing.T, create network.CreateEvmApp, options ...network.ConfigOption) {

@@ -1,8 +1,8 @@
 package network
 
 import (
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"

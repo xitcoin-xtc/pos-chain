@@ -5,13 +5,13 @@
   "forks": {
     "github.com/cosmos/cosmos-sdk": {
       "required_version": "v0.54.4",
-      "path": "github.com/xitcoin-org/cosmos-sdk",
+      "path": "github.com/xitcoin-xtc/cosmos-sdk",
       "version": "v0.54.5-0.20260914091530-52ff14a25bee",
       "commit": "52ff14a25bee524f0e48ae7f00664443bcb22335",
       "base": "dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6",
       "upstream": "https://github.com/cosmos/cosmos-sdk/commit/dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6",
-      "signed_source": "https://github.com/xitcoin-org/cosmos-sdk/commit/52ff14a25bee524f0e48ae7f00664443bcb22335",
-      "sum": "h1:WU03GGJuL72vYRtn90DF79x51Y5TWGFbLa4XgTvKXuA=",
+      "signed_source": "https://github.com/xitcoin-xtc/cosmos-sdk/commit/52ff14a25bee524f0e48ae7f00664443bcb22335",
+      "sum": "h1:ZbENildMBRKKYIJ4Otsm1Yk1WFPVfvitYnx3B+/JdnE=",
       "go_mod_sum": "h1:/1rNNn6uo2iw2ZEp9N8GK9PdWgH0OmxDly8MEAArYPI=",
       "patch_sha256": "dc46d5e1e8497222040f0688277217599ce884e52ebdc820ba65f6a79a74902c",
       "advisory_identity": "github.com/cosmos/cosmos-sdk",
@@ -44,13 +44,13 @@
     },
     "github.com/ethereum/go-ethereum": {
       "required_version": "v1.16.9",
-      "path": "github.com/xitcoin-org/go-ethereum",
+      "path": "github.com/xitcoin-xtc/go-ethereum",
       "version": "v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4",
       "commit": "e09f79643cd464404876f3565ce0a8fd8c0aeb16",
       "base": "d99d6fa2c8d98b7cd653de4a9386d2da3db8f25c",
       "upstream": "https://github.com/cosmos/go-ethereum/commit/d99d6fa2c8d98b7cd653de4a9386d2da3db8f25c",
-      "signed_source": "https://github.com/xitcoin-org/go-ethereum/commit/e09f79643cd464404876f3565ce0a8fd8c0aeb16",
-      "sum": "h1:xDPGjArTeKQ8j19NP5e968xfZLaidTHxaGGk89JRIww=",
+      "signed_source": "https://github.com/xitcoin-xtc/go-ethereum/commit/e09f79643cd464404876f3565ce0a8fd8c0aeb16",
+      "sum": "h1:9k4Qh3iIr8gxPK6qvgEYaDrb3vMkrH+ullN4vuNQuD4=",
       "go_mod_sum": "h1:QtIPOaMKuz4zDZoQQ72nJJ9i5njr+MyRMl2tv7XteJQ=",
       "patch_sha256": "8316073e371bdccaf788bd0f881d23094f1d486d1d7202d3edaa31fdf2416db4",
       "advisory_identity": "github.com/ethereum/go-ethereum",
@@ -274,8 +274,8 @@
     }
   ],
   "root_library": {
-    "version": "v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6",
-    "commit": "3280cdeee8f6d362c332572d14ae26a7ec75b8d4",
-    "signed_source": "https://github.com/xitcoin-org/pos-chain/commit/3280cdeee8f6d362c332572d14ae26a7ec75b8d4"
+    "version": "v0.1.0-testnet.4.0.20261007125404-5eae6f93a37f",
+    "commit": "5eae6f93a37facc99ebe4f3048c654390472a8b3",
+    "signed_source": "https://github.com/xitcoin-xtc/pos-chain/commit/5eae6f93a37facc99ebe4f3048c654390472a8b3"
   }
 }

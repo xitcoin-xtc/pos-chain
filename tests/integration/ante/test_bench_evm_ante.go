@@ -7,12 +7,12 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	evmante "github.com/xitcoin-org/pos-chain/ante/evm"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmante "github.com/xitcoin-xtc/pos-chain/ante/evm"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkmath "cosmossdk.io/math"
 

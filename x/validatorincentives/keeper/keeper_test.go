@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 func keeperTestContext(t *testing.T) (sdk.Context, Keeper) {

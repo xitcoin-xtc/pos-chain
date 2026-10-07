@@ -17,7 +17,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 SDK = "github.com/cosmos/cosmos-sdk"
 GETH = "github.com/ethereum/go-ethereum"
-LIBRARY = "github.com/xitcoin-org/pos-chain"
+LIBRARY = "github.com/xitcoin-xtc/pos-chain"
 
 FAKE_TOOL = r'''#!/usr/bin/env python3
 import json, os, pathlib, sys

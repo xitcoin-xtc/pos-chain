@@ -12,10 +12,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.opentelemetry.io/otel"
 
-	"github.com/xitcoin-org/pos-chain/crypto/hd"
-	"github.com/xitcoin-org/pos-chain/rpc/backend"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/crypto/hd"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 

@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	ethrpc "github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/config"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/config"
 )
 
 type Account struct {

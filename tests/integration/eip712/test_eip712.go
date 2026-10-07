@@ -10,11 +10,11 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

@@ -1,7 +1,7 @@
 package cosmos
 
 import (
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 

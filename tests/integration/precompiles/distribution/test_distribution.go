@@ -9,12 +9,12 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/holiman/uint256"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/distribution"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	chainutil "github.com/xitcoin-org/pos-chain/testutil"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/distribution"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	chainutil "github.com/xitcoin-xtc/pos-chain/testutil"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

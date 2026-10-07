@@ -1,6 +1,6 @@
 package namespaces
 
-import "github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/types"
+import "github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/types"
 
 const (
 	// Engine API namespace (not applicable for Cosmos chains)

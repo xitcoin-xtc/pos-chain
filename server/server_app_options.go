@@ -11,9 +11,9 @@ import (
 
 	cmtcfg "github.com/cometbft/cometbft/config"
 
-	evmmempool "github.com/xitcoin-org/pos-chain/mempool"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool/legacypool"
-	srvflags "github.com/xitcoin-org/pos-chain/server/flags"
+	evmmempool "github.com/xitcoin-xtc/pos-chain/mempool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool/legacypool"
+	srvflags "github.com/xitcoin-xtc/pos-chain/server/flags"
 
 	"cosmossdk.io/log/v2"
 

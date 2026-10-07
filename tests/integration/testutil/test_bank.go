@@ -3,10 +3,10 @@
 package testutil
 
 import (
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/utils"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/utils"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

@@ -42,16 +42,16 @@ if resume_path.exists():
   assert hashlib.sha256(previous(path)).hexdigest()==hashes['before']
   assert hashlib.sha256((root/path).read_bytes()).hexdigest()==hashes['after']
  for path in ['go.mod','go.sum']:assert previous(path)==(root/path).read_bytes(), 'root locks changed'
- def normalize_evmd_mod(raw):return re.sub(rb'(?m)^(\s*github.com/xitcoin-org/pos-chain )\S+',rb'\1ROOT_VERSION',raw)
+ def normalize_evmd_mod(raw):return re.sub(rb'(?m)^(\s*github.com/xitcoin-xtc/pos-chain )\S+',rb'\1ROOT_VERSION',raw)
  assert normalize_evmd_mod(previous('evmd/go.mod'))==normalize_evmd_mod((root/'evmd/go.mod').read_bytes())
- def normalize_evmd_sum(raw):return b''.join(line for line in raw.splitlines(keepends=True) if not line.startswith(b'github.com/xitcoin-org/pos-chain '))
+ def normalize_evmd_sum(raw):return b''.join(line for line in raw.splitlines(keepends=True) if not line.startswith(b'github.com/xitcoin-xtc/pos-chain '))
  assert normalize_evmd_sum(previous('evmd/go.sum'))==normalize_evmd_sum((root/'evmd/go.sum').read_bytes())
  before=json.loads(previous('docs/go-fork-provenance.json'));after=json.loads((root/'docs/go-fork-provenance.json').read_text())
  before.pop('root_library',None);after.pop('root_library',None);assert before==after
  assert all(v['exit_code']==0 and v['blocked'] is None for v in resume['prior_results']['root'].values())
  assert all(v['exit_code']==0 and v['blocked'] is None for k,v in resume['prior_results']['evmd'].items() if k!='tests')
  assert set(resume['failed_test_suites'])=={'TestLedgerTestSuite','TestERC20KeeperTestSuite'}
- assert resume['failed_test_packages']==['github.com/xitcoin-org/pos-chain/evmd/tests/integration']
+ assert resume['failed_test_packages']==['github.com/xitcoin-xtc/pos-chain/evmd/tests/integration']
  (out/'preserved-checks.json').write_text(json.dumps(resume,indent=2))
 # The old fixture/lock/result assertions above remain mandatory. The new guard
 # proves the current tree differs only by the reviewed, digest-bound gate delta.
@@ -83,15 +83,15 @@ if run('install-scanner',['go','install','golang.org/x/vuln/cmd/govulncheck@v1.7
  run('source-scan',[scanner,'-json','./...'])
  if module=='evmd':
   head=os.environ['QUALIFICATION_HEAD_SHA']
-  resolved=run('resolve-published-evmd',['go','list','-m','-json','github.com/xitcoin-org/pos-chain/evmd@'+head])
+  resolved=run('resolve-published-evmd',['go','list','-m','-json','github.com/xitcoin-xtc/pos-chain/evmd@'+head])
   if resolved:
    resolved_text=(out/'resolve-published-evmd.log').read_text()
    version=json.JSONDecoder().raw_decode(resolved_text[resolved_text.index('{'):])[0]['Version']
    harness=root/'binary-qualification';harness.mkdir()
    shutil.copyfile(cwd/'go.mod',harness/'go.mod');shutil.copyfile(cwd/'go.sum',harness/'go.sum');cwd=harness
-   run('prepare-versioned-binary',['go','mod','edit','-module=xitcoin.invalid/qualification','-require=github.com/xitcoin-org/pos-chain/evmd@'+version])
+   run('prepare-versioned-binary',['go','mod','edit','-module=xitcoin.invalid/qualification','-require=github.com/xitcoin-xtc/pos-chain/evmd@'+version])
   else:version=None
- if module=='evmd' and version and run('build-symbols',['go','build','-mod=mod','-o',str(out/'xitcoind-symbols'),'github.com/xitcoin-org/pos-chain/evmd/cmd/evmd']):
+ if module=='evmd' and version and run('build-symbols',['go','build','-mod=mod','-o',str(out/'xitcoind-symbols'),'github.com/xitcoin-xtc/pos-chain/evmd/cmd/evmd']):
   run('buildinfo',['go','version','-m',str(out/'xitcoind-symbols')])
   if '(devel)' in (out/'buildinfo.log').read_text():results['buildinfo']['exit_code']=1
   run('binary-symbols-scan',[scanner,'-mode=binary','-json',str(out/'xitcoind-symbols')])

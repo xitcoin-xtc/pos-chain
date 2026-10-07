@@ -5,10 +5,10 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/xitcoin-org/pos-chain"
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/ics20"
-	precompiletestutil "github.com/xitcoin-org/pos-chain/precompiles/testutil"
+	"github.com/xitcoin-xtc/pos-chain"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/ics20"
+	precompiletestutil "github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -9,10 +9,10 @@ import (
 
 	_ "embed"
 
-	ibcutils "github.com/xitcoin-org/pos-chain/ibc"
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	erc20 "github.com/xitcoin-org/pos-chain/precompiles/erc20"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
+	ibcutils "github.com/xitcoin-xtc/pos-chain/ibc"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	erc20 "github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

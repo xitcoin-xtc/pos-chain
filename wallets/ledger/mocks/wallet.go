@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	accounts "github.com/xitcoin-org/pos-chain/wallets/accounts"
+	accounts "github.com/xitcoin-xtc/pos-chain/wallets/accounts"
 	apitypes "github.com/ethereum/go-ethereum/signer/core/apitypes"
 
 	big "math/big"

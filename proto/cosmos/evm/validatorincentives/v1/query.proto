@@ -3,7 +3,7 @@ package cosmos.evm.validatorincentives.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/validatorincentives/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types";
 
 // Query exposes read-only Validator Incentive state.
 service Query {

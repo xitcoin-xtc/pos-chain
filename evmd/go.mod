@@ -1,4 +1,4 @@
-module github.com/xitcoin-org/pos-chain/evmd
+module github.com/xitcoin-xtc/pos-chain/evmd
 
 go 1.26.7
 
@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/tyler-smith/go-bip39 v1.1.0
-	github.com/xitcoin-org/pos-chain v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6
+	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261007125404-5eae6f93a37f
 	golang.org/x/sync v0.22.0
 	google.golang.org/grpc v1.82.1
 )
@@ -373,7 +373,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// Xitcoin-maintained Cosmos Geth; immutable revision.
 	// Upstream provenance is recorded in docs/go-fork-provenance.json.
-	github.com/ethereum/go-ethereum => github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
+	github.com/ethereum/go-ethereum => github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 	// Security Advisory https://github.com/advisories/GHSA-h395-qcrw-5vmq
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 	// replace broken goleveldb
@@ -382,4 +382,4 @@ replace (
 	github.com/tidwall/btree => github.com/cosmos/btree v0.0.0-20250924232609-2c6195d95951
 )
 
-replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
+replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee

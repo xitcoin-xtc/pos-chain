@@ -7,9 +7,9 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 
-	anteinterfaces "github.com/xitcoin-org/pos-chain/ante/interfaces"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	anteinterfaces "github.com/xitcoin-xtc/pos-chain/ante/interfaces"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"

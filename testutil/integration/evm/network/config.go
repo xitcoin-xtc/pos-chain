@@ -6,9 +6,9 @@ import (
 
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	testtx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	testtx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

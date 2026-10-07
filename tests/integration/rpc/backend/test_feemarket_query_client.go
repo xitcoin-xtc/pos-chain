@@ -3,8 +3,8 @@ package backend
 import (
 	"github.com/stretchr/testify/mock"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend/mocks"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend/mocks"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

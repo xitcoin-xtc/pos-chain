@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	evmante "github.com/xitcoin-org/pos-chain/ante/evm"
+	evmante "github.com/xitcoin-xtc/pos-chain/ante/evm"
 
 	addresscodec "cosmossdk.io/core/address"
 

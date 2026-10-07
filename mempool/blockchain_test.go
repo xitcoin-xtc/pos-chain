@@ -12,11 +12,11 @@ import (
 
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/xitcoin-org/pos-chain/mempool"
-	"github.com/xitcoin-org/pos-chain/mempool/mocks"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	vmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/mempool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/mocks"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	vmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 

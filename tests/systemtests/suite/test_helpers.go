@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/xitcoin-org/pos-chain/tests/systemtests/clients"
+	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/clients"
 )
 
 // BaseFee returns the most recently retrieved and stored baseFee.

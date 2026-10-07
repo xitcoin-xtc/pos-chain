@@ -5,8 +5,8 @@ import (
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
 
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 	ibctypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	connectiontypes "github.com/cosmos/ibc-go/v11/modules/core/03-connection/types"
 	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"

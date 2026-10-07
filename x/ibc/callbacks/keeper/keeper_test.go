@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/x/ibc/callbacks/types"
+	"github.com/xitcoin-xtc/pos-chain/x/ibc/callbacks/types"
 	callbacktypes "github.com/cosmos/ibc-go/v11/modules/apps/callbacks/types"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"

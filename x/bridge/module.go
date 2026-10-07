@@ -17,9 +17,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/xitcoin-org/pos-chain/x/bridge/client/cli"
-	"github.com/xitcoin-org/pos-chain/x/bridge/keeper"
-	"github.com/xitcoin-org/pos-chain/x/bridge/types"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/client/cli"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/keeper"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 const consensusVersion = 1

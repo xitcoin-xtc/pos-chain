@@ -5,8 +5,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	"cosmossdk.io/math"
 

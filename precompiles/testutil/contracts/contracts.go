@@ -9,10 +9,10 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	"github.com/xitcoin-org/pos-chain/testutil/integration"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

@@ -4,7 +4,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 func (k Keeper) InitGenesis(

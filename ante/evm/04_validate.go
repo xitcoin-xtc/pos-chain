@@ -6,8 +6,8 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	anteinterfaces "github.com/xitcoin-org/pos-chain/ante/interfaces"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	anteinterfaces "github.com/xitcoin-xtc/pos-chain/ante/interfaces"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"

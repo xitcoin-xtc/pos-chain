@@ -3,12 +3,12 @@ package slashing
 import (
 	"github.com/stretchr/testify/suite"
 
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
-	"github.com/xitcoin-org/pos-chain/precompiles/slashing"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/slashing"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"

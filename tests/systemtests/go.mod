@@ -1,4 +1,4 @@
-module github.com/xitcoin-org/pos-chain/tests/systemtests
+module github.com/xitcoin-xtc/pos-chain/tests/systemtests
 
 go 1.25.9
 
@@ -7,7 +7,7 @@ require (
 	github.com/cometbft/cometbft v0.39.3
 	github.com/cosmos/cosmos-sdk v0.54.3
 	github.com/cosmos/cosmos-sdk/tools/systemtests v0.0.0-20260505173942-e77c24c3eda7
-	github.com/xitcoin-org/pos-chain v0.5.0-rc.0
+	github.com/xitcoin-xtc/pos-chain v0.5.0-rc.0
 	github.com/creachadair/tomledit v0.0.29
 	github.com/ethereum/go-ethereum v1.16.8
 	github.com/holiman/uint256 v1.3.2
@@ -302,6 +302,6 @@ require (
 )
 
 replace (
-	github.com/xitcoin-org/pos-chain => ../..
+	github.com/xitcoin-xtc/pos-chain => ../..
 	github.com/ethereum/go-ethereum => github.com/cosmos/go-ethereum v1.17.2-cosmos-0
 )

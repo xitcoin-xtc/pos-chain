@@ -31,7 +31,7 @@ import (
 	"time"
 
 	"cosmossdk.io/log/v2"
-	reserver2 "github.com/xitcoin-org/pos-chain/mempool/reserver"
+	reserver2 "github.com/xitcoin-xtc/pos-chain/mempool/reserver"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -46,9 +46,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/reaplist"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/txtracker"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/txtracker"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
 )
 
 // testTxEncoder is a stub for legacypool tests that don't exercise size.

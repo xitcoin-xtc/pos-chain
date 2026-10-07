@@ -8,8 +8,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 

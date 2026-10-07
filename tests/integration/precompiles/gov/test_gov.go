@@ -9,10 +9,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/gov"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/gov"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 func (s *PrecompileTestSuite) TestIsTransaction() {

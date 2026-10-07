@@ -3,14 +3,14 @@ package distribution
 import (
 	"github.com/stretchr/testify/suite"
 
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
-	"github.com/xitcoin-org/pos-chain/precompiles/distribution"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/distribution"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"

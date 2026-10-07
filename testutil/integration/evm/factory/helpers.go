@@ -5,8 +5,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 )

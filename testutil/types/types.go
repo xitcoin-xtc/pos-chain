@@ -3,7 +3,7 @@ package types
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkmath "cosmossdk.io/math"
 

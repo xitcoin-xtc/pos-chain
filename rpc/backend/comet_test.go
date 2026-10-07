@@ -10,7 +10,7 @@ import (
 
 	tmrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend/mocks"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend/mocks"
 )
 
 func TestCometBlockResultByNumber_NilHeightErrorPath(t *testing.T) {

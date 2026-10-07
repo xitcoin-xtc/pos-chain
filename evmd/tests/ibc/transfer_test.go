@@ -12,9 +12,9 @@ import (
 
 	"github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
-	"github.com/xitcoin-org/pos-chain/evmd"
-	"github.com/xitcoin-org/pos-chain/evmd/tests/integration"
-	evmibctesting "github.com/xitcoin-org/pos-chain/testutil/ibc"
+	"github.com/xitcoin-xtc/pos-chain/evmd"
+	"github.com/xitcoin-xtc/pos-chain/evmd/tests/integration"
+	evmibctesting "github.com/xitcoin-xtc/pos-chain/testutil/ibc"
 
 	sdkmath "cosmossdk.io/math"
 

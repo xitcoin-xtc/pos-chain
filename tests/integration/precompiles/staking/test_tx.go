@@ -9,12 +9,12 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/staking"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	cosmosevmutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/staking"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	cosmosevmutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 
 	"cosmossdk.io/math"
 

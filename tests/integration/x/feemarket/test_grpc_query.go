@@ -1,8 +1,8 @@
 package feemarket
 
 import (
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	sdkmath "cosmossdk.io/math"
 

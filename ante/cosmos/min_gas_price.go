@@ -5,8 +5,8 @@ import (
 	"math/big"
 	"slices"
 
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"

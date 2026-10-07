@@ -3,8 +3,8 @@ package keeper
 import (
 	"github.com/ethereum/go-ethereum/common"
 
-	types2 "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	types2 "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/errors"
 )

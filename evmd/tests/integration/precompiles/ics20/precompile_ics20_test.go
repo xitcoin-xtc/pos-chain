@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/evmd/tests/integration"
-	"github.com/xitcoin-org/pos-chain/tests/integration/precompiles/ics20"
-	testapp "github.com/xitcoin-org/pos-chain/testutil/app"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/evmd/tests/integration"
+	"github.com/xitcoin-xtc/pos-chain/tests/integration/precompiles/ics20"
+	testapp "github.com/xitcoin-xtc/pos-chain/testutil/app"
 )
 
 var ibcAppCreator = testapp.ToIBCAppCreator[evm.ICS20PrecompileApp](integration.SetupEvmd, "evm.ICS20PrecompileApp")
