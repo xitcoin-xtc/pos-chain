@@ -55,3 +55,54 @@ jobs:
       - name: Audit contract dependencies
         working-directory: contracts
         run: npm audit --audit-level=high
+
+  fresh-go-diagnostics:
+    name: Fresh Go evidence (${{ matrix.module }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [root, evmd]
+    env:
+      CGO_ENABLED: '1'
+      GOWORK: 'off'
+      GOMAXPROCS: '2'
+      GOMEMLIMIT: 3GiB
+      GOFLAGS: -p=1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Collect current graph and raw findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
+          mkdir -p "$evidence"
+          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          go version > "$evidence/toolchain.txt"
+          sha256sum go.mod go.sum > "$evidence/lock-sha256.txt"
+          go list -m -json all > "$evidence/modules.json"
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          # Diagnostic evidence does not renew the assessment or its exceptions.
+          # Preserve the scanner's nonzero result; existing gates remain mandatory.
+          set +e
+          govulncheck -json ./... > "$evidence/govulncheck.jsonl" 2> "$evidence/govulncheck.stderr"
+          scan_status=$?
+          set -e
+          printf '%s\n' "$scan_status" > "$evidence/scan-exit-code.txt"
+          exit "$scan_status"
+      - name: Preserve evidence even when findings block the scan
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: fresh-go-${{ matrix.module }}
+          path: fresh-go-evidence/
+          retention-days: 14
