@@ -178,9 +178,11 @@ import_local_test_key() {
   local keyname="$1"
   local private_key
   private_key="$(local_test_private_key "$keyname")"
-  printf '\n' | evmd keys unsafe-import-eth-key "$keyname" "$private_key" \
+  local import_passphrase
+  import_passphrase="$(openssl rand -hex 32)"
+  printf '%s\n' "$import_passphrase" | evmd keys unsafe-import-eth-key "$keyname" "$private_key" \
     --keyring-backend "$KEYRING" --home "$CHAINDIR"
-  unset private_key
+  unset private_key import_passphrase
 }
 
 # Setup local node if overwrite is set to Yes, otherwise skip setup

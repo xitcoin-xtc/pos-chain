@@ -68,3 +68,4 @@ jobs:
         env:
           COMPAT_DIR: ${{ github.workspace }}/tests/evm-tools-compatibility
           COMPAT_SUITE: viem
+          COMPAT_LOCAL_KEYS: '1'

@@ -168,7 +168,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ./local_node.sh -y --no-install > "$RUNNER_TEMP/solidity-node.log" 2>&1 &
+          ./local_node.sh -y --no-install > /tmp/evmd.log 2>&1 &
           node_pid=$!
           trap 'kill "$node_pid" 2>/dev/null || true; wait "$node_pid" 2>/dev/null || true' EXIT
           source scripts/tests_compatibility_common.sh

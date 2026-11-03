@@ -56,6 +56,10 @@ if [ -f ".env" ]; then
 	echo "Sourcing .env file..."
 	# shellcheck source=/dev/null
 	source .env
+elif [ "${COMPAT_LOCAL_KEYS:-0}" = 1 ]; then
+	# The CI node was freshly created by start_node; never use a live keyring.
+	PRIVATE_KEY="$(evmd keys unsafe-export-eth-key mykey --keyring-backend test --home "$HOME/.evmd")"
+	export PRIVATE_KEY
 else
 	echo "Error: No .env file found in $TEST_DIR"
 	exit 1
