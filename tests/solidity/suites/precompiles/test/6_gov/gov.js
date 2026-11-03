@@ -20,9 +20,14 @@ describe('Gov Precompile', function () {
         const jsonProposal = buildProposal(COSMOS_ADDR)
         const deposit = { denom: 'atest', amount: hre.ethers.parseEther('1') }
 
-        const tx = await gov
-            .connect(signer)
-            .submitProposal(signer.address, jsonProposal, [deposit], { gasLimit: GAS_LIMIT })
+        // Simulate the actual proposal first: preserve any validation error and
+        // size this setup transaction for the disposable node's current gas costs.
+        const submit = gov.connect(signer).submitProposal
+        const estimatedGas = await submit.estimateGas(signer.address, jsonProposal, [deposit])
+        console.log('Proposal estimated gas:', estimatedGas.toString())
+        const tx = await submit(signer.address, jsonProposal, [deposit], {
+            gasLimit: estimatedGas + estimatedGas / 5n,
+        })
         const receipt = await waitWithTimeout(tx, 20000, RETRY_DELAY_FUNC)
 
         const evt = findEvent(receipt.logs, gov.interface, 'SubmitProposal')
