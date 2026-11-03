@@ -174,5 +174,8 @@ jobs:
           source scripts/tests_compatibility_common.sh
           wait_for_node 10
           load_test_evm_chain_id
+          if [[ '${{ matrix.suite }}' == precompiles ]]; then
+            load_test_validator_address
+          fi
           cd tests/solidity/suites/${{ matrix.suite }}
           yarn test-cosmos

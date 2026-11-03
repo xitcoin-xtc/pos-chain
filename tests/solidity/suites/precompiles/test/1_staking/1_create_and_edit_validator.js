@@ -135,6 +135,7 @@ describe('StakingI – createValidator', function() {
         const out = await staking.validators('', pageReq)
         const validators = out.validators.map(parseValidator)
         expect(validators.length).to.be.gte(2)
-        expect(validators[1].operatorAddress.toLowerCase()).to.equal(signer.address.toLowerCase())
+        const createdValidator = validators.find(v => v.operatorAddress.toLowerCase() === signer.address.toLowerCase())
+        expect(createdValidator, 'Created validator must be present regardless of list ordering').to.exist
     })
 })

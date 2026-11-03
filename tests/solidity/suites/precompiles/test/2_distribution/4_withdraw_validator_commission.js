@@ -1,3 +1,4 @@
+const { GENESIS_VALIDATOR, GENESIS_VALIDATOR_HEX } = require('../common')
 const { expect } = require('chai')
 const { ethers } = require('hardhat')
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
@@ -10,12 +11,13 @@ describe('Distribution – withdraw validator commission', function () {
 
     before(async () => {
         const signers   = await ethers.getSigners()
-        validator       = signers[signers.length - 1]
+        validator       = signers.find(s => s.address.toLowerCase() === GENESIS_VALIDATOR_HEX.toLowerCase())
+        if (!validator) throw new Error('Disposable genesis-validator signer is unavailable')
         distribution    = await ethers.getContractAt('DistributionI', DIST_ADDRESS)
     })
 
     it('withdraws validator commission and emits proper event', async function () {
-        const valBech32     = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+        const valBech32     = GENESIS_VALIDATOR
 
         // 1) query commission before withdrawal
         const beforeRes = await distribution.validatorCommission(valBech32)

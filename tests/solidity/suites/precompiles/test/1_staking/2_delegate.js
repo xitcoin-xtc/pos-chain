@@ -1,3 +1,4 @@
+const { GENESIS_VALIDATOR, GENESIS_VALIDATOR_HEX } = require('../common')
 const {expect} = require('chai')
 const hre = require('hardhat')
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
@@ -19,7 +20,7 @@ describe('Staking – delegate with event assertion', function () {
     })
 
     it('should stake native coin and emit Delegate event (using precision-adjusted shares)', async function () {
-        const valBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+        const valBech32 = GENESIS_VALIDATOR
         const stakeAmountBn = hre.ethers.parseEther('0.001')   // BigNumber
         const stakeAmount = BigInt(stakeAmountBn.toString())
 
@@ -27,7 +28,7 @@ describe('Staking – delegate with event assertion', function () {
         const precision = 10n ** 18n
         const stakeShares = stakeAmount * precision
 
-        const hexValAddr = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E'
+        const hexValAddr = GENESIS_VALIDATOR_HEX
 
         // Query delegation before staking
         const beforeDelegation = await staking.delegation(signer.address, valBech32)

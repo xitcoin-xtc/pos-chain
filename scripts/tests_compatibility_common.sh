@@ -76,6 +76,18 @@ load_test_evm_chain_id() {
 	export EXPECTED_EVM_CHAIN_ID
 }
 
+# Public identity of the validator created by local_node.sh; no private key export.
+load_test_validator_address() {
+	local address
+	address="$(evmd keys show mykey -a --bech val --keyring-backend test --home "${1:-$HOME/.evmd}")" || return 1
+	if [[ ! "$address" =~ ^[a-z0-9]+valoper1[a-z0-9]+$ ]]; then
+		echo "Invalid disposable test validator address" >&2
+		return 1
+	fi
+	TEST_VALIDATOR_ADDRESS="$address"
+	export TEST_VALIDATOR_ADDRESS
+}
+
 # Stop the node
 cleanup_node() {
 	if [ -n "${NODE_PID:-}" ]; then

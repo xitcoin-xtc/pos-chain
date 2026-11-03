@@ -1,3 +1,4 @@
+const { GENESIS_VALIDATOR, GENESIS_VALIDATOR_HEX } = require('../common')
 const {expect} = require('chai')
 const hre = require('hardhat')
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
@@ -47,7 +48,7 @@ describe('Staking – delegate, undelegate & cancelUnbondingDelegation with even
     })
 
     it('should delegate, undelegate, then cancel unbonding and emit correct events', async function () {
-        const valBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+        const valBech32 = GENESIS_VALIDATOR
         const amount = hre.ethers.parseEther('0.001')
 
         // DELEGATE
@@ -55,7 +56,7 @@ describe('Staking – delegate, undelegate & cancelUnbondingDelegation with even
         const delegateReceipt = await waitWithTimeout(delegateTx, 20000, RETRY_DELAY_FUNC)
         console.log('Delegate tx hash:', delegateTx.hash, 'gas used:', delegateReceipt.gasUsed.toString())
 
-        const hexValAddr = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E'
+        const hexValAddr = GENESIS_VALIDATOR_HEX
         const delegateEvt = findEvent(delegateReceipt.logs, staking.interface, 'Delegate')
         expect(delegateEvt, 'Delegate event should be emitted').to.exist
         expect(delegateEvt.args.delegatorAddress).to.equal(signer.address)

@@ -1,3 +1,4 @@
+const { GENESIS_VALIDATOR, GENESIS_VALIDATOR_HEX, accountAddress, validatorAddress } = require('../common')
 const {expect} = require('chai')
 const hre = require('hardhat')
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
@@ -70,13 +71,13 @@ describe('Staking – redelegate with event and state assertions', function () {
     })
 
     it('should redelegate tokens and emit Redelegate event', async function () {
-        const signerBech32 = 'cosmos1cml96vmptgw99syqrrz8az79xer2pcgp95srxm'
-        const srcValBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
-        const dstValBech32 = 'cosmosvaloper1cml96vmptgw99syqrrz8az79xer2pcgpqqyk2g'
+        const signerBech32 = accountAddress(signer.address)
+        const srcValBech32 = GENESIS_VALIDATOR
+        const dstValBech32 = validatorAddress(signer.address)
 
         // decode bech32 → hex for event comparisons
-        const srcValHex = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E'
-        const dstValHex = '0xC6Fe5D33615a1C52c08018c47E8Bc53646A0E101'
+        const srcValHex = GENESIS_VALIDATOR_HEX
+        const dstValHex = signer.address
 
         // 1) query current delegations to both validators before redelegation
         const beforeSrcDelegationRaw = await staking.delegation(signer.address, srcValBech32)

@@ -9,6 +9,24 @@ const SLASHING_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000806'
 const P256_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000100'
 const WERC20_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
+// Public fixture addresses follow the disposable node, never stored private keys.
+const bech32 = require('bech32')
+const { getAddress } = require('ethers')
+const GENESIS_VALIDATOR = process.env.TEST_VALIDATOR_ADDRESS || 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
+const decodedValidator = bech32.decode(GENESIS_VALIDATOR)
+if (!decodedValidator.prefix.endsWith('valoper')) throw new Error('Invalid test validator prefix')
+const accountPrefix = decodedValidator.prefix.slice(0, -'valoper'.length)
+const GENESIS_VALIDATOR_HEX = getAddress('0x' + Buffer.from(bech32.fromWords(decodedValidator.words)).toString('hex'))
+function accountAddress(hex) {
+    return bech32.encode(accountPrefix, bech32.toWords(Buffer.from(getAddress(hex).slice(2), 'hex')))
+}
+function validatorAddress(hex) {
+    return bech32.encode(accountPrefix + 'valoper', bech32.toWords(Buffer.from(getAddress(hex).slice(2), 'hex')))
+}
+function accountWithPrefix(address) {
+    return bech32.encode(accountPrefix, bech32.decode(address).words)
+}
+
 // Default gas limits used across tests
 const DEFAULT_GAS_LIMIT = 1_000_000
 const LARGE_GAS_LIMIT = 10_000_000
@@ -18,28 +36,36 @@ const RETRY_DELAY_FUNC = (attempt) => 500 * Math.pow(2, attempt)
 
 function waitWithTimeout(txn, timeoutMs, retryDelayFn = (attempt) => 1000) {
     return new Promise((resolve, reject) => {
-        const deadlineTimer = setTimeout(() => {
-            reject(new Error(`Txn wait failed after timeout of ${timeoutMs}ms.`));
-        }, timeoutMs);
-
-        let attempt = 0;
-
-        function attemptCall() {
-            Promise.resolve()
-                .then(() => txn.wait())
-                .then((result) => {
-                    clearTimeout(deadlineTimer);
-                    resolve(result);
-                })
-                .catch(() => {
-                    attempt++;
-                    const delay = retryDelayFn(attempt);
-                    setTimeout(attemptCall, delay);
-                });
+        let settled = false
+        let retryTimer
+        const finish = (error, result) => {
+            if (settled) return
+            settled = true
+            clearTimeout(deadlineTimer)
+            clearTimeout(retryTimer)
+            if (error) reject(error)
+            else resolve(result)
         }
-
-        attemptCall();
-    });
+        const deadlineTimer = setTimeout(() => {
+            finish(new Error(`Txn wait failed after timeout of ${timeoutMs}ms.`))
+        }, timeoutMs)
+        let attempt = 0
+        function attemptCall() {
+            if (settled) return
+            Promise.resolve().then(() => txn.wait()).then(
+                result => finish(null, result),
+                error => {
+                    if (settled) return
+                    if (error?.code === 'CALL_EXCEPTION' || error?.receipt?.status === 0 || error?.receipt?.status === 0n) {
+                        finish(error)
+                        return
+                    }
+                    retryTimer = setTimeout(attemptCall, retryDelayFn(++attempt))
+                }
+            )
+        }
+        attemptCall()
+    })
 }
 
 // Helper to convert the raw tuple returned by staking.validator() into an object
@@ -81,6 +107,11 @@ function findEvent(logs, iface, eventName) {
 }
 
 module.exports = {
+    GENESIS_VALIDATOR,
+    GENESIS_VALIDATOR_HEX,
+    accountAddress,
+    validatorAddress,
+    accountWithPrefix,
     STAKING_PRECOMPILE_ADDRESS,
     BECH32_PRECOMPILE_ADDRESS,
     DISTRIBUTION_PRECOMPILE_ADDRESS,
