@@ -470,7 +470,7 @@ func PrintDetailedComparisonBreakdown(rCtx *types.RPCContext) {
 		}
 	}
 
-	fmt.Printf("\n" + strings.Repeat("─", totalWidth) + "\n")
+	fmt.Print("\n" + strings.Repeat("─", totalWidth) + "\n")
 	fmt.Printf("DETAILED BREAKDOWN:\n")
 	fmt.Println(strings.Repeat("─", totalWidth))
 
@@ -494,7 +494,7 @@ func PrintDetailedComparisonBreakdown(rCtx *types.RPCContext) {
 
 	// Detailed issues for type mismatches
 	if len(typeMismatches) > 0 {
-		fmt.Printf("\n" + strings.Repeat("─", 40) + "\n")
+		fmt.Print("\n" + strings.Repeat("─", 40) + "\n")
 		fmt.Printf("TYPE MISMATCH DETAILS:\n")
 		fmt.Println(strings.Repeat("─", 40))
 		for _, result := range rCtx.ComparisonResults {
@@ -513,7 +513,7 @@ func PrintDetailedComparisonBreakdown(rCtx *types.RPCContext) {
 
 	// Detailed issues for error mismatches
 	if len(errorMismatches) > 0 {
-		fmt.Printf("\n" + strings.Repeat("─", 40) + "\n")
+		fmt.Print("\n" + strings.Repeat("─", 40) + "\n")
 		fmt.Printf("ERROR INCONSISTENCY DETAILS:\n")
 		fmt.Println(strings.Repeat("─", 40))
 		for _, result := range rCtx.ComparisonResults {
@@ -528,7 +528,7 @@ func PrintDetailedComparisonBreakdown(rCtx *types.RPCContext) {
 
 	// Structure difference details
 	if len(structureDiffs) > 0 {
-		fmt.Printf("\n" + strings.Repeat("─", 40) + "\n")
+		fmt.Print("\n" + strings.Repeat("─", 40) + "\n")
 		fmt.Printf("STRUCTURAL DIFFERENCE DETAILS:\n")
 		fmt.Println(strings.Repeat("─", 40))
 		for _, result := range rCtx.ComparisonResults {
