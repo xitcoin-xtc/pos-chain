@@ -55,6 +55,27 @@ wait_for_node() {
 	fi
 }
 
+# Read the configured EIP-155 ID, independently of the JSON-RPC result under test.
+load_test_evm_chain_id() {
+	local config_file="${1:-$HOME/.evmd/config/app.toml}"
+	local configured_id
+	configured_id="$(awk '
+		/^[[:space:]]*\[evm\][[:space:]]*(#.*)?$/ { inside_evm=1; next }
+		/^[[:space:]]*\[/ { inside_evm=0 }
+		inside_evm && /^[[:space:]]*evm-chain-id[[:space:]]*=/ {
+			line=$0
+			sub(/^[^=]*=[[:space:]]*/, "", line)
+			sub(/[[:space:]]*(#.*)?$/, "", line)
+			print line
+		}' "$config_file")" || return 1
+	if [[ ! "$configured_id" =~ ^[1-9][0-9]*$ ]]; then
+		echo "Invalid or missing configured test EVM chain ID" >&2
+		return 1
+	fi
+	EXPECTED_EVM_CHAIN_ID="$configured_id"
+	export EXPECTED_EVM_CHAIN_ID
+}
+
 # Stop the node
 cleanup_node() {
 	if [ -n "${NODE_PID:-}" ]; then

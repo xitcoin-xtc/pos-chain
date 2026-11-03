@@ -173,5 +173,6 @@ jobs:
           trap 'kill "$node_pid" 2>/dev/null || true; wait "$node_pid" 2>/dev/null || true' EXIT
           source scripts/tests_compatibility_common.sh
           wait_for_node 10
+          load_test_evm_chain_id
           cd tests/solidity/suites/${{ matrix.suite }}
           yarn test-cosmos

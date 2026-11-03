@@ -47,6 +47,7 @@ sleep 3
 echo "Waiting for evmd node to be ready..."
 
 wait_for_node 10
+load_test_evm_chain_id
 
 # Change to the test directory
 cd "$TEST_DIR"

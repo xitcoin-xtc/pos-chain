@@ -9,7 +9,7 @@ const { expect } = require("chai");
 const tokenArtifact = require("./contractABI/TokenExample.json");
 
 require("dotenv").config();
-const chainId = process.env.CHAIN_ID || 262144; // Default to 262144 if not set
+const chainId = Number(process.env.EXPECTED_EVM_CHAIN_ID || process.env.CHAIN_ID || 262144);
 
 describe("Viem Full Feature Test", function () {
   let publicClient,

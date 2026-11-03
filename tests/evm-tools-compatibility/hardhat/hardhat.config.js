@@ -23,7 +23,7 @@ module.exports = {
     customChains: [
       {
         network: "localhost",
-        chainId: 262144,
+        chainId: Number(process.env.EXPECTED_EVM_CHAIN_ID || 262144),
         urls: {
           apiURL: "http://localhost/api",
           browserURL: "http://localhost"

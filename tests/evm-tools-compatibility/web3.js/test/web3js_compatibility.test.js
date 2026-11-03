@@ -2,6 +2,7 @@
 const Web3 = require("web3");
 const { expect } = require("chai");
 const tokenArtifact = require("./contractABI/TokenExample.json");
+const expectedChainId = Number(process.env.EXPECTED_EVM_CHAIN_ID || 262144);
 
 describe("Web3.js Compatibility Test", function () {
   let web3, accounts, chainId, deployedToken;
@@ -18,7 +19,7 @@ describe("Web3.js Compatibility Test", function () {
   });
 
   it("Should get chain ID", async function () {
-    expect(chainId).to.equal(262144); // Adjust chainId as needed
+    expect(chainId).to.equal(expectedChainId);
   });
 
   it("Should fetch accounts", async function () {
