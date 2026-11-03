@@ -71,6 +71,9 @@ setup_compatibility_tests() {
 	if [ "$print_log" = true ]; then
 		"$ROOT/scripts/tests_compatibility_setup.sh"
 	else
-		"$ROOT/scripts/tests_compatibility_setup.sh" >/tmp/tests_compatibility_setup.log 2>&1
+		if ! "$ROOT/scripts/tests_compatibility_setup.sh" >/tmp/tests_compatibility_setup.log 2>&1; then
+			tail -80 /tmp/tests_compatibility_setup.log >&2
+			return 1
+		fi
 	fi
 }
