@@ -67,3 +67,4 @@ jobs:
           ./scripts/tests_compatibility_viem.sh --verbose
         env:
           COMPAT_DIR: ${{ github.workspace }}/tests/evm-tools-compatibility
+          COMPAT_SUITE: viem

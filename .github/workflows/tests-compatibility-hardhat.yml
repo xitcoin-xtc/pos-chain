@@ -66,3 +66,4 @@ jobs:
           ./scripts/tests_compatibility_hardhat.sh --verbose
         env:
           COMPAT_DIR: ${{ github.workspace }}/tests/evm-tools-compatibility
+          COMPAT_SUITE: hardhat

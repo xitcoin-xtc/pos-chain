@@ -7,13 +7,18 @@ set -eo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 COMPAT_DIR="${COMPAT_DIR:-$ROOT/tests/evm-tools-compatibility}"
+COMPAT_SUITE="${COMPAT_SUITE:-all}"
+case "$COMPAT_SUITE" in
+  all|hardhat|viem|web3.js) ;;
+  *) echo "Unsupported compatibility suite: $COMPAT_SUITE" >&2; exit 2 ;;
+esac
 
 # -----------------------------------------------------------------------------
 # Tooling installation
 # -----------------------------------------------------------------------------
 
 # Install Foundry if forge is not present
-if ! command -v forge >/dev/null 2>&1; then
+if [ "$COMPAT_SUITE" = all ] && ! command -v forge >/dev/null 2>&1; then
 	curl -L https://foundry.paradigm.xyz | bash
 	# shellcheck source=/dev/null
 	source "$HOME/.bashrc" >/dev/null 2>&1 || true
@@ -32,6 +37,7 @@ fi
 
 # Foundry based projects
 for dir in "foundry" "foundry-uniswap-v3"; do
+	[ "$COMPAT_SUITE" = all ] || continue
 	if [ -d "$COMPAT_DIR/$dir" ]; then
 		pushd "$COMPAT_DIR/$dir" >/dev/null
 
@@ -48,7 +54,7 @@ for dir in "foundry" "foundry-uniswap-v3"; do
 done
 
 # Hardhat project
-if [ -d "$COMPAT_DIR/hardhat" ]; then
+if { [ "$COMPAT_SUITE" = all ] || [ "$COMPAT_SUITE" = hardhat ]; } && [ -d "$COMPAT_DIR/hardhat" ]; then
 	for subproject in "v3-core" "v3-periphery"; do
 		if [ -d "$COMPAT_DIR/hardhat/external/$subproject" ]; then
 			pushd "$COMPAT_DIR/hardhat/external/$subproject" >/dev/null
@@ -85,7 +91,8 @@ if [ -d "$COMPAT_DIR/hardhat" ]; then
 fi
 
 # Node based projects (viem, web3.js, sdk examples)
-for dir in "$COMPAT_DIR"/sdk/* "$COMPAT_DIR"/viem "$COMPAT_DIR"/web3js; do
+for dir in "$COMPAT_DIR"/sdk/* "$COMPAT_DIR"/viem "$COMPAT_DIR"/web3.js "$COMPAT_DIR"/web3js; do
+	if [ "$COMPAT_SUITE" != all ] && [ "$(basename "$dir")" != "$COMPAT_SUITE" ]; then continue; fi
 	if [ -d "$dir" ] && [ -f "$dir/package.json" ]; then
 		pushd "$dir" >/dev/null
 

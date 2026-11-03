@@ -67,3 +67,4 @@ jobs:
           ./scripts/tests_compatibility_web3js.sh --verbose
         env:
           COMPAT_DIR: ${{ github.workspace }}/tests/evm-tools-compatibility
+          COMPAT_SUITE: web3.js
