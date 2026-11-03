@@ -3,11 +3,79 @@ const { expect } = require('chai')
 const hre = require('hardhat')
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common')
 
-describe('Gov Precompile', function () {
+const GOV_MODULE_ADDR = accountWithPrefix('cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn')
+const proposalMode = process.env.TEST_GOV_PROPOSALS_ENABLED || '0'
+if (!['0', '1'].includes(proposalMode)) throw new Error('Invalid test governance proposal mode')
+const describeProtected = proposalMode === '0' ? describe : describe.skip
+const describeLegacy = proposalMode === '1' ? describe : describe.skip
+
+// helper to craft a minimal bank send proposal in proto-json format
+function buildProposal(toCosmos) {
+    const msg = {
+        '@type': '/cosmos.bank.v1beta1.MsgSend',
+        from_address: GOV_MODULE_ADDR,
+        to_address: toCosmos,
+        amount: [{ denom: 'atest', amount: '1' }],
+    }
+
+    const prop = {
+        messages: [msg],
+        metadata: 'ipfs://CID',
+        title: 'test prop',
+        summary: 'test prop',
+        expedited: false,
+    }
+
+    return Buffer.from(JSON.stringify(prop))
+}
+
+
+// Protected Xitcoin nodes intentionally reject this method. Keep that assertion
+// separate from the historical lifecycle, which requires an explicit test opt-in.
+describeProtected('Gov Precompile – protected network', function () {
+    let gov, signer
+    before(async () => {
+        [signer] = await hre.ethers.getSigners()
+        gov = await hre.ethers.getContractAt('IGov', '0x0000000000000000000000000000000000000805')
+    })
+
+    it('rejects proposal submission in simulation and execution', async function () {
+        const jsonProposal = buildProposal(accountAddress(signer.address))
+        const deposit = { denom: 'atest', amount: hre.ethers.parseEther('1') }
+        const submit = gov.connect(signer).submitProposal
+        let simulationError
+        try {
+            await submit.estimateGas(signer.address, jsonProposal, [deposit])
+        } catch (error) {
+            simulationError = error
+        }
+        expect(simulationError, 'Protected simulation must reject submission').to.exist
+        expect(simulationError.message).to.include('governance proposal submission is disabled')
+
+        const tx = await submit(signer.address, jsonProposal, [deposit], { gasLimit: 1_000_000 })
+        let executionError
+        try {
+            await waitWithTimeout(tx, 20000, RETRY_DELAY_FUNC)
+        } catch (error) {
+            executionError = error
+        }
+        expect(executionError, 'Protected transaction must revert').to.exist
+        expect(executionError.code).to.equal('CALL_EXCEPTION')
+        expect(executionError.receipt.status).to.equal(0)
+    })
+
+    it('keeps governance params and constitution queries available', async function () {
+        const params = await gov.getParams()
+        expect(params.votingPeriod).to.be.a('bigint')
+        expect(params.minDeposit.length).to.be.greaterThan(0)
+        expect(await gov.getConstitution()).to.be.a('string')
+    })
+})
+
+describeLegacy('Gov Precompile – legacy enabled lifecycle (explicit test opt-in)', function () {
     const GOV_ADDRESS = '0x0000000000000000000000000000000000000805'
     const GAS_LIMIT = 1_000_000
     let COSMOS_ADDR
-    const GOV_MODULE_ADDR = accountWithPrefix('cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn')
 
     let gov, signer, globalProposalId
 
@@ -39,26 +107,6 @@ describe('Gov Precompile', function () {
         globalProposalId = evt.args.proposalId
         console.log('Global proposal ID created:', globalProposalId.toString())
     })
-
-    // helper to craft a minimal bank send proposal in proto-json format
-    function buildProposal(toCosmos) {
-        const msg = {
-            '@type': '/cosmos.bank.v1beta1.MsgSend',
-            from_address: GOV_MODULE_ADDR,
-            to_address: toCosmos,
-            amount: [{ denom: 'atest', amount: '1' }],
-        }
-
-        const prop = {
-            messages: [msg],
-            metadata: 'ipfs://CID',
-            title: 'test prop',
-            summary: 'test prop',
-            expedited: false,
-        }
-
-        return Buffer.from(JSON.stringify(prop))
-    }
 
     it('queries the global proposal', async function () {
         const proposal = await gov.getProposal(globalProposalId)
