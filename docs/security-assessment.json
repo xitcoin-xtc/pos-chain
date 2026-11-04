@@ -6,14 +6,16 @@
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "PR55 plus official JOSE4.1.6 patch technical qualification; no production deployment or general security clearance",
-  "assessment_sha256": "8fbfd63b6bb5c5a82c5c7f37caa451b7673f5da37acf41ecbe6b538d86c9dcc2",
+  "scope": "Root/evmd qualified security graph plus speedtest alignment to the same immutable forks; fresh three-module technical qualification required; no runtime deployment",
+  "assessment_sha256": "ff26400b5740b20e6ec008f281a836e130e5b10c73ee5ec39e16f3173f7f06e5",
   "provenance_sha256": "574885d401b82d0de35c67254d1dc137a1c2461dca415607d66dcbe51ea7807e",
   "lock_sha256": {
     "go.mod": "a7bc1c9bf6822695e0e4ee78991353273e42edf82e758a33bfb90b91e7dd1c9d",
     "go.sum": "bd0dd3b04f74c01a3e8d6f16093cd0df8cb843abe3c685b7949ef889c4507f39",
     "evmd/go.mod": "d3e8f32beaf7b2a80b4428b4e3afb96cf97570a08c129b2675668437227720b5",
-    "evmd/go.sum": "34d4f55289d59810d9b4eb57354b3b069bf82b22fa43d184b75da8ddc3a13bb8"
+    "evmd/go.sum": "34d4f55289d59810d9b4eb57354b3b069bf82b22fa43d184b75da8ddc3a13bb8",
+    "tests/speedtest/go.mod": "5c06ba19586245c6f56ce99d1e534ca5d7a7d41f6e0bc64cca51a55bd7faa4ba",
+    "tests/speedtest/go.sum": "5a2ddcea0569b68e19804ed8159651ab4c466f9c9a9db264ad114a88356c816b"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
@@ -27,7 +29,7 @@
   "accepted_scanner_advisories": [],
   "assessment_document": "docs/security-review-2026-11-04.md",
   "historical_assessment": "docs/security-assessment-2026-09-14.json",
-  "go_source_sha256": "e9fde844e3d3517f48b1939ae2cbde3ea65aa036359563163ab994aef8b5e632",
+  "go_source_sha256": "2bca378ea1caa1a4290d54099c6a1ed7f1993d53e63dd318b97f78a6e290bb32",
   "go_source_input_count": 1108,
   "fresh_evidence": {
     "full_tests": {
@@ -42,10 +44,10 @@
       "run": 41776289042,
       "head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3"
     },
-    "current_head_qualification": "Mandatory fresh matrix for JOSE follow-up; no reuse of PR55 results"
+    "current_head_qualification": "Mandatory fresh root/evmd matrix plus Speedtest graph and command workflow; no historical artifact reuse"
   },
   "reviewed_go_source_evidence_head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3",
-  "qualification_status": "JOSE follow-up: fresh current-head CI required before merge",
+  "qualification_status": "Speedtest alignment: fresh root/evmd checkout+published matrix and strict speedtest command qualification required before merge",
   "previous_pr55_review": {
     "assessment_record_sha256": "64c60b77602041eb9e3eb688d2d3e07f460106cc521b0112f73306d2534420ac",
     "go_source_sha256": "5b60c23658b25e9e9cb131ff7b252e589bd156a45156f66e55f74188c97abd6e",
@@ -60,5 +62,18 @@
     "upstream_rsa_validation_tests": "TestRsaKeyChecks -count=1 PASS",
     "effective_graph_delta": "Only JOSE changes in root,evmd,speedtest",
     "fresh_current_head_qualification_required": true
+  },
+  "previous_jose_review": {
+    "assessment_record_sha256": "545d3969c41a66134cf10e003b637c2b2e8d2998ac578facbb6a6ff546c90e5e",
+    "qualification_run": 41812681884,
+    "head": "3b1d21674fbe8e8bc71d0aae9499ca475d8f7bd8",
+    "historical_only": true
+  },
+  "speedtest_alignment": {
+    "root_go_sources_and_locks_unchanged": true,
+    "all_six_replacements_match_root": true,
+    "obsolete_pion_v2_requirements_removed_by_go_mod_tidy": true,
+    "full_current_qualification_required": true,
+    "expiry_extended": false
   }
 }
