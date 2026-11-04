@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       suite_group:
-        description: Run all diagnostics or only the two chain-specific Solidity suites
+        description: Select all diagnostics, chain-specific Solidity tests, or full Go tests
         type: choice
-        options: [all, chain]
+        options: [all, chain, go]
         default: all
 
 permissions:
@@ -66,7 +66,7 @@ jobs:
     name: Fresh Go evidence (${{ matrix.module }})
     if: github.event_name == 'workflow_dispatch' && inputs.suite_group != 'chain'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -107,6 +107,7 @@ jobs:
           printf '%s\n' "$scan_status" > "$evidence/scan-exit-code.txt"
           exit "$scan_status"
       - name: Compile packages and run targeted regression tests
+        if: inputs.suite_group != 'go'
         shell: bash
         run: |
           set -euo pipefail
@@ -116,6 +117,22 @@ jobs:
           if [[ '${{ matrix.module }}' == root ]]; then
             go test -mod=readonly -tags=test ./rpc/... ./server/... ./client/... > "$evidence/targeted-tests.log" 2>&1
           fi
+      - name: Run full Go test suite without renewing historical acceptance
+        if: inputs.suite_group == 'go'
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
+          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
+          go mod verify > "$evidence/module-verification.log" 2>&1
+          # Runner-local tests only; production nodes and historical gates are untouched.
+          set +e
+          go test -mod=readonly -tags=test -count=1 -timeout=60m ./... > "$evidence/full-tests.log" 2>&1
+          test_status=$?
+          set -e
+          printf '%s\n' "$test_status" > "$evidence/full-tests-exit-code.txt"
+          sha256sum --check "$evidence/lock-sha256.txt"
+          exit "$test_status"
       - name: Preserve diagnostic and test evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -126,7 +143,7 @@ jobs:
 
   legacy-solidity-compatibility:
     name: Legacy Solidity (${{ matrix.suite }})
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.suite_group != 'go'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
