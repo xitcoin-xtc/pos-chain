@@ -209,7 +209,7 @@ function loadTests (runConfig) {
       return
     }
 
-    const needFiles = ['package.json', 'test']
+    const needFiles = ['package.json']
     for (const f of needFiles) {
       if (!fs.existsSync(path.join(__dirname, 'suites', dirname, f))) {
         logger.warn(
@@ -228,6 +228,13 @@ function loadTests (runConfig) {
           )
       )
       const needScripts = ['test-ganache', 'test-cosmos']
+      const testDirectory = path.resolve(
+        __dirname, 'suites', dirname, testManifest.testDirectory || 'test'
+      )
+      if (!fs.existsSync(testDirectory) || !fs.statSync(testDirectory).isDirectory()) {
+        logger.warn(`${dirname} test directory does not exist. Skip this test suite.`)
+        return
+      }
       for (const s of needScripts) {
         if (Object.keys(testManifest.scripts).indexOf(s) === -1) {
           logger.warn(
@@ -437,4 +444,6 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-main()
+module.exports = { loadTests }
+
+if (require.main === module) main()

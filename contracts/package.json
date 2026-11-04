@@ -4,7 +4,13 @@
   "description": "A collection of smart contracts used in the development of the Cosmos EVM blockchain.",
   "devDependencies": {
     "@openzeppelin/contracts": "^4.9.6",
-    "hardhat": "^3.0.15"
+    "hardhat": "3.14.0",
+    "@nomicfoundation/hardhat-ethers": "4.0.15",
+    "@nomicfoundation/hardhat-ethers-chai-matchers": "3.0.11",
+    "@nomicfoundation/hardhat-mocha": "3.1.0",
+    "chai": "6.2.2",
+    "ethers": "6.17.0",
+    "mocha": "11.8.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,6 +33,12 @@
   },
   "overrides": {
     "zod": "4.6.6",
-    "@nomicfoundation/hardhat-zod-utils": "3.0.6"
+    "@nomicfoundation/hardhat-zod-utils": "3.0.6",
+    "diff": "9.0.0",
+    "serialize-javascript": "7.1.3",
+    "mocha": {
+      "glob": "14.0.2",
+      "minimatch": "11.0.1"
+    }
   }
 }

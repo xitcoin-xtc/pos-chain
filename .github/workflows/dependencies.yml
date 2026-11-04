@@ -160,7 +160,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 22
+          node-version: ${{ (matrix.suite == 'precompiles' || matrix.suite == 'revert_cases') && '22' || '24' }}
       - name: Activate pinned Yarn
         run: |
           corepack enable
@@ -168,10 +168,19 @@ jobs:
       - name: Install locked workspace dependencies
         working-directory: tests/solidity
         run: yarn install --frozen-lockfile --non-interactive
+      - name: Install and audit the modern generic-suite runner
+        if: matrix.suite != 'precompiles' && matrix.suite != 'revert_cases'
+        working-directory: contracts
+        run: |
+          npm ci
+          npm run test:tooling
+          npm audit --audit-level=high
       - name: Check real consumers of security overrides
         if: matrix.suite == 'basic'
         working-directory: tests/solidity
-        run: node check-security-compatibility.cjs
+        run: |
+          node check-test-discovery.cjs
+          node check-security-compatibility.cjs
       - name: Test on disposable in-process EVM
         if: matrix.suite != 'precompiles' && matrix.suite != 'revert_cases'
         working-directory: tests/solidity/suites/${{ matrix.suite }}

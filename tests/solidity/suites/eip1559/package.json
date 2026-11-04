@@ -3,15 +3,9 @@
   "version": "1.0.0",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "test-ganache": "yarn truffle test",
-    "test-cosmos": "yarn truffle test --network cosmos"
-  },
-  "devDependencies": {
-    "truffle": "^5.4.14",
-    "truffle-assertions": "^0.9.2"
-  },
-  "dependencies": {
-    "@truffle/hdwallet-provider": "^1.6.0"
+    "test-local": "node ../../../../contracts/node_modules/hardhat/dist/src/cli.js --config ../../../../contracts/solidity-suites/eip1559.config.mjs test",
+    "test-ganache": "yarn test-local",
+    "test-cosmos": "node ../../../../contracts/node_modules/hardhat/dist/src/cli.js --config ../../../../contracts/solidity-suites/eip1559.config.mjs test --network cosmos"
   },
   "standard": {
     "globals": [
@@ -25,5 +19,7 @@
       "assert",
       "describe"
     ]
-  }
+  },
+  "type": "module",
+  "testDirectory": "../../../../contracts/test-suites/eip1559/test"
 }
