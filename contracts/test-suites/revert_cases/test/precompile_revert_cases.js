@@ -12,7 +12,7 @@ import {
     verifyOutOfGasError
 } from './test_helper.js';
 describe('Precompile Revert Cases E2E Tests', function () {
-    let revertTestContract, precompileWrapper;
+    let revertTestContract, precompileWrapper, signer;
     let validValidatorAddress, invalidValidatorAddress;
     let analysis, decodedReason;
 

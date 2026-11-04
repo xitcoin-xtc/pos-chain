@@ -6,8 +6,8 @@
   "scripts": {
     "get-contracts": "mkdir -p ../../../../contracts/test-suites/revert_cases/contracts/cosmos && rsync -avm --include='*/' --exclude='**/ERC20Minter_OpenZeppelinV5.sol' --exclude='**/WEVMOS.sol' --exclude='**/ERC20NoMetadata.sol' --include='*.sol' --exclude='*' ../../../../precompiles/ ../../../../contracts/test-suites/revert_cases/contracts/cosmos/",
     "clean-contracts": "rm -rf ../../../../contracts/test-suites/revert_cases/contracts/cosmos/*",
-    "test-ganache": "node ../../../../contracts/node_modules/hardhat/dist/src/cli.js --config ../../../../contracts/solidity-suites/revert_cases.config.mjs test",
-    "test-cosmos": "yarn get-contracts && node ../../../../contracts/node_modules/hardhat/dist/src/cli.js --config ../../../../contracts/solidity-suites/revert_cases.config.mjs test --network cosmos && yarn clean-contracts"
+    "test-ganache": "node ../../../../contracts/scripts/run-chain-suite.mjs revert_cases",
+    "test-cosmos": "yarn get-contracts && node ../../../../contracts/scripts/run-chain-suite.mjs revert_cases --network cosmos && yarn clean-contracts"
   },
   "testDirectory": "../../../../contracts/test-suites/revert_cases/test"
 }
