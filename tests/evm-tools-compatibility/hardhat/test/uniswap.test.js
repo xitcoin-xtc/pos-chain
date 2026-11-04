@@ -1,6 +1,8 @@
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 // test/UniswapV3RouterManagerDeploy.test.js
-const { ethers } = require("hardhat");
-const { expect } = require("chai");
+import { ethers } from '../test-runtime.js';
+import { expect } from 'chai';
 const factoryArtifact = require("./abis/v3-core/UniswapV3Factory.sol/UniswapV3Factory.json");
 const routerArtifact = require("./abis/v3-periphery/SwapRouter.sol/SwapRouter.json");
 const managerArtifact = require("./abis/v3-periphery/NonfungiblePositionManager.sol/NonfungiblePositionManager.json");

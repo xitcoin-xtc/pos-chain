@@ -1,5 +1,5 @@
 // test/Web3jsCompatibility.test.js
-const Web3 = require("web3");
+const { Web3 } = require("web3");
 const { expect } = require("chai");
 const tokenArtifact = require("./contractABI/TokenExample.json");
 const expectedChainId = Number(process.env.EXPECTED_EVM_CHAIN_ID || 262144);
@@ -19,7 +19,7 @@ describe("Web3.js Compatibility Test", function () {
   });
 
   it("Should get chain ID", async function () {
-    expect(chainId).to.equal(expectedChainId);
+    expect(chainId).to.equal(BigInt(expectedChainId));
   });
 
   it("Should fetch accounts", async function () {
@@ -38,7 +38,7 @@ describe("Web3.js Compatibility Test", function () {
       .send({ from: accounts[0], block: "latest", gas: 5000000 });
     const txHash = receipt.transactionHash;
     const confirmedReceipt = await web3.eth.getTransactionReceipt(txHash);
-    expect(confirmedReceipt.status).to.be.true;
+    expect(confirmedReceipt.status).to.equal(1n);
   });
 
   it("Should read balance (call)", async function () {
@@ -56,7 +56,7 @@ describe("Web3.js Compatibility Test", function () {
 
     // Query Transfer events using the block number from the transfer
     const events = await deployedToken.getPastEvents("Transfer", {
-      fromBlock: transferReceipt.blockNumber - 10,
+      fromBlock: transferReceipt.blockNumber - 10n,
       toBlock: transferReceipt.blockNumber,
     });
     expect(events.length).to.be.greaterThan(0);

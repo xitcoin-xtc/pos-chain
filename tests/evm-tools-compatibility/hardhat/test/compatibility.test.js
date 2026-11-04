@@ -1,5 +1,5 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from 'chai';
+import { ethers } from '../test-runtime.js';
 
 describe("Hardhat Local Chain Compatibility Test", function () {
   let Token;
@@ -70,7 +70,7 @@ describe("Hardhat Local Chain Compatibility Test", function () {
     // TODO: Update it to revertedWithCustomError when available (https://github.com/xitcoin-org/pos-chain/pull/289).
     await expect(
       Token.connect(addr1).transfer(addr2.address, 99999)
-    ).to.be.reverted;
+    ).to.revert(ethers);
 
     console.log("✅ Transfer failed as expected due to insufficient balance.");
   });

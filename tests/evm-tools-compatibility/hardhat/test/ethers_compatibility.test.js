@@ -1,6 +1,6 @@
 // test/EthersFeatures.test.js
-const { ethers } = require("hardhat");
-const { expect } = require("chai");
+import { ethers } from '../test-runtime.js';
+import { expect } from 'chai';
 
 describe("Ethers.js Core Features Compatibility Test", function () {
   let token;
@@ -40,7 +40,7 @@ describe("Ethers.js Core Features Compatibility Test", function () {
 
   it("Should revert mint if called by non-owner", async function () {
     // TODO: Update it to revertedWithCustomError when available (https://github.com/xitcoin-org/pos-chain/pull/289).
-    await expect(token.connect(addr1).mint(addr1.address, 1000)).to.be.reverted;
+    await expect(token.connect(addr1).mint(addr1.address, 1000)).to.revert(ethers);
   });
 
   it("Should estimate gas for a mint transaction", async function () {

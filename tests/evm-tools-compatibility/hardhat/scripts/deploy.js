@@ -1,4 +1,4 @@
-const { ethers } = require("hardhat");
+import { ethers } from '../test-runtime.js';
 
 let deployedAddr;
 
