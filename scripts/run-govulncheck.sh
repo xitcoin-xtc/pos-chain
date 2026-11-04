@@ -19,15 +19,6 @@ else
   review_expired=false
 fi
 
-accepted=(
-  GO-2023-1821 # Deprecated crisis code is outside the reviewed production imports/registration.
-  GO-2023-1881 # ConstantFee defect: distinct advisory; crisis remains outside production.
-  GO-2024-2584 # Fix source is present in SDK 0.54.4; Source/OSV discrepancy is assessed in SECURITY-ASSESSMENT.md.
-  GO-2025-3442 # v0.39.4 contains the SetPeerRange fix; broad OSV range still reports it.
-  GO-2026-4479 # Residual v2 module only; effective STUN v3/DTLS v3 imports are reviewed.
-  GO-2026-5932 # SDK now uses Proton armor; obsolete OpenPGP is a test oracle only.
-)
-
 # Lock the same module that govulncheck scans, including calls from evmd.
 export GOWORK=off
 module_file="$(go env GOMOD)"
@@ -61,7 +52,7 @@ require_module github.com/cosmos/cosmos-sdk v0.54.4
 require_module github.com/ethereum/go-ethereum v1.16.9
 require_module github.com/cometbft/cometbft v0.39.4
 require_module github.com/pion/dtls/v2 v2.2.12
-require_module golang.org/x/crypto v0.56.0
+require_module golang.org/x/crypto v0.58.0
 require_replacement github.com/cosmos/cosmos-sdk github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
 require_replacement github.com/ethereum/go-ethereum github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 require_module github.com/pion/stun/v3 v3.1.5
@@ -112,28 +103,6 @@ if [[ "$review_expired" == true ]]; then
   exit 1
 fi
 
-if (( status == 0 )); then
-  exit 0
-fi
-if (( status != 3 )); then
-  exit "$status"
-fi
-
-mapfile -t found < <(
-  sed -nE 's/^Vulnerability #[0-9]+: (GO-[0-9]{4}-[0-9]+)$/\1/p' "$report" |
-    sort -u
-)
-mapfile -t allowed < <(printf '%s\n' "${accepted[@]}" | sort -u)
-mapfile -t unexpected < <(comm -23 <(printf '%s\n' "${found[@]}") <(printf '%s\n' "${allowed[@]}"))
-
-if (( ${#found[@]} == 0 )); then
-  echo "govulncheck failed without a parseable advisory ID" >&2
-  exit 1
-fi
-if (( ${#unexpected[@]} > 0 )); then
-  printf 'Unaccepted Go vulnerability: %s\n' "${unexpected[@]}" >&2
-  exit 1
-fi
-
-printf 'Only reviewed upstream exceptions remain (review by %s): %s\n' \
-  "$review_by" "${found[*]}"
+# This renewed assessment accepts no scanner exceptions. Every finding or tool
+# error returned by govulncheck blocks CI, including previously accepted IDs.
+exit "$status"

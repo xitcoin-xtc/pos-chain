@@ -3,9 +3,39 @@
 import hashlib
 import json
 from pathlib import Path
+import re
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSESSMENT_SHA256 = 'a622b9235cc4a260a413c31c930dde8ef6a0f5b6e65208c7387a6b746799b24e'
+ASSESSMENT_SHA256 = '64c60b77602041eb9e3eb688d2d3e07f460106cc521b0112f73306d2534420ac'
+
+
+def source_inputs(root):
+    names = subprocess.check_output(
+        ['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'],
+        cwd=root).decode().split('\0')
+    sources = {name for name in names if name.endswith(('.go', '.proto'))
+               or Path(name).name in ('go.mod', 'go.sum')}
+    for name in list(sources):
+        if not name.endswith('.go'):
+            continue
+        for embedded in re.findall(r'(?m)^\s*//go:embed\s+([^\n]+)', (root / name).read_text()):
+            for resource in embedded.split():
+                if any(c in resource for c in '*?["'):
+                    raise ValueError('embedded resource pattern requires a new review: ' + name)
+                sources.add(str(Path(name).parent / resource))
+    for name in sorted(sources):
+        path = root / name
+        if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+            raise ValueError('invalid assessment source input: ' + name)
+    return sorted(sources)
+
+
+def source_digest(root):
+    digest = hashlib.sha256()
+    for name in source_inputs(root):
+        digest.update(name.encode() + b'\0' + hashlib.sha256((root / name).read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def verify(root=ROOT):
@@ -13,8 +43,12 @@ def verify(root=ROOT):
     if hashlib.sha256(raw).hexdigest() != ASSESSMENT_SHA256:
         raise ValueError('current security assessment changed; renewed review required')
     record = json.loads(raw)
+    if record.get('accepted_scanner_advisories') != []:
+        raise ValueError('current assessment must not accept scanner exceptions')
+    if source_digest(root) != record['go_source_sha256']:
+        raise ValueError('assessment source inputs changed; renewed review required')
     bindings = dict(record['lock_sha256'])
-    bindings['SECURITY-ASSESSMENT.md'] = record['assessment_sha256']
+    bindings[record['assessment_document']] = record['assessment_sha256']
     bindings['docs/go-fork-provenance.json'] = record['provenance_sha256']
     for name, expected in bindings.items():
         path = root / name

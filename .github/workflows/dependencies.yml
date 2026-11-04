@@ -58,6 +58,10 @@ jobs:
         working-directory: contracts
         run: npm ci
 
+      - name: Check secure toolchain compatibility
+        working-directory: contracts
+        run: npm run test:tooling
+
       - name: Audit contract dependencies
         working-directory: contracts
         run: npm audit --audit-level=high
@@ -164,6 +168,10 @@ jobs:
       - name: Install locked workspace dependencies
         working-directory: tests/solidity
         run: yarn install --frozen-lockfile --non-interactive
+      - name: Check real consumers of security overrides
+        if: matrix.suite == 'basic'
+        working-directory: tests/solidity
+        run: node check-security-compatibility.cjs
       - name: Test on disposable in-process EVM
         if: matrix.suite != 'precompiles' && matrix.suite != 'revert_cases'
         working-directory: tests/solidity/suites/${{ matrix.suite }}

@@ -6,34 +6,27 @@ Report security vulnerabilities through GitHub Private Vulnerability Reporting f
 
 Do not open a public issue for an undisclosed vulnerability.
 
-## Reviewed Go advisories
+## Current Go dependency review
 
-[SECURITY-ASSESSMENT.md](SECURITY-ASSESSMENT.md) is the current source of truth
-for PR44's six dispositions, exact versions, evidence, expiry and residual risk.
-[Provenance](docs/go-fork-provenance.md) records immutable sources and sums.
-The 2026-09-14 technical assessment is by the PR author; it is not an independent
-approval or release authorization.
+[Current review](docs/security-review-2026-11-04.md) records PR55's fresh
+source scans, full tests, published-module binary evidence and residual risks.
+The gate accepts no scanner advisory exceptions. It retains exact source,
+manifest, embedded-resource, fork/checksum and dated-assessment checks;
+obsolete production imports, raw-key RPC methods, scanner findings/errors,
+source drift and expiry block CI.
 
-- GO-2023-1821 and GO-2023-1881: x/crisis is absent from the examined production
-  imports and application registration; these are distinct non-applicability
-  conclusions, not blanket SDK exemptions.
-- GO-2024-2584: the consumed SDK fork based on v0.54.4 contains the slashing
-  fix; the open Go advisory range is reconciled against source.
-- GO-2025-3442: CometBFT v0.39.4 contains the peer-height regression fix.
-  Blocksync is active and the broad Go module findings remain recorded.
-- GO-2026-4479: Geth uses STUN v3.1.5 over UDP4; DTLS v3.1.4 has the nonce
-  fix. DTLS v2.2.12 remains transitively required by CometBFT/IBC but is absent
-  from the examined production imports.
-- GO-2026-5932: SDK armor uses ProtonMail/go-crypto v1.4.1 with CRC24
-  compatibility checking. Legacy OpenPGP is a test oracle only; x/crypto
-  remains for other primitives. CRC24 is not authentication.
+The versioned workflow repeats qualification on the current checkout and exact
+published PR head. It builds and tests the published modules, compares graphs,
+verifies checksums and scans a symbol-bearing binary. No historical evidence
+is reused to qualify current code. JSON output alone does not establish a clean
+scan. The two module-only advisory matches remain visible with their traces.
 
-The gates retain all six identities, exact dependency and assessment checks,
-obsolete-import/raw-key RPC rejection, scanner errors, new findings and expiry.
-Dependency security scans root and evmd; Test and build also scans its compiled
-artifact. Historical symbol-bearing qualification is separately identified;
-scanner silence under fork coordinates or in stripped binaries is not clearance.
-Renewal requires a new justified assessment and tests, never just a date change.
+[Historical assessment](SECURITY-ASSESSMENT.md) and
+[its original record](docs/security-assessment-2026-09-14.json) retain all six
+historical identities and their original dates. Immutable
+[provenance](docs/go-fork-provenance.md) remains mandatory. The current review
+is automated technical work, not independent approval or release authorization.
+Renewal requires new justified evidence and tests, never just a date change.
 
 ## Scope
 
