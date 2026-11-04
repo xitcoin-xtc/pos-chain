@@ -7,7 +7,7 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSESSMENT_SHA256 = '64c60b77602041eb9e3eb688d2d3e07f460106cc521b0112f73306d2534420ac'
+ASSESSMENT_SHA256 = '545d3969c41a66134cf10e003b637c2b2e8d2998ac578facbb6a6ff546c90e5e'
 
 
 def source_inputs(root):
