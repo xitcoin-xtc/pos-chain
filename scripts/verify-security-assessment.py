@@ -17,6 +17,9 @@ def source_inputs(root):
     sources = {name for name in names if name.endswith(('.go', '.proto'))
                or Path(name).name in ('go.mod', 'go.sum')}
     for name in list(sources):
+        path = root / name
+        if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+            raise ValueError('invalid assessment source input: ' + name)
         if not name.endswith('.go'):
             continue
         for embedded in re.findall(r'(?m)^\s*//go:embed\s+([^\n]+)', (root / name).read_text()):

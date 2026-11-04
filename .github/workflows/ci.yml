@@ -43,10 +43,16 @@ jobs:
         run: go test -tags=test ./...
 
       - name: Build xitcoind
-        run: make build
+        # Scan and publish the same symbol-bearing artifact. A stripped binary
+        # makes govulncheck fall back to all module advisories without attribution.
+        run: make build COSMOS_BUILD_OPTIONS=nostrip
+        env:
+          GOFLAGS: -trimpath
 
       - name: Scan the release binary
-        run: bash scripts/run-govulncheck.sh -mode=binary build/xitcoind
+        run: |
+          go tool nm build/xitcoind > /dev/null
+          bash scripts/run-govulncheck.sh -mode=binary build/xitcoind
 
       - name: Package Linux release artifact
         shell: bash

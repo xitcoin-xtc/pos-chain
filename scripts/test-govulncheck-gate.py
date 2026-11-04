@@ -220,6 +220,13 @@ class GateTests(unittest.TestCase):
                     self.cfg["date"] = "2026-11-12"
                     self.run_gate(module, 1, "expired exception review still blocks", scanned=True)
 
+    def test_untrusted_source_symlink(self):
+        target = self.root / 'synthetic-not-source.txt'
+        target.write_text('synthetic fixture, not a credential')
+        (self.root / 'untrusted.go').symlink_to(target)
+        for module in ['root', 'evmd']:
+            self.run_gate(module, 1, 'invalid assessment source input')
+
     def test_existing_source_guards(self):
         for file, content, message in [
             ("rpc/obsolete.go", "func ImportRawKey() {}", "Raw private-key import"),
