@@ -103,6 +103,40 @@ async function main() {
     const FilecoinRPC = require('@zondax/filecoin-signing-tools/src/utils/index.js');
     const rpc = new FilecoinRPC({ url: endpoint, token: 'synthetic-not-a-credential' });
     assert.deepEqual(await rpc.getNonce('synthetic-address'), { synthetic: true });
+    const legacyAxios = require(require.resolve('axios', {
+      paths: [dirname(require.resolve('@zondax/filecoin-signing-tools/package.json'))],
+    }));
+    assert.equal(legacyAxios.VERSION, '0.35.0');
+    let inheritedVisitorCalls = 0;
+    Object.defineProperty(Object.prototype, 'visitor', {
+      configurable: true, value() { inheritedVisitorCalls++; },
+    });
+    try { legacyAxios.toFormData({ field: 'synthetic' }); }
+    finally { delete Object.prototype.visitor; }
+    assert.equal(inheritedVisitorCalls, 0);
+
+    // A cloned interceptor config must not inherit a proxy from Object.prototype.
+    // Both endpoints are disposable loopback servers; no external host or real token.
+    let unexpectedProxyCalls = 0;
+    const proxyTrap = http.createServer((request, response) => {
+      unexpectedProxyCalls++;
+      response.setHeader('content-type', 'application/json');
+      response.end('{"unexpectedProxy":true}');
+    });
+    proxyTrap.listen(0, '127.0.0.1');
+    await once(proxyTrap, 'listening');
+    rpc.requester.interceptors.request.use(config => ({ ...config, headers: { ...config.headers } }));
+    Object.defineProperty(Object.prototype, 'proxy', {
+      configurable: true,
+      value: { protocol: 'http', host: '127.0.0.1', port: proxyTrap.address().port },
+    });
+    try {
+      assert.deepEqual(await rpc.getNonce('synthetic-address'), { synthetic: true });
+      assert.equal(unexpectedProxyCalls, 0);
+    } finally {
+      delete Object.prototype.proxy;
+      await new Promise(resolve => proxyTrap.close(resolve));
+    }
   } finally { await new Promise(resolve => server.close(resolve)); }
 
   const Ws = require(require.resolve('ws', { paths: [dirname(require.resolve('eth-lib/package.json'))] }));
