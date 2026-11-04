@@ -6,14 +6,14 @@
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "PR55 current source and published-module technical qualification; no production deployment or general security clearance",
-  "assessment_sha256": "b1e5039f921a78226b7cd84257f7f99169329b71b38e60aea78d5f23a75b844d",
+  "scope": "PR55 plus official JOSE4.1.6 patch technical qualification; no production deployment or general security clearance",
+  "assessment_sha256": "8fbfd63b6bb5c5a82c5c7f37caa451b7673f5da37acf41ecbe6b538d86c9dcc2",
   "provenance_sha256": "574885d401b82d0de35c67254d1dc137a1c2461dca415607d66dcbe51ea7807e",
   "lock_sha256": {
-    "go.mod": "314a31af1c0322672fb8d2bb5059083779e319b84adc299835c084bee5b8ca26",
-    "go.sum": "3b8d31d18f226445470001f46e67022f46639b17490a060ef43f2073e2286cc0",
-    "evmd/go.mod": "a61a687e9e1a0f378c0609843fe331ec6370bf27ee2cb7dc5a22f8aa73829dbb",
-    "evmd/go.sum": "94ba3fa413e2f03d297c04b978f955a169de066cb6b929583a7432bd35a0172b"
+    "go.mod": "a7bc1c9bf6822695e0e4ee78991353273e42edf82e758a33bfb90b91e7dd1c9d",
+    "go.sum": "bd0dd3b04f74c01a3e8d6f16093cd0df8cb843abe3c685b7949ef889c4507f39",
+    "evmd/go.mod": "d3e8f32beaf7b2a80b4428b4e3afb96cf97570a08c129b2675668437227720b5",
+    "evmd/go.sum": "34d4f55289d59810d9b4eb57354b3b069bf82b22fa43d184b75da8ddc3a13bb8"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
@@ -27,7 +27,7 @@
   "accepted_scanner_advisories": [],
   "assessment_document": "docs/security-review-2026-11-04.md",
   "historical_assessment": "docs/security-assessment-2026-09-14.json",
-  "go_source_sha256": "5b60c23658b25e9e9cb131ff7b252e589bd156a45156f66e55f74188c97abd6e",
+  "go_source_sha256": "e9fde844e3d3517f48b1939ae2cbde3ea65aa036359563163ab994aef8b5e632",
   "go_source_input_count": 1108,
   "fresh_evidence": {
     "full_tests": {
@@ -42,8 +42,23 @@
       "run": 41776289042,
       "head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3"
     },
-    "current_head_qualification": "Mandatory fresh matrix workflow, no artifact reuse"
+    "current_head_qualification": "Mandatory fresh matrix for JOSE follow-up; no reuse of PR55 results"
   },
   "reviewed_go_source_evidence_head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3",
-  "qualification_status": "Fresh current-head CI required before merge"
+  "qualification_status": "JOSE follow-up: fresh current-head CI required before merge",
+  "previous_pr55_review": {
+    "assessment_record_sha256": "64c60b77602041eb9e3eb688d2d3e07f460106cc521b0112f73306d2534420ac",
+    "go_source_sha256": "5b60c23658b25e9e9cb131ff7b252e589bd156a45156f66e55f74188c97abd6e",
+    "merge_commit": "312905ed8cc2149500410afd85ecc6794062f9cd",
+    "qualification_run": 41798986561
+  },
+  "jose_patch": {
+    "advisory": "GHSA-mgcc-cww5-fp2q",
+    "from": "v4.1.4",
+    "to": "v4.1.6",
+    "max_rsa_modulus_bits": 4096,
+    "upstream_rsa_validation_tests": "TestRsaKeyChecks -count=1 PASS",
+    "effective_graph_delta": "Only JOSE changes in root,evmd,speedtest",
+    "fresh_current_head_qualification_required": true
+  }
 }
