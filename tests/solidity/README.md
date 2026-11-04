@@ -34,3 +34,26 @@ six suites on disposable GitHub runners. The four modern suites use Node 24 and
 the locked contracts npm installation; the two unchanged suites use Node 22 and
 the locked Yarn workspace. Application contracts and node configuration are not
 changed by this tooling migration.
+
+
+## Remaining runner migration — November 2026
+
+All six Solidity suites now use the same Hardhat3.14 toolchain in contracts.
+The chain-specific precompile/revert fixtures live under contracts/test-suites;
+the wrapper commands still copy the same precompile Solidity files and run
+against the disposable cosmos network. All Solidity inputs and case names are
+preserved. The12 protected legacy governance cases retain their explicit opt-in
+policy; no governance setting or live node is changed by these tests.
+
+The Hardhat compatibility fixture also moves to Hardhat3 while retaining all
+CLI, Ethers, token and Uniswap cases. The Web3 fixture moves from1.10 to4.16;
+its seven original scenarios remain and numeric assertions follow Web3's
+BigInt return values. Thus the fixtures now qualify the recent client APIs;
+they no longer claim to qualify the retired Hardhat2 or Web3v1 generations.
+
+The Web3 validator uses fixed Zod4.6.6. Its small compatibility adapter preserves
+custom validation metadata using superRefine, pins both original shipped files
+by SHA256 and refuses source/version drift. Tests cover real ABI encoding,
+invalid arguments, bounded arrays and an offline signing/recovery roundtrip.
+Both Hardhat installations use the existing checksum-guarded Zod4 adapter and
+its real CLI parser regressions. No audit exceptions are accepted.

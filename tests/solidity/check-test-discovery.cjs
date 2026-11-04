@@ -6,4 +6,4 @@ assert.deepEqual(loadTests({}).sort(), [
   'basic', 'eip1559', 'exception', 'opcode', 'precompiles', 'revert_cases',
 ]);
 assert.deepEqual(loadTests({ onlyTest: ['basic', 'opcode'] }).sort(), ['basic', 'opcode']);
-console.log('All six suites are discoverable after moving the four generic suites');
+console.log('All six suites are discoverable after migrating all six suites');

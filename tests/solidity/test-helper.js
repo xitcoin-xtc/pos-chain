@@ -42,92 +42,11 @@ function extractChainIDFromGo(goFilePath) {
   }
 }
 
-// Function to update Hardhat config with the extracted chain ID
-function updateHardhatConfig(chainId, hardhatConfigPath) {
-  try {
-    if (!fs.existsSync(hardhatConfigPath)) {
-      logger.warn(`Hardhat config not found at ${hardhatConfigPath}`)
-      return
-    }
-
-    let configContent = fs.readFileSync(hardhatConfigPath, 'utf8')
-
-    // Find the cosmos network block and update chainId within it
-    const cosmosBlockRegex = /cosmos:\s*{([^{}]*(?:{[^{}]*}[^{}]*)*)}/
-    const match = configContent.match(cosmosBlockRegex)
-
-    if (match) {
-      const cosmosBlock = match[1]
-      const chainIdRegex = /chainId:\s*\d+/
-
-      if (chainIdRegex.test(cosmosBlock)) {
-        const updatedCosmosBlock = cosmosBlock.replace(chainIdRegex, `chainId: ${chainId}`)
-        const updatedContent = configContent.replace(cosmosBlockRegex, `cosmos: {${updatedCosmosBlock}}`)
-
-        fs.writeFileSync(hardhatConfigPath, updatedContent)
-        logger.info(`Updated Hardhat config with chainId: ${chainId}`)
-      } else {
-        logger.warn('chainId not found in cosmos network block')
-        logger.info('Cosmos block content:', cosmosBlock)
-      }
-    } else {
-      logger.warn('Could not find cosmos network block in Hardhat config')
-      logger.info('Please check if your Hardhat config has a cosmos network configuration')
-
-      // Show available network blocks for debugging
-      const networkMatches = configContent.match(/\w+:\s*{[^{}]*}/g)
-      if (networkMatches) {
-        logger.info('Found network blocks:', networkMatches)
-      }
-    }
-  } catch (error) {
-    logger.warn(`Error updating Hardhat config: ${error.message}`)
-  }
-}
-
-// Function to create backup of Hardhat config
-function backupHardhatConfig(hardhatConfigPath) {
-  const backupPath = hardhatConfigPath + '.backup'
-  try {
-    if (fs.existsSync(hardhatConfigPath)) {
-      fs.copyFileSync(hardhatConfigPath, backupPath)
-      logger.info(`Created backup: ${backupPath}`)
-      return backupPath
-    }
-  } catch (error) {
-    logger.warn(`Error creating backup: ${error.message}`)
-  }
-  return null
-}
-
-// Function to restore Hardhat config from backup
-function restoreHardhatConfig(hardhatConfigPath, backupPath) {
-  try {
-    if (backupPath && fs.existsSync(backupPath)) {
-      fs.copyFileSync(backupPath, hardhatConfigPath)
-      fs.unlinkSync(backupPath) // Remove backup file
-      logger.info('Restored original Hardhat config')
-    }
-  } catch (error) {
-    logger.warn(`Error restoring config: ${error.message}`)
-  }
-}
-
-// Function to sync configuration from Go to Hardhat
+// All six suites use the shared environment-driven network configuration.
 function syncConfiguration() {
-  // Adjust these paths based on your project structure
-  const goConfigPath = path.join(__dirname, '../../server/config/config.go')
-  const hardhatConfigPath = path.join(__dirname, './suites/precompiles/hardhat.config.js')
-
-  logger.info('Syncing configuration from Go to Hardhat...')
-
-  // Create backup before modifying
-  const backupPath = backupHardhatConfig(hardhatConfigPath)
-
-  const chainId = extractChainIDFromGo(goConfigPath)
-  updateHardhatConfig(chainId, hardhatConfigPath)
-
-  return { hardhatConfigPath, backupPath }
+  process.env.EXPECTED_EVM_CHAIN_ID ||= String(extractChainIDFromGo(
+    path.join(__dirname, '../../server/config/config.go')
+  ))
 }
 
 function checkTestEnv () {
@@ -368,7 +287,7 @@ function setupNetwork ({ runConfig, timeout }) {
 
 async function main () {
   // Sync configuration before running tests
-  const configPaths = syncConfiguration()
+  syncConfiguration()
 
   let proc = null
 
@@ -392,11 +311,6 @@ async function main () {
     logger.err(`Test execution failed: ${error.message}`)
     throw error
   } finally {
-    // Always restore the original config, even if tests fail
-    if (configPaths) {
-      restoreHardhatConfig(configPaths.hardhatConfigPath, configPaths.backupPath)
-    }
-
     if (proc) {
       proc.kill()
     }

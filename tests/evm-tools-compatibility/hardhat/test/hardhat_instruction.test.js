@@ -1,6 +1,6 @@
-const { execSync } = require("child_process");
-const fs = require("fs");
-const { expect } = require("chai");
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import { expect } from 'chai';
 
 describe("Hardhat Commands Compatibility", function () {
   it("Should compile contracts", function () {

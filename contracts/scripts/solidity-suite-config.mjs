@@ -4,8 +4,7 @@ import matchers from '@nomicfoundation/hardhat-ethers-chai-matchers';
 import mocha from '@nomicfoundation/hardhat-mocha';
 import { fileURLToPath } from 'node:url';
 
-// The four generic EVM suites share the already audited contracts toolchain.
-// The separate legacy-client compatibility suites retain their client versions.
+// All six Solidity suites share the same audited toolchain.
 export function soliditySuiteConfig(suite, version) {
   const directory = fileURLToPath(new URL(`../test-suites/${suite}/`, import.meta.url));
   return defineConfig({
@@ -34,4 +33,18 @@ export function soliditySuiteConfig(suite, version) {
     },
     test: { mocha: { timeout: 120000, failZero: true, forbidOnly: true, forbidPending: true } },
   });
+}
+
+export function chainSuiteConfig(suite) {
+  const config = soliditySuiteConfig(suite, '0.8.18');
+  config.solidity = {
+    compilers: [
+      { version: '0.8.18', settings: { optimizer: { enabled: false, runs: 200 }, evmVersion: 'paris' } },
+      { version: '0.4.22', settings: { optimizer: { enabled: false, runs: 200 }, evmVersion: 'byzantium' } },
+    ],
+  };
+  // The existing protected governance policy intentionally leaves 12 legacy
+  // lifecycle cases pending. All other suites still forbid pending tests.
+  config.test.mocha.forbidPending = suite !== 'precompiles';
+  return config;
 }

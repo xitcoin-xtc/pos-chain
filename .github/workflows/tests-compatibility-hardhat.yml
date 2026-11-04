@@ -8,8 +8,13 @@ permissions:
 
 jobs:
   hardhat-compatibility:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CGO_ENABLED: '1'
+      GOMAXPROCS: '2'
+      GOMEMLIMIT: 3GiB
+      GOFLAGS: -p=1
 
     steps:
       - name: Checkout code
@@ -35,7 +40,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Cache Go modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -54,7 +59,13 @@ jobs:
 
       - name: Install locked test dependencies
         working-directory: tests/evm-tools-compatibility/hardhat
-        run: npm ci
+        run: |
+          npm ci
+          npm run test:tooling
+
+      - name: Audit all compatibility dependencies
+        working-directory: tests/evm-tools-compatibility/hardhat
+        run: npm audit --audit-level=low
 
       - name: Build and install evmd
         run: |
