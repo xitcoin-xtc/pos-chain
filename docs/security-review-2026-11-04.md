@@ -82,3 +82,27 @@ source-input digest, with no additional scanner exception or later expiry.
 Previous PR55 evidence remains historical: all current checkout tests, published
 module comparisons and binary/source scans must pass afresh for the follow-up
 head before merge. Passing a module-only metadata review is insufficient.
+
+## Speedtest graph alignment — 2026-11-04
+
+The separate speedtest module did not inherit its local root/evmd dependencies'
+replace directives. It still selected Cosmos Geth1.16.2 and the original SDK,
+reintroducing obsolete STUNv2/DTLSv2 into the test command's effective imports.
+Align all six root replacements, including the same immutable Geth/SDK forks
+and maintained keyring, and regenerate the speedtest sums using go mod tidy.
+The old Pionv2 requirements disappear from its manifest. No production Go file,
+root/evmd manifest, public binary, fork revision or provenance claim changes.
+
+Qualification must check the speedtest replacement map against the root,
+verify all module sums, reject obsolete effective production imports, compile
+and test the complete command and run a strict scanner without accepted IDs.
+The current root/evmd checkout and published-module matrices, source and binary
+scans also run afresh because the assessment binds every Go module input.
+Prior PR58 evidence is historical and does not replace this qualification.
+The source-input digest and speedtest lock hashes bind exactly this graph;
+review expiry remains2026-11-11 and no scanner exception is introduced.
+
+The JavaScript client modernization is separately qualified and documented in
+its test-tooling review. Retaining the original generations in the preceding
+review described its earlier compatibility scope; a new migration must preserve
+all scenarios and explicitly state which recent client generations it qualifies.
