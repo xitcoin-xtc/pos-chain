@@ -1,4 +1,4 @@
-name: Review critical dependency changes
+name: Review severe dependency changes
 
 on:
   pull_request:
@@ -15,11 +15,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Reject newly introduced critical dependencies in every scope
+      - name: Reject newly introduced high and critical dependencies in every scope
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           vulnerability-check: true
-          fail-on-severity: critical
+          fail-on-severity: high
           fail-on-scopes: runtime, development, unknown
           license-check: false
           comment-summary-in-pr: never
