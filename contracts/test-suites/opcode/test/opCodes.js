@@ -16,6 +16,6 @@ describe('OpCodes', function () {
     await assert.rejects(contractInstance.test_invalid(), /invalid opcode|revert|VM Exception/i);
   });
   it('Should revert', async function () {
-    await expect(contractInstance.test_revert()).to.be.reverted;
+    await expect(contractInstance.test_revert()).to.revert(ethers);
   });
 });

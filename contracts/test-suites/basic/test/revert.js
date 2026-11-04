@@ -9,6 +9,6 @@ describe('Test EVM Revert', function () {
     expect(await storageInstance.getAddress()).to.match(/^0x[0-9a-fA-F]{40}$/);
   });
   it('should revert when call `shouldRevert()`', async function () {
-    await expect(storageInstance.shouldRevert()).to.be.reverted;
+    await expect(storageInstance.shouldRevert()).to.revert(ethers);
   });
 });
