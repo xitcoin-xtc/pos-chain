@@ -7,6 +7,7 @@ Real root/evmd graph validation is required separately with acquired modules.
 """
 import copy
 import json
+import importlib.util
 import os
 from pathlib import Path
 import shutil
@@ -60,15 +61,24 @@ class GateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="gate-simulation-")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         for name in ["scripts", "docs", "rpc", "evmd", "bin"]:
             (self.root / name).mkdir()
         for name in ["scripts/run-govulncheck.sh", "scripts/verify-go-fork-provenance.py",
                      "docs/go-fork-provenance.json", "docs/security-assessment.json",
-                     "SECURITY-ASSESSMENT.md", "scripts/verify-security-assessment.py"]:
+                     "SECURITY-ASSESSMENT.md", "docs/security-review-2026-11-04.md", "scripts/verify-security-assessment.py"]:
             shutil.copyfile(ROOT / name, self.root / name)
         for name in ["go.mod", "go.sum", "evmd/go.mod", "evmd/go.sum"]:
             shutil.copyfile(ROOT / name, self.root / name)
+        spec = importlib.util.spec_from_file_location('assessment', ROOT / 'scripts/verify-security-assessment.py')
+        assessment = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(assessment)
+        for name in assessment.source_inputs(ROOT):
+            target = self.root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / name, target)
+        subprocess.run(['git', 'init', '--quiet', str(self.root)], check=True)
+        subprocess.run(['git', '-C', str(self.root), 'add', '.'], check=True)
         for name in ["go", "date", "govulncheck"]:
             tool = self.root / "bin" / name
             tool.write_text(FAKE_TOOL)
@@ -78,7 +88,7 @@ class GateTests(unittest.TestCase):
         for path, version in {
             SDK: "v0.54.4", GETH: "v1.16.9",
             "github.com/cometbft/cometbft": "v0.39.4",
-            "github.com/pion/dtls/v2": "v2.2.12", "golang.org/x/crypto": "v0.56.0",
+            "github.com/pion/dtls/v2": "v2.2.12", "golang.org/x/crypto": "v0.58.0",
             "github.com/pion/stun/v3": "v3.1.5", "github.com/pion/dtls/v3": "v3.1.4",
             "github.com/ProtonMail/go-crypto": "v1.4.1",
         }.items():
@@ -90,7 +100,7 @@ class GateTests(unittest.TestCase):
             }
         self.cfg = {"modules": {"root": copy.deepcopy(modules), "evmd": copy.deepcopy(modules)},
                     "packages": {"root": [LIBRARY + "/crypto"], "evmd": [LIBRARY + "/evmd"]},
-                    "date": "2026-09-14", "scanner_output": "simulated scanner output", "scanner_status": 0}
+                    "date": "2026-11-04", "scanner_output": "simulated scanner output", "scanner_status": 0}
         self.cfg["modules"]["root"][LIBRARY] = {"Path": LIBRARY, "Main": True}
         self.cfg["modules"]["evmd"][LIBRARY] = {
             "Path": LIBRARY, "Version": manifest["root_library"]["version"],
@@ -121,21 +131,21 @@ class GateTests(unittest.TestCase):
     def test_valid_locks_scanner_and_expiry(self):
         for module in ["root", "evmd"]:
             with self.subTest(module=module):
-                self.cfg["date"] = "2026-09-14"
+                self.cfg["date"] = "2026-11-04"
                 self.run_gate(module, 0, scanned=True)
-                self.cfg["date"] = "2026-09-22"
+                self.cfg["date"] = "2026-11-12"
                 self.run_gate(module, 1, "expired exception review still blocks", scanned=True)
 
     def test_current_assessment_boundaries_and_integrity(self):
         for module in ["root", "evmd"]:
-            for date in ["2026-09-14", "2026-09-21"]:
+            for date in ["2026-11-04", "2026-11-11"]:
                 self.cfg["date"] = date
                 self.run_gate(module, 0, scanned=True)
-            for date in ["2026-09-13", "invalid"]:
+            for date in ["2026-11-03", "invalid"]:
                 self.cfg["date"] = date
                 self.run_gate(module, 1, "not yet valid")
-        self.cfg["date"] = "2026-09-14"
-        for name in ["docs/security-assessment.json", "SECURITY-ASSESSMENT.md",
+        self.cfg["date"] = "2026-11-04"
+        for name in ["docs/security-assessment.json", "docs/security-review-2026-11-04.md",
                      "docs/go-fork-provenance.json", "go.mod", "go.sum",
                      "evmd/go.mod", "evmd/go.sum"]:
             path = self.root / name
@@ -200,15 +210,22 @@ class GateTests(unittest.TestCase):
     def test_scanner_failures_and_advisory_identity(self):
         for module in ["root", "evmd"]:
             for status, output, expected in [
-                (3, "Vulnerability #1: GO-2025-3442", 0),
-                (3, "Vulnerability #1: GO-2099-9999", 1),
-                (3, "unparseable", 1), (2, "scanner failure", 2),
+                (3, "Vulnerability #1: GO-2025-3442", 3),
+                (3, "Vulnerability #1: GO-2099-9999", 3),
+                (3, "unparseable", 3), (2, "scanner failure", 2),
             ]:
                 with self.subTest(module=module, status=status, output=output):
-                    self.cfg.update(scanner_status=status, scanner_output=output, date="2026-09-14")
+                    self.cfg.update(scanner_status=status, scanner_output=output, date="2026-11-04")
                     self.run_gate(module, expected, scanned=True)
-                    self.cfg["date"] = "2026-09-22"
+                    self.cfg["date"] = "2026-11-12"
                     self.run_gate(module, 1, "expired exception review still blocks", scanned=True)
+
+    def test_untrusted_source_symlink(self):
+        target = self.root / 'synthetic-not-source.txt'
+        target.write_text('synthetic fixture, not a credential')
+        (self.root / 'untrusted.go').symlink_to(target)
+        for module in ['root', 'evmd']:
+            self.run_gate(module, 1, 'invalid assessment source input')
 
     def test_existing_source_guards(self):
         for file, content, message in [
@@ -218,7 +235,7 @@ class GateTests(unittest.TestCase):
             with self.subTest(file=file):
                 path = self.root / file
                 path.write_text(content)
-                self.run_gate("root", 1, message)
+                self.run_gate("root", 1, "assessment")
                 path.unlink()
 
 

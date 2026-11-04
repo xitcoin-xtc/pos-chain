@@ -44,6 +44,7 @@ trap cleanup_node EXIT
 sleep 3
 
 wait_for_node 10
+load_test_evm_chain_id
 
 # Change to the test directory
 cd "$TEST_DIR"

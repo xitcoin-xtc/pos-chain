@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      suite_group:
+        description: Select all diagnostics, chain-specific Solidity tests, full Go tests, or a versioned binary
+        type: choice
+        options: [all, chain, go, versioned]
+        default: all
 
 permissions:
   contents: read
@@ -52,6 +58,180 @@ jobs:
         working-directory: contracts
         run: npm ci
 
+      - name: Check secure toolchain compatibility
+        working-directory: contracts
+        run: npm run test:tooling
+
       - name: Audit contract dependencies
         working-directory: contracts
         run: npm audit --audit-level=high
+
+  fresh-go-diagnostics:
+    name: Fresh Go evidence (${{ matrix.module }})
+    if: github.event_name == 'workflow_dispatch' && (inputs.suite_group == 'all' || inputs.suite_group == 'go')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [root, evmd]
+    env:
+      CGO_ENABLED: '1'
+      GOWORK: 'off'
+      GOMAXPROCS: '2'
+      GOMEMLIMIT: 3GiB
+      GOFLAGS: -p=1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Collect current graph and raw findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
+          mkdir -p "$evidence"
+          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          go version > "$evidence/toolchain.txt"
+          sha256sum go.mod go.sum > "$evidence/lock-sha256.txt"
+          go list -m -json all > "$evidence/modules.json"
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          # Diagnostic evidence does not renew the assessment or its exceptions.
+          # JSON mode reports findings in the artifact; exit 0 does not mean clean.
+          # Preserve execution errors; existing acceptance gates remain mandatory.
+          set +e
+          govulncheck -json ./... > "$evidence/govulncheck.jsonl" 2> "$evidence/govulncheck.stderr"
+          scan_status=$?
+          set -e
+          printf '%s\n' "$scan_status" > "$evidence/scan-exit-code.txt"
+          exit "$scan_status"
+      - name: Compile packages and run targeted regression tests
+        if: inputs.suite_group != 'go'
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
+          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
+          go test -mod=readonly -tags=test -run '^$' ./... > "$evidence/compile-check.log" 2>&1
+          if [[ '${{ matrix.module }}' == root ]]; then
+            go test -mod=readonly -tags=test ./rpc/... ./server/... ./client/... > "$evidence/targeted-tests.log" 2>&1
+          fi
+      - name: Run full Go test suite without renewing historical acceptance
+        if: inputs.suite_group == 'go'
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
+          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
+          go mod verify > "$evidence/module-verification.log" 2>&1
+          # Runner-local tests only; production nodes and historical gates are untouched.
+          set +e
+          go test -mod=readonly -tags=test -count=1 -timeout=60m ./... > "$evidence/full-tests.log" 2>&1
+          test_status=$?
+          set -e
+          printf '%s\n' "$test_status" > "$evidence/full-tests-exit-code.txt"
+          sha256sum --check "$evidence/lock-sha256.txt"
+          exit "$test_status"
+      - name: Preserve diagnostic and test evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: fresh-go-${{ matrix.module }}
+          path: fresh-go-evidence/
+          retention-days: 14
+
+  legacy-solidity-compatibility:
+    name: Legacy Solidity (${{ matrix.suite }})
+    if: github.event_name == 'workflow_dispatch' && (inputs.suite_group == 'all' || inputs.suite_group == 'chain')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJSON(inputs.suite_group == 'chain' && '["precompiles","revert_cases"]' || '["basic","eip1559","exception","opcode","precompiles","revert_cases"]') }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+      - name: Activate pinned Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+      - name: Install locked workspace dependencies
+        working-directory: tests/solidity
+        run: yarn install --frozen-lockfile --non-interactive
+      - name: Check real consumers of security overrides
+        if: matrix.suite == 'basic'
+        working-directory: tests/solidity
+        run: node check-security-compatibility.cjs
+      - name: Test on disposable in-process EVM
+        if: matrix.suite != 'precompiles' && matrix.suite != 'revert_cases'
+        working-directory: tests/solidity/suites/${{ matrix.suite }}
+        run: yarn test-ganache
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: matrix.suite == 'precompiles' || matrix.suite == 'revert_cases'
+        with:
+          go-version-file: go.mod
+      - name: Build disposable chain test node
+        if: matrix.suite == 'precompiles' || matrix.suite == 'revert_cases'
+        env:
+          CGO_ENABLED: '1'
+          GOMAXPROCS: '2'
+          GOMEMLIMIT: 2GiB
+          GOFLAGS: -p=1
+        run: make install
+      - name: Test chain-specific precompiles on disposable node
+        if: matrix.suite == 'precompiles' || matrix.suite == 'revert_cases'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./local_node.sh -y --no-install > /tmp/evmd.log 2>&1 &
+          node_pid=$!
+          trap 'kill "$node_pid" 2>/dev/null || true; wait "$node_pid" 2>/dev/null || true' EXIT
+          source scripts/tests_compatibility_common.sh
+          wait_for_node 10
+          load_test_evm_chain_id
+          if [[ '${{ matrix.suite }}' == precompiles ]]; then
+            load_test_validator_address
+          fi
+          cd tests/solidity/suites/${{ matrix.suite }}
+          yarn test-cosmos
+
+  fresh-versioned-binary:
+    name: Fresh versioned binary evidence
+    if: github.event_name == 'workflow_dispatch' && inputs.suite_group == 'versioned'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CGO_ENABLED: '1'
+      GOWORK: 'off'
+      GOMAXPROCS: '2'
+      GOMEMLIMIT: 3GiB
+      GOFLAGS: -p=1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            evmd/go.sum
+      - name: Collect published-source build and binary scan
+        run: python3 scripts/collect-fresh-versioned-go.py
+      - name: Preserve fresh evidence without publishing a binary
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: fresh-versioned-binary
+          path: fresh-versioned-evidence/
+          retention-days: 14

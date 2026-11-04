@@ -63,9 +63,17 @@ jobs:
           go mod verify
 
       - name: Build Linux AMD64 release
+        env:
+          GOFLAGS: -trimpath
         run: |
           mkdir -p dist
-          make BUILDDIR="$GITHUB_WORKSPACE/dist" build-linux
+          make BUILDDIR="$GITHUB_WORKSPACE/dist" COSMOS_BUILD_OPTIONS=nostrip build-linux
+
+      - name: Scan the actual symbol-bearing release artifact
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          go tool nm dist/xitcoind > /dev/null
+          bash scripts/run-govulncheck.sh -mode=binary dist/xitcoind
 
       - name: Verify and package release
         shell: bash

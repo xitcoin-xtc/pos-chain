@@ -47,6 +47,7 @@ sleep 3
 echo "Waiting for evmd node to be ready..."
 
 wait_for_node 10
+load_test_evm_chain_id
 
 # Change to the test directory
 cd "$TEST_DIR"
@@ -56,6 +57,10 @@ if [ -f ".env" ]; then
 	echo "Sourcing .env file..."
 	# shellcheck source=/dev/null
 	source .env
+elif [ "${COMPAT_LOCAL_KEYS:-0}" = 1 ]; then
+	# The CI node was freshly created by start_node; never use a live keyring.
+	PRIVATE_KEY="$(evmd keys unsafe-export-eth-key mykey --keyring-backend test --home "$HOME/.evmd")"
+	export PRIVATE_KEY
 else
 	echo "Error: No .env file found in $TEST_DIR"
 	exit 1

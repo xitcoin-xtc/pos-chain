@@ -1,15 +1,17 @@
+const { accountAddress, validatorAddress } = require('../common')
 const { expect } = require('chai');
 const hre = require('hardhat');
 
 describe('Distribution – validator query methods', function () {
     const DIST_ADDRESS = '0x0000000000000000000000000000000000000801';
-    const VAL_OPER_BECH32 = 'cosmosvaloper1cml96vmptgw99syqrrz8az79xer2pcgpqqyk2g';
-    const VAL_BECH32 = 'cosmos1cml96vmptgw99syqrrz8az79xer2pcgp95srxm'
+    let VAL_OPER_BECH32, VAL_BECH32;
 
     let distribution, signer;
 
     before(async () => {
         [signer] = await hre.ethers.getSigners();
+        VAL_OPER_BECH32 = validatorAddress(signer.address);
+        VAL_BECH32 = accountAddress(signer.address);
         distribution = await hre.ethers.getContractAt('DistributionI', DIST_ADDRESS);
     });
 

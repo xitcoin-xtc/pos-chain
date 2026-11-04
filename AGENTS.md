@@ -42,7 +42,7 @@ Top-level directories:
 
 ## Toolchain
 
-- Go: see `go.mod` (currently 1.26.7).
+- Go: see `go.mod` (currently 1.26.10).
 - CGO required for builds (`CGO_ENABLED=1`).
 - `golangci-lint` v2.10.1 (pinned in Makefile).
 - Docker required for protobuf generation, localnet, and rpc-compat tests.

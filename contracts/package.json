@@ -7,7 +7,9 @@
     "hardhat": "^3.0.15"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node scripts/patch-hardhat-zod.mjs",
+    "test:tooling": "node --test scripts/check-hardhat-zod.mjs"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,9 @@
   "type": "module",
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0"
+  },
+  "overrides": {
+    "zod": "4.6.6",
+    "@nomicfoundation/hardhat-zod-utils": "3.0.6"
   }
 }

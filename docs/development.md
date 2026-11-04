@@ -39,11 +39,17 @@ This repository contains the Xitcoin chain implementation. It does not contain p
 
 For upstream attribution, see [UPSTREAMS.md](../UPSTREAMS.md).
 
-## PR44 security and qualification
+## Current security and qualification
 
-[Current assessment](../SECURITY-ASSESSMENT.md) records the exact dependency
-versions, six advisory dispositions and limits. Root tests alone do not cover
-evmd. Versioned graph CI reuses digest-bound acquired application results and
-runs targeted guard tests; it does not claim a new full suite or binary scan.
-The ordinary dependency gates separately scan current source. Dated remediation
-reports describe historical candidates and must not replace current provenance.
+[Current technical review](security-review-2026-11-04.md) records fresh source
+and versioned-binary evidence, full tests, all six historical advisory identities
+and the remaining limitations. Root tests alone do not cover evmd. The current
+versioned workflow tests both checkout modules and the exact published PR head,
+checks graph/checksum identity and scans a symbol-bearing versioned binary.
+It does not reuse September results. The strict scanner gate accepts no advisory
+exceptions; source drift, new findings, scanner errors and expiry block CI.
+
+The [September assessment](../SECURITY-ASSESSMENT.md) and historical qualification
+scripts remain historical records, not clearance of current code. Neither the
+current automated technical review nor a green CI run is independent approval
+or authorization to deploy a production chain.

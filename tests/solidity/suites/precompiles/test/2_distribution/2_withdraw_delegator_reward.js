@@ -1,3 +1,4 @@
+const { GENESIS_VALIDATOR, GENESIS_VALIDATOR_HEX } = require('../common')
 const { expect } = require('chai');
 const hre = require('hardhat');
 const { findEvent, waitWithTimeout, RETRY_DELAY_FUNC} = require('../common');
@@ -17,8 +18,8 @@ describe('Distribution – withdraw delegator reward', function () {
     });
 
     it('should withdraw rewards and emit WithdrawDelegatorReward event', async function () {
-        const valBech32 = 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql';
-        const valHex = '0x7cB61D4117AE31a12E393a1Cfa3BaC666481D02E';
+        const valBech32 = GENESIS_VALIDATOR;
+        const valHex = GENESIS_VALIDATOR_HEX;
         const stakeAmountBn = hre.ethers.parseEther('0.001')   // BigNumber
         const stakeAmount = BigInt(stakeAmountBn.toString())
         // This address is a current withdraw address for the signer. Check 1_set_withdraw_address.js test for more details.

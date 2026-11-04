@@ -1,21 +1,19 @@
 {
-  "schema": 1,
-  "assessed_on": "2026-09-14",
-  "review_by": "2026-09-21",
-  "assessment_author": "INO / Ino-C1 (PR author)",
+  "schema": 2,
+  "assessed_on": "2026-11-04",
+  "review_by": "2026-11-11",
+  "assessment_author": "INO / automated technical remediation review (not independent)",
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "PR44 exact qualified root/evmd inputs; no merge, deployment or general security clearance",
-  "source_head": "41da8db5ada202b0bb0a27016ad11dac4b2068b5",
-  "qualified_head": "5e24531951873ec8d0cf4403d118c45f47fa641e",
-  "assessment_sha256": "9e8d05dbf5817f17b5f6de0e382125b6c9dc7060a7710251bf871da1d4ca94a9",
+  "scope": "PR55 current source and published-module technical qualification; no production deployment or general security clearance",
+  "assessment_sha256": "b1e5039f921a78226b7cd84257f7f99169329b71b38e60aea78d5f23a75b844d",
   "provenance_sha256": "574885d401b82d0de35c67254d1dc137a1c2461dca415607d66dcbe51ea7807e",
   "lock_sha256": {
-    "go.mod": "38457b69b3d06e5878fcdd7abe6dc9967fbfea323c6a57a0b2e855f8e621bb24",
-    "go.sum": "a756b61150d7be25beb8d0d5ebc84eb3ddcb7ab482bcbc56b2a84011d6176958",
-    "evmd/go.mod": "ba4b33609d600e169cabb5dea24ac47dc50f50ce0b8b7cf08b4d90ef47265e5f",
-    "evmd/go.sum": "943873d94636a26bc2075b8c668d48f46ed7a1a8779268a22b65c036b970f26c"
+    "go.mod": "314a31af1c0322672fb8d2bb5059083779e319b84adc299835c084bee5b8ca26",
+    "go.sum": "3b8d31d18f226445470001f46e67022f46639b17490a060ef43f2073e2286cc0",
+    "evmd/go.mod": "a61a687e9e1a0f378c0609843fe331ec6370bf27ee2cb7dc5a22f8aa73829dbb",
+    "evmd/go.sum": "94ba3fa413e2f03d297c04b978f955a169de066cb6b929583a7432bd35a0172b"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
@@ -25,5 +23,27 @@
     "GO-2026-4479": "OBSOLETE_PRODUCTION_PATH_REMOVED_V3_FIXED",
     "GO-2026-5932": "OBSOLETE_ARMOR_REPLACED"
   },
-  "expiry_reason": "Seven-day re-examination window for metadata discrepancies and bounded parser/platform evidence; no automatic renewal."
+  "expiry_reason": "Seven-day re-examination window for metadata discrepancies and bounded parser/platform evidence; no automatic renewal.",
+  "accepted_scanner_advisories": [],
+  "assessment_document": "docs/security-review-2026-11-04.md",
+  "historical_assessment": "docs/security-assessment-2026-09-14.json",
+  "go_source_sha256": "5b60c23658b25e9e9cb131ff7b252e589bd156a45156f66e55f74188c97abd6e",
+  "go_source_input_count": 1108,
+  "fresh_evidence": {
+    "full_tests": {
+      "run": 41774520680,
+      "head": "f28a80ad66bdb8fc593c992a89d02ce42677f268",
+      "tested_packages": [
+        54,
+        21
+      ]
+    },
+    "versioned_binary": {
+      "run": 41776289042,
+      "head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3"
+    },
+    "current_head_qualification": "Mandatory fresh matrix workflow, no artifact reuse"
+  },
+  "reviewed_go_source_evidence_head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3",
+  "qualification_status": "Fresh current-head CI required before merge"
 }
