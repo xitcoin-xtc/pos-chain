@@ -4,11 +4,11 @@
   "description": "A collection of smart contracts used in the development of the Cosmos EVM blockchain.",
   "devDependencies": {
     "@openzeppelin/contracts": "^4.9.6",
-    "hardhat": "3.14.0",
-    "@nomicfoundation/hardhat-ethers": "4.0.15",
-    "@nomicfoundation/hardhat-ethers-chai-matchers": "3.0.11",
+    "hardhat": "3.21.2",
+    "@nomicfoundation/hardhat-ethers": "4.2.2",
+    "@nomicfoundation/hardhat-ethers-chai-matchers": "3.0.13",
     "@nomicfoundation/hardhat-mocha": "3.1.0",
-    "chai": "6.2.2",
+    "chai": "6.3.0",
     "ethers": "6.17.0",
     "mocha": "11.8.0",
     "bech32": "1.1.4"
@@ -30,7 +30,7 @@
   "homepage": "https://github.com/xitcoin-org/pos-chain#readme",
   "type": "module",
   "dependencies": {
-    "@account-abstraction/contracts": "^0.6.0"
+    "@account-abstraction/contracts": "^0.8.0"
   },
   "overrides": {
     "zod": "4.6.6",
