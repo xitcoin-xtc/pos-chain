@@ -210,7 +210,7 @@ def is_os_repo(path: Path) -> bool:
             if not line:
                 break
 
-            if "module github.com/xitcoin-org/pos-chain" in line:
+            if "module github.com/xitcoin-xtc/pos-chain" in line:
                 return True
 
     return False

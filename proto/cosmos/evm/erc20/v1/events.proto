@@ -2,7 +2,7 @@
 syntax = "proto3";
 package cosmos.evm.erc20.v1;
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/erc20/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/erc20/types";
 
 // EventRegisterPair is an event emitted when a coin is registered.
 message EventRegisterPair {

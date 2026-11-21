@@ -9,8 +9,8 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/runner"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/runner"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

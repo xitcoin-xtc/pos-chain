@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	validatoradmissiontypes "github.com/xitcoin-org/pos-chain/x/validatoradmission/types"
-	validatorincentivestypes "github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	validatoradmissiontypes "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
+	validatorincentivestypes "github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 // UpgradeName defines the on-chain upgrade name for the sample EVMD upgrade

@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

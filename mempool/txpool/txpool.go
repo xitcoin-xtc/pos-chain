@@ -24,7 +24,7 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/xitcoin-org/pos-chain/mempool/reserver"
+	"github.com/xitcoin-xtc/pos-chain/mempool/reserver"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/types"

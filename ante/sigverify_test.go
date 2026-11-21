@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/ante"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	"github.com/xitcoin-org/pos-chain/encoding"
-	"github.com/xitcoin-org/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/ante"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/encoding"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	kmultisig "github.com/cosmos/cosmos-sdk/crypto/keys/multisig"

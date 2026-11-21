@@ -1,8 +1,8 @@
 package codec
 
 import (
-	cryptocodec "github.com/xitcoin-org/pos-chain/crypto/codec"
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
+	cryptocodec "github.com/xitcoin-xtc/pos-chain/crypto/codec"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

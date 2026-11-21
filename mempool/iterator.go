@@ -7,9 +7,9 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 
-	"github.com/xitcoin-org/pos-chain/mempool/miner"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
-	msgtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/mempool/miner"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
+	msgtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 

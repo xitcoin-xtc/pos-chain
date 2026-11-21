@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	cosmosclientdebug "github.com/cosmos/cosmos-sdk/client/debug"

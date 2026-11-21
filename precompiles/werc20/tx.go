@@ -6,7 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

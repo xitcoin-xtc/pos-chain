@@ -15,8 +15,8 @@ import (
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 	comettypes "github.com/cometbft/cometbft/types"
 
-	filtermocks "github.com/xitcoin-org/pos-chain/rpc/namespaces/ethereum/eth/filters/mocks"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
+	filtermocks "github.com/xitcoin-xtc/pos-chain/rpc/namespaces/ethereum/eth/filters/mocks"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
 
 	"cosmossdk.io/log/v2"
 )

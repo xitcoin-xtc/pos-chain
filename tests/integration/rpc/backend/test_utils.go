@@ -11,8 +11,8 @@ import (
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cometbft/cometbft/types"
 
-	backend2 "github.com/xitcoin-org/pos-chain/rpc/backend"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	backend2 "github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 func mookProofs(num int, withData bool) *crypto.ProofOps {

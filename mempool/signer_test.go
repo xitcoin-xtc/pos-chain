@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	protov2 "google.golang.org/protobuf/proto"
 
-	mempool2 "github.com/xitcoin-org/pos-chain/mempool"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	mempool2 "github.com/xitcoin-xtc/pos-chain/mempool"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

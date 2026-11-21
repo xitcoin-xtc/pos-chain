@@ -9,8 +9,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
 )
 
 // GetBlockByNumber returns the JSON-RPC compatible Ethereum block identified by

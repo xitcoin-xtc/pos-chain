@@ -11,10 +11,10 @@ import (
 
 	cmtrpcclient "github.com/cometbft/cometbft/rpc/client"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend/mocks"
-	"github.com/xitcoin-org/pos-chain/server/config"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend/mocks"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	length "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )

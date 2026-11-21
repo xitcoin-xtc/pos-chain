@@ -8,9 +8,9 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	rpc "github.com/xitcoin-org/pos-chain/rpc/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	"github.com/xitcoin-org/pos-chain/x/vm/types/mocks"
+	rpc "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types/mocks"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

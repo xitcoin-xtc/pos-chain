@@ -3,7 +3,7 @@ package mempool
 import (
 	"errors"
 
-	"github.com/xitcoin-org/pos-chain/mempool/internal/queue"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/queue"
 )
 
 var (

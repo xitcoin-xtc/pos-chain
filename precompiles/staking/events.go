@@ -10,7 +10,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"

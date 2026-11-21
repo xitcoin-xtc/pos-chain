@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/wrappers"
-	"github.com/xitcoin-org/pos-chain/x/vm/wrappers/testutil"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/wrappers"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/wrappers/testutil"
 
 	sdkmath "cosmossdk.io/math"
 

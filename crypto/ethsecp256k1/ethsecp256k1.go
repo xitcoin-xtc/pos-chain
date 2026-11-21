@@ -8,7 +8,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
 
 	errorsmod "cosmossdk.io/errors"
 

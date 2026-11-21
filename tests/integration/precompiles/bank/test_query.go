@@ -5,9 +5,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/bank"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	cosmosevmutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/bank"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	cosmosevmutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 
 	"cosmossdk.io/math"
 

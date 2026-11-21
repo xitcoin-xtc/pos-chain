@@ -11,7 +11,7 @@ import (
 
 	"github.com/test-go/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 )
 
 // RunTxBroadcasting tests transaction broadcasting and duplicate handling in a multi-node network.

@@ -11,11 +11,11 @@ import (
 	cmttypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/xitcoin-org/pos-chain/evmd/config"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/evmd/config"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 
 	"cosmossdk.io/log/v2"

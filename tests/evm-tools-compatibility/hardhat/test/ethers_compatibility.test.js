@@ -39,7 +39,7 @@ describe("Ethers.js Core Features Compatibility Test", function () {
   });
 
   it("Should revert mint if called by non-owner", async function () {
-    // TODO: Update it to revertedWithCustomError when available (https://github.com/xitcoin-org/pos-chain/pull/289).
+    // TODO: Update it to revertedWithCustomError when available (https://github.com/cosmos/evm/pull/289).
     await expect(token.connect(addr1).mint(addr1.address, 1000)).to.revert(ethers);
   });
 

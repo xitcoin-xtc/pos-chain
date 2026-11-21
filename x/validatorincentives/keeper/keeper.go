@@ -9,7 +9,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 type Keeper struct {

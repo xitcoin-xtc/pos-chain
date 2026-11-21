@@ -1,12 +1,12 @@
-module github.com/xitcoin-org/pos-chain/tests/speedtest
+module github.com/xitcoin-xtc/pos-chain/tests/speedtest
 
 go 1.26.10
 
 replace (
 	// Match the immutable security fork qualified by the root module.
-	github.com/ethereum/go-ethereum => github.com/xitcoin-org/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
-	github.com/xitcoin-org/pos-chain => ../../
-	github.com/xitcoin-org/pos-chain/evmd => ../../evmd
+	github.com/ethereum/go-ethereum => github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
+	github.com/xitcoin-xtc/pos-chain => ../../
+	github.com/xitcoin-xtc/pos-chain/evmd => ../../evmd
 )
 
 require (
@@ -15,8 +15,8 @@ require (
 	github.com/cosmos/cosmos-sdk v0.54.4
 	github.com/ethereum/go-ethereum v1.16.9
 	github.com/spf13/cobra v1.10.2
-	github.com/xitcoin-org/pos-chain v0.2.0
-	github.com/xitcoin-org/pos-chain/evmd v0.0.0-20251112193856-d450ea1d6bd0
+	github.com/xitcoin-xtc/pos-chain v0.2.0
+	github.com/xitcoin-xtc/pos-chain/evmd v0.0.0-20251112193856-d450ea1d6bd0
 )
 
 require (
@@ -371,4 +371,4 @@ replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.2021
 
 replace github.com/tidwall/btree => github.com/cosmos/btree v0.0.0-20250924232609-2c6195d95951
 
-replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-org/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee
+replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20260914091530-52ff14a25bee

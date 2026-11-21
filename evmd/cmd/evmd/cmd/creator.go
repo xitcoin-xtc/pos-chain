@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/xitcoin-org/pos-chain/evmd"
+	"github.com/xitcoin-xtc/pos-chain/evmd"
 
 	"cosmossdk.io/log/v2"
 	"github.com/cosmos/cosmos-sdk/store/v2"

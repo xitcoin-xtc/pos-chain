@@ -6,9 +6,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/hashicorp/go-metrics"
 
-	"github.com/xitcoin-org/pos-chain/contracts"
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
+	"github.com/xitcoin-xtc/pos-chain/contracts"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"

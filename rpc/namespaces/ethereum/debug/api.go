@@ -24,10 +24,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 

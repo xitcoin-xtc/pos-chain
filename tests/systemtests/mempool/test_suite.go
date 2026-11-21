@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 )
 
 const txPoolContentTimeout = 120 * time.Second

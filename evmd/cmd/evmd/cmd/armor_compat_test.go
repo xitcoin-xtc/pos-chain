@@ -6,9 +6,9 @@ import (
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/stretchr/testify/require"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	"github.com/xitcoin-org/pos-chain/crypto/hd"
-	"github.com/xitcoin-org/pos-chain/encoding"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/crypto/hd"
+	"github.com/xitcoin-xtc/pos-chain/encoding"
 )
 
 // Uses the same encoding setup as NewExampleApp, without starting an app,

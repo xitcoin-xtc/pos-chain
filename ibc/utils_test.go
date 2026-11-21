@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cosmosevmibc "github.com/xitcoin-org/pos-chain/ibc"
-	precompilestestutil "github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
+	cosmosevmibc "github.com/xitcoin-xtc/pos-chain/ibc"
+	precompilestestutil "github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v11/testing"

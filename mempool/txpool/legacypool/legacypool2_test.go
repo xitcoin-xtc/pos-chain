@@ -22,8 +22,8 @@ import (
 	"testing"
 
 	"cosmossdk.io/log/v2"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/reaplist"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/txtracker"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/txtracker"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/tracing"

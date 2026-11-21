@@ -12,11 +12,11 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend/mocks"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend/mocks"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

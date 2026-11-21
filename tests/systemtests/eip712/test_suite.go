@@ -10,7 +10,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	basesuite "github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	basesuite "github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 )
 
 type TestSuite struct {

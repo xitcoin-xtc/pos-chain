@@ -12,7 +12,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	protov2 "google.golang.org/protobuf/proto"
 
-	evmapi "github.com/xitcoin-org/pos-chain/api/cosmos/evm/vm/v1"
+	evmapi "github.com/xitcoin-xtc/pos-chain/api/cosmos/evm/vm/v1"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"

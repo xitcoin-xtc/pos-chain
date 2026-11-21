@@ -5,8 +5,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/xitcoin-org/pos-chain/wallets/accounts"
-	"github.com/xitcoin-org/pos-chain/wallets/ledger"
+	"github.com/xitcoin-xtc/pos-chain/wallets/accounts"
+	"github.com/xitcoin-xtc/pos-chain/wallets/ledger"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	signingtypes "github.com/cosmos/cosmos-sdk/types/tx/signing"

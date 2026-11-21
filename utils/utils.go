@@ -12,7 +12,7 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/spf13/viper"
 
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 	ibctransfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 
 	errorsmod "cosmossdk.io/errors"

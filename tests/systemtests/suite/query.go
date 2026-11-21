@@ -8,7 +8,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/xitcoin-org/pos-chain/tests/systemtests/clients"
+	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/clients"
 )
 
 // NonceAt returns the account nonce for the given account at the latest block

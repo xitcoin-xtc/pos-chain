@@ -5,8 +5,8 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"

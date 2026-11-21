@@ -10,10 +10,10 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

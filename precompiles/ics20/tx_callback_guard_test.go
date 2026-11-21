@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	callbackstypes "github.com/xitcoin-org/pos-chain/x/ibc/callbacks/types"
+	callbackstypes "github.com/xitcoin-xtc/pos-chain/x/ibc/callbacks/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"

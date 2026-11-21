@@ -10,9 +10,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/xuri/excelize/v2"
 
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/config"
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/types"
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/utils"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/config"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/types"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/utils"
 )
 
 const totalWidth = 63

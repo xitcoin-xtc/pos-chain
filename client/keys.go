@@ -7,8 +7,8 @@ import (
 
 	"github.com/cometbft/cometbft/libs/cli"
 
-	clientkeys "github.com/xitcoin-org/pos-chain/client/keys"
-	"github.com/xitcoin-org/pos-chain/crypto/hd"
+	clientkeys "github.com/xitcoin-xtc/pos-chain/client/keys"
+	"github.com/xitcoin-xtc/pos-chain/crypto/hd"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

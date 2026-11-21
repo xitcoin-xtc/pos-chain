@@ -10,13 +10,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-	servercfg "github.com/xitcoin-org/pos-chain/server/config"
-	testKeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/vm/keeper/testdata"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
+	servercfg "github.com/xitcoin-xtc/pos-chain/server/config"
+	testKeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/keeper/testdata"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

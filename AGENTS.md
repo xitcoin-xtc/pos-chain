@@ -15,8 +15,8 @@ Docs: https://evm.cosmos.network/
 
 This repo is two Go modules:
 
-- `./` — `github.com/xitcoin-org/pos-chain` — library code (modules, precompiles, RPC).
-- `./evmd/` — `github.com/xitcoin-org/pos-chain/evmd` — example chain binary and
+- `./` — `github.com/xitcoin-xtc/pos-chain` — library code (modules, precompiles, RPC).
+- `./evmd/` — `github.com/xitcoin-xtc/pos-chain/evmd` — example chain binary and
   integration tests. Has its own `go.mod`/`go.sum`.
 
 Top-level directories:

@@ -10,14 +10,14 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	commonfactory "github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/utils"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	testutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	commonfactory "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/utils"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	testutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 
 	"cosmossdk.io/math"
 

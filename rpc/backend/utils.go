@@ -19,11 +19,11 @@ import (
 	"github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/xitcoin-org/pos-chain/rpc/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	"github.com/xitcoin-org/pos-chain/utils"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/utils"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 

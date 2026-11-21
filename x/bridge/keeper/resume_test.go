@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/xitcoin-org/pos-chain/x/bridge/types"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 func pausedRouteForResume(t *testing.T) (sdkContext sdk.Context, k Keeper, config types.RouteConfig, keys []*ecdsa.PrivateKey) {

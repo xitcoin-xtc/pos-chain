@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	cmnfactory "github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	cmnnet "github.com/xitcoin-org/pos-chain/testutil/integration/base/network"
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
+	cmnfactory "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	cmnnet "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	"cosmossdk.io/math"
 

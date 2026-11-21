@@ -23,7 +23,7 @@ import (
 
 	stderrors "github.com/pkg/errors"
 
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
 )
 
 // StartGoTrace turns on tracing, writing to the given file.

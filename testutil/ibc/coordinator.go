@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 )
 

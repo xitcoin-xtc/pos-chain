@@ -6,10 +6,10 @@ import (
 
 	transferkeeper "github.com/cosmos/ibc-go/v11/modules/apps/transfer/keeper"
 	channelkeeper "github.com/cosmos/ibc-go/v11/modules/core/04-channel/keeper"
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
-	ibcutils "github.com/xitcoin-org/pos-chain/ibc"
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	erc20Keeper "github.com/xitcoin-org/pos-chain/x/erc20/keeper"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
+	ibcutils "github.com/xitcoin-xtc/pos-chain/ibc"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	erc20Keeper "github.com/xitcoin-xtc/pos-chain/x/erc20/keeper"
 
 	"cosmossdk.io/core/address"
 

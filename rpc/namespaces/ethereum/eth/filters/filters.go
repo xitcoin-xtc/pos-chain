@@ -15,9 +15,9 @@ import (
 
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 
-	"github.com/xitcoin-org/pos-chain/rpc/backend"
-	"github.com/xitcoin-org/pos-chain/rpc/types"
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	"github.com/xitcoin-xtc/pos-chain/rpc/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
 
 	"cosmossdk.io/log/v2"
 )

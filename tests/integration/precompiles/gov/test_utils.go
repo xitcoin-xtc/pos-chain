@@ -6,8 +6,8 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // callType constants to differentiate between

@@ -5,9 +5,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

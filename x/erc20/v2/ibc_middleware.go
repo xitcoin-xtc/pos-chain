@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"

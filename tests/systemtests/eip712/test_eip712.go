@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/xitcoin-org/pos-chain/tests/systemtests/suite"
+	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/suite"
 	"github.com/stretchr/testify/require"
 )
 

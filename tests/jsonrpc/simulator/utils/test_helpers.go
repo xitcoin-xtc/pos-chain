@@ -13,8 +13,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/config"
-	"github.com/xitcoin-org/pos-chain/tests/jsonrpc/simulator/types"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/config"
+	"github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator/types"
 )
 
 func SendTransaction(rCtx *types.RPCContext, from, to string, value *big.Int, isGeth bool) (string, error) {

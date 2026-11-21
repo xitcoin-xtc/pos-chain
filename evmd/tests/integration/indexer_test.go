@@ -3,9 +3,9 @@ package integration
 import (
 	"testing"
 
-	evm "github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/tests/integration/indexer"
-	testapp "github.com/xitcoin-org/pos-chain/testutil/app"
+	evm "github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/tests/integration/indexer"
+	testapp "github.com/xitcoin-xtc/pos-chain/testutil/app"
 )
 
 func TestKVIndexer(t *testing.T) {

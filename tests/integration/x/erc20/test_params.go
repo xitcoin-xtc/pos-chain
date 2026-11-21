@@ -1,7 +1,7 @@
 package erc20
 
 import (
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

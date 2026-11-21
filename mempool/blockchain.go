@@ -13,10 +13,10 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool/legacypool"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool/legacypool"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log/v2"

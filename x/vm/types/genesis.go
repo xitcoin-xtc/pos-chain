@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/xitcoin-org/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/utils"
 )
 
 // Validate performs a basic validation of a GenesisAccount fields.

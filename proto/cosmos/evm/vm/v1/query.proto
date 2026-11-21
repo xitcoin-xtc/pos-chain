@@ -10,7 +10,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/vm/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/vm/types";
 
 // Query defines the gRPC querier service.
 service Query {

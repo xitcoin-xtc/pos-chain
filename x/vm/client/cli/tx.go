@@ -12,8 +12,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/xitcoin-org/pos-chain/utils"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/core/address"
 

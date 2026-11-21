@@ -7,10 +7,10 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	protov2 "google.golang.org/protobuf/proto"
 
-	"github.com/xitcoin-org/pos-chain/ante/evm"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/ante/evm"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

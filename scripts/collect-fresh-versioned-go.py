@@ -8,7 +8,7 @@ import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / 'fresh-versioned-evidence'
-MODULE = 'github.com/xitcoin-org/pos-chain/evmd'
+MODULE = 'github.com/xitcoin-xtc/pos-chain/evmd'
 HARNESS = ROOT / 'fresh-versioned-harness'
 OUT.mkdir(exist_ok=True)
 RESULTS = {}

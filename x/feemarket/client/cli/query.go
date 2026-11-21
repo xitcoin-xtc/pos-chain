@@ -3,7 +3,7 @@ package cli
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	"github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"

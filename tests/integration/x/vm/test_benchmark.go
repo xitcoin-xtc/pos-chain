@@ -8,11 +8,11 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/require"
 
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	utiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	vmkeeper "github.com/xitcoin-org/pos-chain/x/vm/keeper"
-	"github.com/xitcoin-org/pos-chain/x/vm/keeper/testdata"
-	"github.com/xitcoin-org/pos-chain/x/vm/types"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	utiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	vmkeeper "github.com/xitcoin-xtc/pos-chain/x/vm/keeper"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/keeper/testdata"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkmath "cosmossdk.io/math"
 

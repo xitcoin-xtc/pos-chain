@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/xitcoin-org/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/utils"
 )
 
 // NewTransactionLogs creates a new NewTransactionLogs instance.

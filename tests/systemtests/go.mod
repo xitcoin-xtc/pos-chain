@@ -1,4 +1,4 @@
-module github.com/xitcoin-org/pos-chain/tests/systemtests
+module github.com/xitcoin-xtc/pos-chain/tests/systemtests
 
 go 1.26.10
 
@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/test-go/testify v1.1.4
 	github.com/tidwall/gjson v1.18.0
-	github.com/xitcoin-org/pos-chain v0.5.0-rc.0
+	github.com/xitcoin-xtc/pos-chain v0.5.0-rc.0
 )
 
 require (
@@ -302,5 +302,5 @@ require (
 
 replace (
 	github.com/ethereum/go-ethereum => github.com/cosmos/go-ethereum v1.17.2-cosmos-0
-	github.com/xitcoin-org/pos-chain => ../..
+	github.com/xitcoin-xtc/pos-chain => ../..
 )

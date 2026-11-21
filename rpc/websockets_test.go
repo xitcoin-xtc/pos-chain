@@ -17,9 +17,9 @@ import (
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	"github.com/xitcoin-org/pos-chain/rpc/stream"
-	rpctypes "github.com/xitcoin-org/pos-chain/rpc/types"
-	"github.com/xitcoin-org/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/rpc/stream"
+	rpctypes "github.com/xitcoin-xtc/pos-chain/rpc/types"
+	"github.com/xitcoin-xtc/pos-chain/server/config"
 
 	"cosmossdk.io/log/v2"
 
