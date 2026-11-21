@@ -86,7 +86,7 @@ class GateTests(unittest.TestCase):
         manifest = json.loads((ROOT / "docs/go-fork-provenance.json").read_text())
         modules = {}
         for path, version in {
-            SDK: "v0.54.4", GETH: "v1.16.9",
+            SDK: "v0.54.5", GETH: "v1.17.2",
             "github.com/cometbft/cometbft": "v0.39.4",
             "github.com/pion/dtls/v2": "v2.2.12", "golang.org/x/crypto": "v0.58.0",
             "github.com/pion/stun/v3": "v3.1.5", "github.com/pion/dtls/v3": "v3.1.4",
@@ -104,8 +104,8 @@ class GateTests(unittest.TestCase):
         self.cfg["modules"]["root"][LIBRARY] = {"Path": LIBRARY, "Main": True}
         self.cfg["modules"]["evmd"][LIBRARY] = {
             "Path": LIBRARY, "Version": manifest["root_library"]["version"],
-            "Sum": "h1:3ia4Sq6nwBn1DxtIk4uFJ5qHRj811E2GKmW+cyEEzxo=",
-            "GoModSum": "h1:CanDeGLRJbuTQguEvxW9Sl+quNmVuFRxYoR8tyA/ZAk=",
+            "Sum": "h1:c2OkjoXuZA4WYL0bwF2n4hgIDCw7m/0rrw3KKTkWZjU=",
+            "GoModSum": "h1:EA4zbBu+KFdpVp/tEfyy9/5C3H9xO/FuatoCPVuoBLM=",
         }
 
     def run_gate(self, module, expected, message="", scanned=False):
