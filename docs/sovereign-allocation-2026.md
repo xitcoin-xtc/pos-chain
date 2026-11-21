@@ -1,112 +1,120 @@
-# Xitcoin 2026 Sovereign Allocation Index
+# Xitchain 2026 Member State Seat Allocation
+
+Status: planned for mainnet, not implemented on chain
+
+Member State seats and their vesting are a planned policy. The running chain
+software does not implement them: it only caps the validator set at 258 and
+admits validators through the validator-admission module. Nothing in this
+document transfers tokens, activates a validator or reserves a position on
+chain today.
 
 ## Reference framework
 
 The index defines a deterministic reference allocation for the 193 United
 Nations Member States recorded at the 2026 reference date.
 
-The index records the fixed allocation assigned to each State position. It
+The index records the fixed allocation planned for each State position. It
 does not, by itself, transfer tokens, activate a validator or create automatic
-validator admission. Release requires an activated position and the protocol
-controls defined in `docs/sovereign-validator-framework.md`.
+validator admission. Release would require an activated position and the
+protocol controls described in `docs/sovereign-validator-framework.md`, which
+are not implemented yet.
 
-## Reserve and formula
+## Seat pool and formula
 
-The fixed reference reserve is 386,000,000 XTC:
+The seat pool is 386,000,000 XTC, the same amount as the sovereign reserve
+account of the running testnet genesis:
 
-- 289,500,000 XTC equal component (75%);
-- 96,500,000 XTC demographic component (25%).
-
-Each position receives an equal base of 1,500,000 XTC. The demographic
-component is calculated as follows:
+- 289,500,000 XTC equal share: 1,500,000 XTC for each of the 193 Member States;
+- 96,500,000 XTC population pool, shared in proportion to the square root of
+  each Member State's population.
 
 ```text
-allocation_i = 386,000,000 x (
-  0.75 / 193
-  + 0.25 x sqrt(population_i_2026)
-    / sum(sqrt(population_2026))
-)
+allocation_i = 1,500,000
+             + 96,500,000 x sqrt(population_i) / sum(sqrt(population_j))
 ```
 
-Calculations use deterministic decimal arithmetic. Final atomic-unit
-remainders are distributed by descending fractional remainder, with ISO3 code
-as the deterministic tie-breaker.
+Allocations are whole XTC. The units left by rounding are given to the largest
+fractional remainders, with the ISO3 code as the deterministic tie-breaker. The
+193 allocations total exactly 386,000,000 XTC.
 
-The aggregate allocation is exactly 386,000,000.000000000000000000 XTC.
-
-## Economic function
-
-The allocation is a finite protocol-funded contribution supporting an
-activated sovereign validator position. It is additional to, and never a
-substitute for, the State-provided minimum self-delegation.
-
-After activation, the fixed ISO3 allocation is intended to vest linearly over
-five years of eligible service under a schedule created specifically for that
-position. Activation may occur at any future date and requires no global
-calendar change. The schedule is subject to the institutional, staking,
-availability and security conditions defined by the sovereign validator
-framework. It does not create new supply.
-
-Ordinary staking rewards remain separate. After the finite allocation has
-fully vested, the validator continues under the same staking, commission,
-delegation, fee-distribution and slashing rules as other validators.
+| Example | Population (1 July 2026) | Allocation |
+| --- | ---: | ---: |
+| Smallest: Tuvalu | 9,362 | 1,511,216 XTC |
+| Median: Hungary | 9,585,818 | 1,858,884 XTC |
+| Largest: India | 1,476,625,576 | 5,954,251 XTC |
 
 ## Population reference
 
-Population values use the United Nations World Population Prospects 2024
-medium variant for 1 July 2026.
+Population values are the United Nations World Population Prospects 2024,
+medium variant, for 1 July 2026: the figure the United Nations publishes for
+each Member State, used as it is.
 
-Source: `https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/EXCEL_FILES/1_General/WPP2024_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT.xlsx`
+No territory is added to or removed from any Member State. China, for example,
+uses the figure the United Nations publishes for the Member State "China",
+without adding Hong Kong, Macao or Taiwan. Statistical records that are not
+Member States do not create positions and are not added to another position.
+This is a neutral technical rule, not a political or diplomatic determination.
 
-Source SHA-256: `98e34d9b65b53858cd08a57a566e45050b08093ad85ba5714fe6fbd78055ae6d`
+Source: <https://population.un.org/wpp/>
 
-## Statistical consolidation
+## Funding
 
-Statistical records without a separate reference position are included only
-where the consolidation table identifies a reference position.
+The pool is funded from the Xitchain reserve of Kcalb Ltd, held on Cronos by
+the wallet `0x4993F2012D72C3cFb67eBde946481b9dbFB3F254`. At mainnet the pool
+crosses the bridge one for one, locked on Cronos, so the total supply stays
+5,250,000,000 XTC. The allocation does not create new supply.
 
-Under the United Nations M49 statistical framework, the China position
-consolidates China, China Hong Kong SAR, China Macao SAR and China Taiwan
-Province of China.
+## Economic function
 
-Cook Islands, Niue and Western Sahara remain non-consolidated statistical
-records. They do not create additional reference positions and are not
-included in another position's population value.
+The allocation is a finite contribution supporting an activated Member State
+validator position. It is additional to, and never a substitute for, the
+State-provided minimum self-delegation of 5,000,000 XTC.
+
+After activation, the fixed allocation is intended to vest linearly over five
+years of eligible service (20% a year) under a schedule created for that
+position. Activation may occur at any future date and requires no global
+calendar change. The schedule is subject to the institutional, staking,
+availability and security conditions described in the sovereign validator
+framework.
+
+Ordinary staking rewards remain separate. After the allocation has fully
+vested, the validator continues under the same staking, commission,
+delegation, fee-distribution and slashing rules as other validators.
 
 ## Validator capacity
 
-The target protocol configuration provides:
+The planned configuration is:
 
-- 258 maximum validators;
-- 193 reserved Member-State positions;
+- 258 maximum validators (the only part enforced by the running software);
+- 193 Member State positions (planned, not implemented on chain);
 - 65 general validator positions;
 - 5,000,000 XTC minimum self-delegation for every activated validator.
 
-The 258-position capacity is conserved. A governance-approved increase in the
-reserved Member-State category reduces the general category by the same number
-of positions. A decrease increases the general category by the same number.
-Changing the total validator capacity requires a separate governance decision.
+The 258-position capacity is intended to be conserved. A governance-approved
+increase in the Member State category would reduce the general category by the
+same number of positions, and a decrease would increase it. Changing the total
+validator capacity would require a separate governance decision.
 
-Changes to the reserved registry require an on-chain governance proposal tied
-to an objective change in United Nations membership. A registry change cannot
-create tokens, rewrite vested allocations or reduce an active position's
-accrued rights. Any new allocation must be funded from an identified,
-unallocated reserve approved in the same governance process.
+Changes to the Member State registry would require an on-chain governance
+proposal tied to an objective change in United Nations membership. A registry
+change could not create tokens, rewrite vested allocations or reduce an active
+position's accrued rights. Any new allocation would have to be funded from an
+identified, unallocated reserve approved in the same governance process.
 
-The same minimum applies to founder, institutional and general validators. A State
-must supply this commitment independently; its sovereign allocation cannot be
+The same minimum applies to founder, institutional and general validators. A
+State must supply this commitment independently; its seat allocation cannot be
 counted toward the activation minimum.
 
 Validator admission remains subject to the validator-admission module. The
-development branch defines the 5,000,000 XTC protocol minimum but does not yet
-implement the sovereign position, institutional succession, mandate or
-activation-based five-year vesting controls. Those remaining controls must be
-implemented, tested and independently reviewed before activation.
+chain defines the 5,000,000 XTC protocol minimum but does not implement the
+Member State position registry, institutional succession, mandates or the
+activation-based five-year vesting. Those controls must be implemented, tested
+and independently reviewed before any activation.
 
 ## Institutional continuity
 
-Each ISO3 position remains attached to the relevant State. Successive
-administrations of that State may transfer the institutional governance and
+Each ISO3 position would remain attached to the relevant State. Successive
+administrations of that State could transfer the institutional governance and
 operating mandate to their authorized successors without replacing the State
 position, its history or its remaining allocation.
 
@@ -122,6 +130,12 @@ their source and licence are recorded.
 
 ## Canonical files
 
-- `networks/xitcoin-testnet-1/sovereign-allocation-index-2026.csv`
-- `networks/xitcoin-testnet-1/sovereign-allocation-index-2026.json`
-- `networks/xitcoin-testnet-1/territorial-consolidation-2026.csv`
+The canonical dataset and the script that produces it are published in the
+testnets repository:
+
+- [`xitcoin-testnet-1/sovereign-allocation-index-2026.csv`](https://github.com/xitcoin-xtc/testnets/blob/main/xitcoin-testnet-1/sovereign-allocation-index-2026.csv)
+- [`xitcoin-testnet-1/sovereign-allocation-index-2026.json`](https://github.com/xitcoin-xtc/testnets/blob/main/xitcoin-testnet-1/sovereign-allocation-index-2026.json)
+- [`xitcoin-testnet-1/compute-sovereign-allocation-2026.py`](https://github.com/xitcoin-xtc/testnets/blob/main/xitcoin-testnet-1/compute-sovereign-allocation-2026.py)
+
+Run `python3 compute-sovereign-allocation-2026.py --check` in that folder to
+recompute and compare the files.
