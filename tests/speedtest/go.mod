@@ -1,6 +1,6 @@
 module github.com/xitcoin-xtc/pos-chain/tests/speedtest
 
-go 1.26.10
+go 1.26.11
 
 replace (
 	// Match the immutable security fork qualified by the root module.
