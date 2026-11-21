@@ -4,16 +4,16 @@
   "security_acceptance": false,
   "forks": {
     "github.com/cosmos/cosmos-sdk": {
-      "required_version": "v0.54.4",
+      "required_version": "v0.54.5",
       "path": "github.com/xitcoin-xtc/cosmos-sdk",
-      "version": "v0.54.5-0.20260914091530-52ff14a25bee",
-      "commit": "52ff14a25bee524f0e48ae7f00664443bcb22335",
-      "base": "dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6",
-      "upstream": "https://github.com/cosmos/cosmos-sdk/commit/dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6",
-      "signed_source": "https://github.com/xitcoin-xtc/cosmos-sdk/commit/52ff14a25bee524f0e48ae7f00664443bcb22335",
-      "sum": "h1:ZbENildMBRKKYIJ4Otsm1Yk1WFPVfvitYnx3B+/JdnE=",
-      "go_mod_sum": "h1:/1rNNn6uo2iw2ZEp9N8GK9PdWgH0OmxDly8MEAArYPI=",
-      "patch_sha256": "dc46d5e1e8497222040f0688277217599ce884e52ebdc820ba65f6a79a74902c",
+      "version": "v0.54.5-0.20261121191520-bb5933a0bf0d",
+      "commit": "bb5933a0bf0d4a3f574daf20c32325ed2ae946bb",
+      "base": "4c5119fe2514241b963a6eb75972761797a5cb1d",
+      "upstream": "https://github.com/cosmos/cosmos-sdk/commit/4c5119fe2514241b963a6eb75972761797a5cb1d",
+      "signed_source": "https://github.com/xitcoin-xtc/cosmos-sdk/commit/bb5933a0bf0d4a3f574daf20c32325ed2ae946bb",
+      "sum": "h1:sPbBYj+vQwN3OaaPO0FfV7t/fR7lgHzaS+9JpnJomAE=",
+      "go_mod_sum": "h1:H0Gf65d9OmM+lboj6M4fjtxYc6Rf9VEcoJX/HtVJTDY=",
+      "patch_sha256": "bb3d33b267fb4b861db204250a41880ce3ea8b21bc540be55d7b4c361bf2cda3",
       "advisory_identity": "github.com/cosmos/cosmos-sdk",
       "licenses": [
         "LICENSE",
@@ -23,27 +23,24 @@
       "qualification": {
         "checks": [
           {
-            "run": 34788124256,
-            "scope": "tidy-all and unchanged full lint modules"
-          },
-          {
-            "run": 34791392591,
-            "scope": "corrected tests lint; old unit failure retained"
-          },
-          {
-            "run": 34793489922,
-            "scope": "CRC production build PASS; lint failure retained"
-          },
-          {
-            "run": 34794203018,
-            "scope": "corrected crypto lint and full test-unit PASS"
+            "scope": "local: go mod verify, go build ./..., go test ./crypto/... ./x/feegrant/... and x/gov/keeper TestSetHooks",
+            "result": "PASS"
           }
         ],
-        "qualification": "REQUIRED_UPSTREAM_CHECKS_PASSED"
+        "previous_qualification": "REQUIRED_UPSTREAM_CHECKS_PASSED for 52ff14a25bee (historical)",
+        "qualification": "LOCAL_CHECKS_PASSED_DOWNSTREAM_CI_REQUIRED"
+      },
+      "patch_sha256_method": "sha256 of `git diff --full-index --binary <base> <commit>`",
+      "rebase": {
+        "from_commit": "52ff14a25bee524f0e48ae7f00664443bcb22335",
+        "from_base": "dedeb7c80a91c47ae83f5352e29c3dd34e4a3fc6",
+        "pull_request": "https://github.com/xitcoin-xtc/cosmos-sdk/pull/1",
+        "cherry_pick_conflicts": false,
+        "commits_signed": false
       }
     },
     "github.com/ethereum/go-ethereum": {
-      "required_version": "v1.16.9",
+      "required_version": "v1.17.2",
       "path": "github.com/xitcoin-xtc/go-ethereum",
       "version": "v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4",
       "commit": "e09f79643cd464404876f3565ce0a8fd8c0aeb16",
@@ -274,8 +271,8 @@
     }
   ],
   "root_library": {
-    "version": "v0.1.0-testnet.4.0.20261121185321-cf8a79a7f495",
-    "commit": "cf8a79a7f4950e98f6c609e71b92f9b26222d659",
-    "signed_source": "https://github.com/xitcoin-xtc/pos-chain/commit/cf8a79a7f4950e98f6c609e71b92f9b26222d659"
+    "version": "v0.1.0-testnet.4.0.20261121194228-f449f3ec4b1c",
+    "commit": "f449f3ec4b1c28ab6d04dc4fe39b6d4071100444",
+    "signed_source": "https://github.com/xitcoin-xtc/pos-chain/commit/f449f3ec4b1c28ab6d04dc4fe39b6d4071100444"
   }
 }
