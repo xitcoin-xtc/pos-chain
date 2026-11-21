@@ -11,19 +11,20 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-// ControlDomain keeps governance signatures separate from transfer approvals.
-const ControlDomain = "xitcoin-bridge-testnet-control-v1"
-
+// Control actions with an on-chain handler. Pausing is a guardian action
+// (GuardianPauseAction), not a ControlAction, and there is no close-route
+// action: disabling a route is an update_route_config with enabled=false.
 const (
 	ActionUpdateRouteConfig = "update_route_config"
-	ActionPauseRoute        = "pause_route"
 	ActionResumeRoute       = "resume_route"
-	ActionCloseRoute        = "close_route"
 )
 
-// ControlAction describes a future route-governance action. PayloadHash binds
-// an action to its exact, separately canonicalised payload. This primitive has
-// no token, bank, reserve, minting, relayer, or transaction capability.
+// ControlAction describes a route-governance action approved by two current
+// bridge signers. PayloadHash binds an action to its exact, separately
+// canonicalised payload. Nonce must be exactly the last applied control nonce
+// plus one (see keeper.ControlNonce), so control actions apply in order and an
+// older signed action can never be applied after a newer one. This primitive
+// has no token, bank, reserve, minting, relayer, or transaction capability.
 type ControlAction struct {
 	RouteID       string `json:"route_id"`
 	Action        string `json:"action"`
@@ -38,7 +39,7 @@ func (a ControlAction) Validate() error {
 		return errors.New("invalid route ID")
 	}
 	switch a.Action {
-	case ActionUpdateRouteConfig, ActionPauseRoute, ActionResumeRoute, ActionCloseRoute:
+	case ActionUpdateRouteConfig, ActionResumeRoute:
 	default:
 		return errors.New("invalid bridge control action")
 	}
@@ -54,13 +55,18 @@ func (a ControlAction) Validate() error {
 	return nil
 }
 
-// ID is deterministic and contains every signed governance field.
-func (a ControlAction) ID() ([32]byte, error) {
+// ID is deterministic and contains every signed governance field and the
+// network-specific control domain of chainID.
+func (a ControlAction) ID(chainID string) ([32]byte, error) {
 	if err := a.Validate(); err != nil {
 		return [32]byte{}, err
 	}
+	domain, err := ControlDomain(chainID)
+	if err != nil {
+		return [32]byte{}, err
+	}
 	payload := strings.Join([]string{
-		ControlDomain,
+		domain,
 		a.RouteID,
 		a.Action,
 		strings.ToLower(strings.TrimSpace(a.PayloadHash)),
@@ -71,17 +77,22 @@ func (a ControlAction) ID() ([32]byte, error) {
 	return sha256.Sum256([]byte(payload)), nil
 }
 
-func ControlDigest(action ControlAction) (common.Hash, error) {
-	id, err := action.ID()
+// ControlDigest is keccak256(ControlDomain(chainID) || ID(chainID)).
+func ControlDigest(action ControlAction, chainID string) (common.Hash, error) {
+	id, err := action.ID(chainID)
 	if err != nil {
 		return common.Hash{}, err
 	}
-	return crypto.Keccak256Hash([]byte(ControlDomain), id[:]), nil
+	domain, err := ControlDomain(chainID)
+	if err != nil {
+		return common.Hash{}, err
+	}
+	return crypto.Keccak256Hash([]byte(domain), id[:]), nil
 }
 
 // VerifyControlApprovals requires two distinct current bridge signers. It does
-// not apply the action; execution will be added only after module integration.
-func VerifyControlApprovals(action ControlAction, bridgeSigners []string, signatures [][]byte) ([]common.Address, error) {
+// not apply the action; the keeper applies it after nonce and payload checks.
+func VerifyControlApprovals(action ControlAction, chainID string, bridgeSigners []string, signatures [][]byte) ([]common.Address, error) {
 	allowed, err := configuredSigners(bridgeSigners)
 	if err != nil {
 		return nil, err
@@ -89,7 +100,7 @@ func VerifyControlApprovals(action ControlAction, bridgeSigners []string, signat
 	if len(signatures) < RequiredApprovals || len(signatures) > MaxBridgeSigners {
 		return nil, fmt.Errorf("signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
 	}
-	digest, err := ControlDigest(action)
+	digest, err := ControlDigest(action, chainID)
 	if err != nil {
 		return nil, err
 	}

@@ -10,20 +10,25 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-const SigningDomain = "xitcoin-bridge-testnet-attestation-v1"
-
-// SigningDigest domain-separates bridge approvals from every other signature.
-func SigningDigest(attestation Attestation) (common.Hash, error) {
-	id, err := attestation.ID()
+// SigningDigest is keccak256(AttestationDomain(chainID) || PayloadHash(chainID)).
+// chainID is the Xitcoin chain ID of the destination chain that verifies the
+// approval, so the digest is network-specific twice: through the domain and
+// through the destination chain ID inside the payload.
+func SigningDigest(attestation Attestation, chainID string) (common.Hash, error) {
+	domain, err := AttestationDomain(chainID)
 	if err != nil {
 		return common.Hash{}, err
 	}
-	return crypto.Keccak256Hash([]byte(SigningDomain), id[:]), nil
+	payloadHash, err := attestation.PayloadHash(chainID)
+	if err != nil {
+		return common.Hash{}, err
+	}
+	return crypto.Keccak256Hash([]byte(domain), payloadHash[:]), nil
 }
 
 // VerifyApprovals recovers signer addresses and requires two distinct members
 // of the configured three-member bridge signer set.
-func VerifyApprovals(attestation Attestation, bridgeSigners []string, signatures [][]byte) ([]common.Address, error) {
+func VerifyApprovals(attestation Attestation, chainID string, bridgeSigners []string, signatures [][]byte) ([]common.Address, error) {
 	allowed, err := configuredSigners(bridgeSigners)
 	if err != nil {
 		return nil, err
@@ -31,7 +36,7 @@ func VerifyApprovals(attestation Attestation, bridgeSigners []string, signatures
 	if len(signatures) < RequiredApprovals || len(signatures) > MaxBridgeSigners {
 		return nil, fmt.Errorf("signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
 	}
-	digest, err := SigningDigest(attestation)
+	digest, err := SigningDigest(attestation, chainID)
 	if err != nil {
 		return nil, err
 	}

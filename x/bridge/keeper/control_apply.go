@@ -16,11 +16,10 @@ var (
 	ErrControlPayloadMismatch = errors.New("bridge control payload does not match route configuration")
 )
 
-var processedControlPrefix = []byte{0x04}
-
 // ApplyRouteConfigUpdate accepts a configuration only after two distinct
-// current bridge signers have approved its exact payload. It has no bank,
-// minting, reserve, relayer, or transfer authority.
+// current bridge signers have approved its exact payload with the next
+// sequential control nonce. The route ID and source chain ID are immutable.
+// It has no bank, minting, reserve, relayer, or transfer authority.
 func (k Keeper) ApplyRouteConfigUpdate(
 	ctx sdk.Context,
 	current types.RouteConfig,
@@ -34,7 +33,8 @@ func (k Keeper) ApplyRouteConfigUpdate(
 	if err := next.Validate(); err != nil {
 		return err
 	}
-	if action.Action != types.ActionUpdateRouteConfig || action.RouteID != current.RouteID || next.RouteID != current.RouteID {
+	if action.Action != types.ActionUpdateRouteConfig || action.RouteID != current.RouteID ||
+		next.RouteID != current.RouteID || next.SourceChainID != current.SourceChainID {
 		return ErrControlPayloadMismatch
 	}
 	if err := action.Validate(); err != nil {
@@ -51,28 +51,15 @@ func (k Keeper) ApplyRouteConfigUpdate(
 	if !strings.EqualFold(common.BytesToHash(payloadHash[:]).Hex(), action.PayloadHash) {
 		return ErrControlPayloadMismatch
 	}
-	id, err := action.ID()
-	if err != nil {
+	if err := k.requireNextControlNonce(ctx, action.Nonce); err != nil {
 		return err
 	}
-	store := ctx.KVStore(k.storeKey)
-	key := processedControlKey(id)
-	if store.Has(key) {
-		return ErrControlActionProcessed
-	}
-	if _, err := types.VerifyControlApprovals(action, current.BridgeSigners, signatures); err != nil {
+	if _, err := types.VerifyControlApprovals(action, ctx.ChainID(), current.BridgeSigners, signatures); err != nil {
 		return err
 	}
 	if err := k.SetRouteConfig(ctx, next); err != nil {
 		return err
 	}
-	store.Set(key, []byte{1})
+	k.setControlNonce(ctx, action.Nonce)
 	return nil
-}
-
-func processedControlKey(id [32]byte) []byte {
-	key := make([]byte, len(processedControlPrefix)+len(id))
-	copy(key, processedControlPrefix)
-	copy(key[len(processedControlPrefix):], id[:])
-	return key
 }

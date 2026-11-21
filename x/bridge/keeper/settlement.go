@@ -10,7 +10,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
@@ -21,6 +20,7 @@ var (
 	ErrOutstandingLimitExceeded = errors.New("bridge outstanding limit exceeded")
 	ErrInsufficientOutstanding  = errors.New("bridge outstanding amount is insufficient")
 	ErrMaximumSupplyExceeded    = errors.New("XTC maximum supply exceeded")
+	ErrBlockedDestination       = errors.New("bridge destination is a blocked module account")
 )
 
 func (k Keeper) OutstandingAmount(ctx sdk.Context) sdkmath.Int {
@@ -49,6 +49,9 @@ func (k Keeper) SettleInbound(ctx sdk.Context, config types.RouteConfig, attesta
 	recipient, err := sdk.AccAddressFromBech32(strings.TrimSpace(attestation.Destination))
 	if err != nil {
 		return fmt.Errorf("invalid Xitcoin destination: %w", err)
+	}
+	if k.bankKeeper.BlockedAddr(recipient) {
+		return ErrBlockedDestination
 	}
 	amount, ok := sdkmath.NewIntFromString(attestation.Amount)
 	if !ok || !amount.IsPositive() {
@@ -80,9 +83,9 @@ func (k Keeper) InitiateOutboundTransfer(ctx sdk.Context, config types.RouteConf
 	if err := k.RequireRouteAvailable(ctx, config); err != nil {
 		return [32]byte{}, 0, err
 	}
-	destination = strings.TrimSpace(destination)
-	if !common.IsHexAddress(destination) || common.HexToAddress(destination) == (common.Address{}) {
-		return [32]byte{}, 0, errors.New("invalid Cronos destination")
+	cronosDestination, err := types.ValidateCronosDestination(destination)
+	if err != nil {
+		return [32]byte{}, 0, err
 	}
 	amount, ok := sdkmath.NewIntFromString(amountText)
 	if !ok || !amount.IsPositive() {
@@ -103,7 +106,7 @@ func (k Keeper) InitiateOutboundTransfer(ctx sdk.Context, config types.RouteConf
 		return [32]byte{}, 0, err
 	}
 	nonce := k.nextOutboundNonce(ctx)
-	payload := strings.Join([]string{config.RouteID, sender.String(), strings.ToLower(common.HexToAddress(destination).Hex()), amount.String(), fmt.Sprintf("%d", nonce)}, "\x00")
+	payload := strings.Join([]string{config.RouteID, sender.String(), strings.ToLower(cronosDestination.Hex()), amount.String(), fmt.Sprintf("%d", nonce)}, "\x00")
 	id := sha256.Sum256([]byte(payload))
 	k.setOutstandingAmount(ctx, outstanding.Sub(amount))
 	return id, nonce, nil

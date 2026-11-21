@@ -8,10 +8,11 @@ import (
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
-var routeConfigKey = []byte{0x02}
+var routeConfigKey = types.KeyRouteConfig
 
-// SetRouteConfig stores only a validated configuration. It is intentionally
-// not exposed through a transaction until verified 2-of-3 governance exists.
+// SetRouteConfig stores only a validated configuration. Transactions reach it
+// only through MsgInitializeRouteConfig (authority, once, disabled and paused)
+// and a 2-of-3 update_route_config control action.
 func (k Keeper) SetRouteConfig(ctx sdk.Context, config types.RouteConfig) error {
 	if err := config.Validate(); err != nil {
 		return err

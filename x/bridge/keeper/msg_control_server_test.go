@@ -6,7 +6,6 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -17,7 +16,7 @@ import (
 func controlServerSetup(t *testing.T) (sdk.Context, Keeper, types.RouteConfig, []*ecdsa.PrivateKey, *ecdsa.PrivateKey) {
 	t.Helper()
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_msg_control_test")).WithBlockTime(time.Unix(1800000100, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_msg_control_test")).WithBlockTime(time.Unix(1800000100, 0))
 	k := NewKeeper(key)
 	keys := make([]*ecdsa.PrivateKey, 3)
 	signers := make([]string, 3)
@@ -42,7 +41,7 @@ func controlServerSetup(t *testing.T) (sdk.Context, Keeper, types.RouteConfig, [
 
 func signControl(t *testing.T, action types.ControlAction, keys []*ecdsa.PrivateKey) [][]byte {
 	t.Helper()
-	digest, err := types.ControlDigest(action)
+	digest, err := types.ControlDigest(action, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +60,7 @@ func TestMsgServerEmergencyPauseAndControlledResume(t *testing.T) {
 	server := NewMsgServer(k)
 	submitter := sdk.AccAddress(make([]byte, 20)).String()
 	pauseAction := types.GuardianPauseAction{RouteID: config.RouteID, Nonce: 1, ExpiresUnix: 1800003600}
-	pauseDigest, err := types.GuardianPauseDigest(pauseAction)
+	pauseDigest, err := types.GuardianPauseDigest(pauseAction, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,8 +79,8 @@ func TestMsgServerEmergencyPauseAndControlledResume(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resumeAction := types.ControlAction{RouteID: config.RouteID, Action: types.ActionResumeRoute, PayloadHash: common.BytesToHash(payloadHash[:]).Hex(), Nonce: 2, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600}
-	resume := &types.MsgResumeRoute{Submitter: submitter, RouteId: config.RouteID, Nonce: 2, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600, Signatures: signControl(t, resumeAction, keys)}
+	resumeAction := types.ControlAction{RouteID: config.RouteID, Action: types.ActionResumeRoute, PayloadHash: common.BytesToHash(payloadHash[:]).Hex(), Nonce: 1, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600}
+	resume := &types.MsgResumeRoute{Submitter: submitter, RouteId: config.RouteID, Nonce: 1, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600, Signatures: signControl(t, resumeAction, keys)}
 	if _, err := server.ResumeRoute(sdk.WrapSDKContext(ctx), resume); err != nil {
 		t.Fatalf("threshold resume rejected: %v", err)
 	}
@@ -99,7 +98,7 @@ func TestMsgServerRouteUpdateUsesCurrentSignerSet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	action := types.ControlAction{RouteID: current.RouteID, Action: types.ActionUpdateRouteConfig, PayloadHash: common.BytesToHash(payloadHash[:]).Hex(), Nonce: 3, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600}
+	action := types.ControlAction{RouteID: current.RouteID, Action: types.ActionUpdateRouteConfig, PayloadHash: common.BytesToHash(payloadHash[:]).Hex(), Nonce: 1, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600}
 	msg := &types.MsgUpdateRouteConfig{Submitter: sdk.AccAddress(make([]byte, 20)).String(), RouteId: next.RouteID, BridgeSigners: next.BridgeSigners, Guardian: next.Guardian, MaxTransferAmount: next.MaxTransferAmount, DailyLimit: next.DailyLimit, MaxOutstandingAmount: next.MaxOutstandingAmount, Enabled: next.Enabled, Nonce: action.Nonce, NotBeforeUnix: action.NotBeforeUnix, ExpiresUnix: action.ExpiresUnix, Signatures: signControl(t, action, keys)}
 	if _, err := NewMsgServer(k).UpdateRouteConfig(sdk.WrapSDKContext(ctx), msg); err != nil {
 		t.Fatalf("approved route update rejected: %v", err)

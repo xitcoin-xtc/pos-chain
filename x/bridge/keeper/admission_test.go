@@ -6,7 +6,6 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
@@ -14,7 +13,7 @@ import (
 
 func TestAdmitAttestationRequiresMatchingEnabledRouteAndTwoSignatures(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_admission_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_admission_test")).WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 
 	first, err := crypto.GenerateKey()
@@ -42,10 +41,10 @@ func TestAdmitAttestationRequiresMatchingEnabledRouteAndTwoSignatures(t *testing
 	}
 	attestation := types.Attestation{
 		RouteID: config.RouteID, Direction: types.DirectionCronosToXitcoin,
-		SourceChainID: "cronos-testnet", SourceRef: "0x" + strings.Repeat("a", 64),
+		SourceChainID: "338", SourceRef: "0x" + strings.Repeat("a", 64),
 		Nonce: 1, Destination: "xitcoin1testdestination", Amount: "10", DeadlineUnix: 1800003600,
 	}
-	digest, err := types.SigningDigest(attestation)
+	digest, err := types.SigningDigest(attestation, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +74,7 @@ func TestAdmitAttestationRequiresMatchingEnabledRouteAndTwoSignatures(t *testing
 
 func TestAdmitAttestationRejectsDisabledOrMismatchedRouteWithoutRecording(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_admission_reject_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_admission_reject_test")).WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 	first, err := crypto.GenerateKey()
 	if err != nil {
@@ -94,7 +93,7 @@ func TestAdmitAttestationRejectsDisabledOrMismatchedRouteWithoutRecording(t *tes
 		t.Fatal(err)
 	}
 	config := types.RouteConfig{RouteID: "cronos-testnet-xitcoin-testnet", BridgeSigners: []string{crypto.PubkeyToAddress(first.PublicKey).Hex(), crypto.PubkeyToAddress(second.PublicKey).Hex(), crypto.PubkeyToAddress(third.PublicKey).Hex()}, Guardian: crypto.PubkeyToAddress(guardian.PublicKey).Hex(), MaxTransferAmount: "10", DailyLimit: "15", MaxOutstandingAmount: "100"}
-	attestation := types.Attestation{RouteID: config.RouteID, Direction: types.DirectionCronosToXitcoin, SourceChainID: "cronos-testnet", SourceRef: "0x" + strings.Repeat("b", 64), Nonce: 1, Destination: "xitcoin1testdestination", Amount: "1", DeadlineUnix: 1800003600}
+	attestation := types.Attestation{RouteID: config.RouteID, Direction: types.DirectionCronosToXitcoin, SourceChainID: "338", SourceRef: "0x" + strings.Repeat("b", 64), Nonce: 1, Destination: "xitcoin1testdestination", Amount: "1", DeadlineUnix: 1800003600}
 
 	if _, err := k.AdmitAttestation(ctx, config, attestation, nil); err != ErrRouteDisabled {
 		t.Fatalf("disabled route error = %v", err)
