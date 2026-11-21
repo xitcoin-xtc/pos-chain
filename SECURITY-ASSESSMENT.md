@@ -1,5 +1,10 @@
 # SECURITY-ASSESSMENT
 
+> **Current review:** [internal review of 2026-11-21](docs/security-review-2026-11-21.md)
+> (record: [docs/security-assessment.json](docs/security-assessment.json)). The text
+> below is the September 2026 assessment of the six advisory dispositions; it is
+> kept unchanged as history, apart from the organisation name.
+
 Assessment date: **2026-09-14 UTC**. Scope: xitcoin-xtc/pos-chain PR44,
 starting head `41da8db5ada202b0bb0a27016ad11dac4b2068b5`, with the exact
 production sources, dependency locks and fixtures qualified at

@@ -1,21 +1,21 @@
 {
   "schema": 2,
-  "assessed_on": "2026-11-04",
-  "review_by": "2026-11-11",
-  "assessment_author": "INO / automated technical remediation review (not independent)",
+  "assessed_on": "2026-11-21",
+  "review_by": "2026-11-28",
+  "assessment_author": "Internal automated technical review under the Thomas-Cabrit maintainer account (not independent)",
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "Root/evmd qualified security graph plus speedtest alignment to the same immutable forks; fresh three-module technical qualification required; no runtime deployment",
-  "assessment_sha256": "ff26400b5740b20e6ec008f281a836e130e5b10c73ee5ec39e16f3173f7f06e5",
-  "provenance_sha256": "574885d401b82d0de35c67254d1dc137a1c2461dca415607d66dcbe51ea7807e",
+  "scope": "Current main 9e49329 plus the organisation rename to xitcoin-xtc and the klauspost/compress, OpenTelemetry and Go 1.26.11 patches; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
+  "assessment_sha256": "4499c5bf32a6d9dd87594a7686424e3e3e11707c43618b6148b9258c13f30f69",
+  "provenance_sha256": "2104ae7af18801ca41ac804ea79ee439f006423ad9317310ab3483b5cc852d3e",
   "lock_sha256": {
-    "go.mod": "a7bc1c9bf6822695e0e4ee78991353273e42edf82e758a33bfb90b91e7dd1c9d",
-    "go.sum": "bd0dd3b04f74c01a3e8d6f16093cd0df8cb843abe3c685b7949ef889c4507f39",
-    "evmd/go.mod": "d3e8f32beaf7b2a80b4428b4e3afb96cf97570a08c129b2675668437227720b5",
-    "evmd/go.sum": "34d4f55289d59810d9b4eb57354b3b069bf82b22fa43d184b75da8ddc3a13bb8",
-    "tests/speedtest/go.mod": "5c06ba19586245c6f56ce99d1e534ca5d7a7d41f6e0bc64cca51a55bd7faa4ba",
-    "tests/speedtest/go.sum": "5a2ddcea0569b68e19804ed8159651ab4c466f9c9a9db264ad114a88356c816b"
+    "go.mod": "d7b5c3f6aec0cd6ae09cdac1f6d38fb47f17b5e480a3d610105a2c4db52068e8",
+    "go.sum": "4ceac88a254cfcf659abeb2a82e5e81db961f20740e66f2106fb65a0e489459c",
+    "evmd/go.mod": "7e1022298751f3c144342a9d6e07e59bcd0976be725f18676f4545084ccbe6dc",
+    "evmd/go.sum": "d325b382fb2ba01b71d774ace3cacafa7576f7413bf0f8ffcff6c2e932c9b00c",
+    "tests/speedtest/go.mod": "ab9c8b94456fac57020cc9fcd6125c22105183be0afd970d44165a149749fd1b",
+    "tests/speedtest/go.sum": "d60c99e0491e7c47e4ab79765de6bd89e107956cab5e698649369782d4d2e1c0"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
@@ -25,55 +25,39 @@
     "GO-2026-4479": "OBSOLETE_PRODUCTION_PATH_REMOVED_V3_FIXED",
     "GO-2026-5932": "OBSOLETE_ARMOR_REPLACED"
   },
-  "expiry_reason": "Seven-day re-examination window for metadata discrepancies and bounded parser/platform evidence; no automatic renewal.",
+  "expiry_reason": "Seven-day re-examination window, the same length as the previous review; the known open findings listed in the review document are being changed in follow-up pull requests; no automatic renewal.",
   "accepted_scanner_advisories": [],
-  "assessment_document": "docs/security-review-2026-11-04.md",
-  "historical_assessment": "docs/security-assessment-2026-09-14.json",
-  "go_source_sha256": "2bca378ea1caa1a4290d54099c6a1ed7f1993d53e63dd318b97f78a6e290bb32",
-  "go_source_input_count": 1108,
-  "fresh_evidence": {
+  "assessment_document": "docs/security-review-2026-11-21.md",
+  "historical_assessment": "docs/security-assessment-2026-11-04.json",
+  "previous_review": {
+    "assessment_record_sha256": "1fa30156adcbb73d019713738f6869880dc5a1be0530dd915e6085021367431b",
+    "assessed_on": "2026-11-04",
+    "review_by": "2026-11-11",
+    "expired": true
+  },
+  "patched_advisories": {
+    "GO-2026-6865": "github.com/klauspost/compress 1.18.7 -> 1.20.5",
+    "GO-2026-6859": "Go 1.26.10 -> 1.26.11",
+    "GHSA-q7gw-24fr-5p69": "go.opentelemetry.io/otel/sdk, trace and sdk/log -> 1.47.0"
+  },
+  "local_evidence": {
+    "toolchain": "go1.26.11",
     "full_tests": {
-      "run": 41774520680,
-      "head": "f28a80ad66bdb8fc593c992a89d02ce42677f268",
-      "tested_packages": [
-        54,
-        21
-      ]
+      "root_packages_ok": 54,
+      "evmd_packages_ok": 21
     },
-    "versioned_binary": {
-      "run": 41776289042,
-      "head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3"
-    },
-    "current_head_qualification": "Mandatory fresh root/evmd matrix plus Speedtest graph and command workflow; no historical artifact reuse"
+    "govulncheck": "v1.7.0 root, evmd and symbol-bearing binary: 0 called, 0 imported-package findings; module-level GO-2026-5932 and GO-2025-3442",
+    "evmd_root_anchor": "cf8a79a7f4950e98f6c609e71b92f9b26222d659"
   },
-  "reviewed_go_source_evidence_head": "694bc90e1420f34f3bbf4f749d5d73ff32028db3",
-  "qualification_status": "Speedtest alignment: fresh root/evmd checkout+published matrix and strict speedtest command qualification required before merge",
-  "previous_pr55_review": {
-    "assessment_record_sha256": "64c60b77602041eb9e3eb688d2d3e07f460106cc521b0112f73306d2534420ac",
-    "go_source_sha256": "5b60c23658b25e9e9cb131ff7b252e589bd156a45156f66e55f74188c97abd6e",
-    "merge_commit": "312905ed8cc2149500410afd85ecc6794062f9cd",
-    "qualification_run": 41798986561
-  },
-  "jose_patch": {
-    "advisory": "GHSA-mgcc-cww5-fp2q",
-    "from": "v4.1.4",
-    "to": "v4.1.6",
-    "max_rsa_modulus_bits": 4096,
-    "upstream_rsa_validation_tests": "TestRsaKeyChecks -count=1 PASS",
-    "effective_graph_delta": "Only JOSE changes in root,evmd,speedtest",
-    "fresh_current_head_qualification_required": true
-  },
-  "previous_jose_review": {
-    "assessment_record_sha256": "545d3969c41a66134cf10e003b637c2b2e8d2998ac578facbb6a6ff546c90e5e",
-    "qualification_run": 41812681884,
-    "head": "3b1d21674fbe8e8bc71d0aae9499ca475d8f7bd8",
-    "historical_only": true
-  },
-  "speedtest_alignment": {
-    "root_go_sources_and_locks_unchanged": true,
-    "all_six_replacements_match_root": true,
-    "obsolete_pion_v2_requirements_removed_by_go_mod_tidy": true,
-    "full_current_qualification_required": true,
-    "expiry_extended": false
-  }
+  "current_head_qualification": "Mandatory fresh root/evmd checkout and published-module matrix, strict source and binary scans and the speedtest command qualification on the pull request head; no historical artifact reuse",
+  "known_open_findings": [
+    "validatoradmission: nested authz MsgExec bypass of approval and minimum self-delegation",
+    "cosmos/evm 2026-11-02 advisories not yet ported (GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8; GHSA-c6xv and GHSA-9xwc to check)",
+    "node-local unsafe-enable-governance-proposal-submission affects consensus paths",
+    "testnet multisig hard-coded as authority; CLI defaults to the testnet EVM chain id",
+    "Cosmos SDK fork based on retracted v0.54.4; v0.54.5 feegrant fix pending (state-breaking)",
+    "go-ethereum requirement v1.16.9 does not describe the v1.17.2 Cosmos Geth replacement"
+  ],
+  "go_source_sha256": "3b0c4a8b5ce0fdf279aaf2db9da609aceb095ee26aab46bb5a983056826f1542",
+  "go_source_input_count": 1108
 }

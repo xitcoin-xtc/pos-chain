@@ -2,7 +2,7 @@ name: Versioned Go integration qualification
 on:
   pull_request:
     branches: [main]
-    paths: ['go.mod', 'go.sum', 'evmd/**', '**/*.go', 'docs/go-fork-provenance.json', 'docs/versioned-go-qualification-resume.json', 'scripts/verify-go-fork-provenance.py', 'scripts/qualify-versioned-go.py', 'scripts/qualify-current-go.py', 'docs/security-review-2026-11-04.md', 'scripts/verify-versioned-go-reuse.py', 'scripts/test-versioned-go-reuse.py', 'docs/versioned-go-reuse.json', 'SECURITY-ASSESSMENT.md', 'docs/security-assessment.json', 'scripts/verify-security-assessment.py', 'scripts/run-govulncheck.sh', 'scripts/test-govulncheck-gate.py', 'SECURITY.md', 'README.md', 'AGENTS.md', 'UPSTREAMS.md', 'docs/development.md', 'docs/go-fork-provenance.md', '.github/workflows/versioned-go-qualification.yml']
+    paths: ['go.mod', 'go.sum', 'evmd/**', '**/*.go', 'docs/go-fork-provenance.json', 'docs/versioned-go-qualification-resume.json', 'scripts/verify-go-fork-provenance.py', 'scripts/qualify-versioned-go.py', 'scripts/qualify-current-go.py', 'docs/security-review-2026-11-21.md', 'scripts/verify-versioned-go-reuse.py', 'scripts/test-versioned-go-reuse.py', 'docs/versioned-go-reuse.json', 'SECURITY-ASSESSMENT.md', 'docs/security-assessment.json', 'scripts/verify-security-assessment.py', 'scripts/run-govulncheck.sh', 'scripts/test-govulncheck-gate.py', 'SECURITY.md', 'README.md', 'AGENTS.md', 'UPSTREAMS.md', 'docs/development.md', 'docs/go-fork-provenance.md', '.github/workflows/versioned-go-qualification.yml']
   workflow_dispatch:
 permissions:
   contents: read

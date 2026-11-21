@@ -2,7 +2,7 @@ name: Speedtest security qualification
 on:
   pull_request:
     branches: [main]
-    paths: ['tests/speedtest/**', 'go.mod', 'go.sum', 'evmd/**', '**/*.go', 'docs/security-assessment.json', 'docs/security-review-2026-11-04.md', 'scripts/verify-security-assessment.py', 'scripts/qualify-speedtest.py', '.github/workflows/speedtest-security.yml']
+    paths: ['tests/speedtest/**', 'go.mod', 'go.sum', 'evmd/**', '**/*.go', 'docs/security-assessment.json', 'docs/security-review-2026-11-21.md', 'scripts/verify-security-assessment.py', 'scripts/qualify-speedtest.py', '.github/workflows/speedtest-security.yml']
   workflow_dispatch:
 permissions:
   contents: read

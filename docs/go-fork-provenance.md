@@ -49,7 +49,7 @@ Historical R1–R3 gate validation: the then-current `python3 scripts/test-govul
 
 Historical patch-only evidence remains under `security-remediation-20260913` and at signed head `52c0ea290645c4b53b5648178f7176dfdc5a401c`. It describes the earlier local graph; current locks and this provenance file describe the versioned candidate. The complete integration commit and the root library revision consumed by evmd are recorded separately to avoid a self-referential Go version.
 
-Root library consumed by evmd: `v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6`, signed commit `3280cdeee8f6d362c332572d14ae26a7ec75b8d4`. Root Go sources and locks match that immutable library revision.
+Root library consumed by evmd: `v0.1.0-testnet.4.0.20261121185321-cf8a79a7f495`, commit `cf8a79a7f4950e98f6c609e71b92f9b26222d659` (not GPG-signed), recorded in `go-fork-provenance.json` and reviewed in [the 2026-11-21 internal review](security-review-2026-11-21.md). The previous anchor was signed commit `3280cdeee8f6d362c332572d14ae26a7ec75b8d4` (`v0.1.0-testnet.4.0.20260914101327-3280cdeee8f6`), published before the organisation rename.
 
 The first full versioned evmd run exposed stale integration fixtures: Cosmos-prefixed local addresses, an invalid public Amino address checksum, and permissionless ERC20 scenarios relying on a different genesis default. Four test helper files now preserve address bytes under the configured prefix, use valid local receivers, and set the tested permissionless baseline explicitly. Assertions and production behavior are unchanged. Local preflight passed the entire ERC20 suite and then Ledger after the fixture checksum correction; initial failures are retained.
 
