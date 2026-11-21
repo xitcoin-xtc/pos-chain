@@ -1,13 +1,18 @@
-# Xitcoin Sovereign Validator Framework
+# Xitchain Sovereign Validator Framework
 
-Status: proposed protocol policy, not deployed
-Reference date: 20 August 2026
+Status: planned for mainnet, not implemented on chain
+Reference date: 20 August 2026 (seat amounts aligned on 22 November 2026)
+
+Member State seats and their vesting are planned. The running chain software
+does not implement them: it only caps the validator set at 258 and admits
+validators through the validator-admission module. No position is reserved,
+funded or vesting on chain today.
 
 ## Purpose
 
-The framework reserves one institutional validator position for each of the
-193 United Nations Member States recorded in the Xitcoin 2026 Sovereign
-Allocation Index. A position is attached permanently to the relevant State, identified
+The framework plans one institutional validator position for each of the
+193 United Nations Member States recorded in the Xitchain 2026 Member State
+Seat Allocation (`docs/sovereign-allocation-2026.md`). A position is attached permanently to the relevant State, identified
 by its canonical ISO3 code. It is not attached to a president, minister,
 administration, signatory or infrastructure provider.
 
@@ -18,26 +23,26 @@ allocation.
 
 ## Validator capacity
 
-The target validator capacity is:
+The planned validator capacity is:
 
-- 193 reserved Member-State positions;
+- 193 Member-State positions (planned, not implemented on chain);
 - 65 general validator positions;
 - 258 positions in total;
 - 5,000,000 XTC minimum self-delegation for every activated validator.
 
 The same minimum applies to founder, institutional and general validators.
 The total capacity remains fixed at 258 positions. A governance-approved
-increase in the reserved Member-State category reduces the general category
+increase in the Member-State category would reduce the general category
 one-for-one; a decrease increases the general category one-for-one. Any change
 to the total capacity requires a separate governance decision.
 
-The reserved registry follows the published United Nations Member-State list.
-Adding or removing a reserved position requires an on-chain proposal supported
+The planned registry follows the published United Nations Member-State list.
+Adding or removing a Member-State position would require an on-chain proposal supported
 by an objective membership change. The proposal must identify any allocation
 funding and cannot create supply, rewrite vested allocations or reduce accrued
 rights.
 
-A reserved Member-State position is not active and receives no reward while its
+A Member-State position is not active and receives no reward while its
 admission conditions are not satisfied.
 
 ## Institutional control
@@ -76,15 +81,27 @@ verified:
 The sovereign allocation does not satisfy the minimum self-delegation. The
 State must provide the required commitment independently.
 
-## Sovereign allocation reserve
+## Seat pool
 
-The fixed reserve remains 386,000,000 XTC. The allocation of each ISO3
-position remains calculated by the canonical 75% equal / 25% demographic
-formula recorded in `docs/sovereign-allocation-2026.md` and the associated CSV
-and JSON files.
+The seat pool is 386,000,000 XTC: 1,500,000 XTC for each of the 193 Member
+States (289,500,000 XTC) plus 96,500,000 XTC shared in proportion to the square
+root of each Member State's population. Populations are the United Nations
+World Population Prospects 2024 figures (medium variant, 1 July 2026) published
+for each Member State, used as they are, with no territory added to or removed
+from any State. Allocations are whole XTC, rounded by the largest-remainder
+method, and total exactly 386,000,000 XTC. They range from 1,511,216 XTC
+(Tuvalu) to 5,954,251 XTC (India), with a median of 1,858,884 XTC (Hungary).
+The method is recorded in `docs/sovereign-allocation-2026.md`; the canonical
+dataset and the script that produces it are in the
+[testnets repository](https://github.com/xitcoin-xtc/testnets/tree/main/xitcoin-testnet-1).
 
-The allocation is a finite protocol-funded support grant for an activated
-sovereign validator position. It is separate from ordinary validator rewards,
+The pool is funded from the Xitchain reserve of Kcalb Ltd, held on Cronos by
+the wallet `0x4993F2012D72C3cFb67eBde946481b9dbFB3F254`. At mainnet the pool
+crosses the bridge one for one, locked on Cronos, so the total supply stays
+5,250,000,000 XTC.
+
+The allocation is a finite support grant for an activated sovereign validator
+position. It is separate from ordinary validator rewards,
 does not create new supply and does not grant automatic admission.
 
 ## Activation-based five-year release
@@ -124,10 +141,9 @@ conditions, including:
 A failed condition pauses future accrual and opens a defined remediation
 period. Reactivation resumes the schedule without retroactive accrual for the
 suspended interval. It must not permit arbitrary seizure of an amount already
-vested. Cancelled or unvested amounts remain in the sovereign allocation
-reserve.
+vested. Cancelled or unvested amounts remain in the seat pool.
 
-An inactive position's allocation remains reserved in the protocol account
+An inactive position's allocation remains in the seat pool
 until valid activation or an explicit network-governance decision governed by
 the published reserve rules. Company availability must not be required for the
 vesting calculation to continue.
