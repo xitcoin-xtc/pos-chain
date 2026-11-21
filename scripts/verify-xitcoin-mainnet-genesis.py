@@ -11,6 +11,9 @@ from pathlib import Path
 ATOMIC_PER_XTC = 10**18
 MAX_SUPPLY_ATOMIC = 5_250_000_000 * ATOMIC_PER_XTC
 VALIDATOR_STAKE_ATOMIC = 5_000_000 * ATOMIC_PER_XTC
+# The Xitcoin Testnet 2-of-3 administrative multisig. evmd/config/network.go
+# refuses it as the mainnet authority; it must not appear in a mainnet genesis.
+TESTNET_ADMINISTRATIVE_MULTISIG = "xtc1vza8zsgvrfwmve084ytd8xqdkkm7u9e5csctc2"
 EXPECTED_MONIKERS = {
     "Xitcoin Atlas",
     "Xitcoin Borealis",
@@ -78,6 +81,8 @@ def validate(candidate, testnet, expected_bootstrap):
     serialized = json.dumps(candidate, sort_keys=True)
     if "xitcoin-testnet" in serialized:
         fail("testnet identity remains in candidate genesis")
+    if TESTNET_ADMINISTRATIVE_MULTISIG in serialized:
+        fail("candidate genesis contains the testnet administrative multisig")
 
     app = require(candidate, "app_state")
     if require(app, "bridge", "paused") is not True:
@@ -198,6 +203,10 @@ def validate(candidate, testnet, expected_bootstrap):
         fail("validator-admission allowlist must exactly match the four gentxs")
     if admission["authority"] == test_authority:
         fail("candidate reuses the testnet validator-admission authority")
+    for module in ("validator_admission", "validator_incentives"):
+        authority = require(app, module, "authority")
+        if not authority or authority in {test_authority, TESTNET_ADMINISTRATIVE_MULTISIG}:
+            fail(f"{module}.authority must be the reviewed mainnet authority, not empty or the testnet multisig")
     if admission["minimum_self_delegation"] != f"{VALIDATOR_STAKE_ATOMIC}axtc":
         fail("validator-admission minimum self-delegation is inconsistent")
 

@@ -126,7 +126,12 @@ func NewRootCmd() *cobra.Command {
 				return err
 			}
 
-			customAppTemplate, customAppConfig := config.InitAppConfig(config.NativeDenom, config.TestnetEVMChainID) // TODO:VLAD - Remove this
+			// app.toml defaults follow the network: 101089 for the testnet,
+			// 101088 for mainnet, the testnet value for any other chain.
+			customAppTemplate, customAppConfig := config.InitAppConfig(
+				config.NativeDenom,
+				config.DefaultEVMChainID(initClientCtx.ChainID),
+			)
 			customTMConfig := initCometConfig()
 
 			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
