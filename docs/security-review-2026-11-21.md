@@ -119,3 +119,42 @@ inputs. No scanner exception is accepted. The review window is
 review, because the open findings above are being changed in the following
 days. There is no automatic renewal; after 2026-11-28 the gate fails again
 until a new review is written.
+
+## Follow-up: Cosmos SDK v0.54.5 base and dependency refresh — 2026-11-21
+
+This section reviews the second pull request of the window. It closes open
+findings 5 and 6 above.
+
+- **SDK fork base.** The fork's single armor commit was cherry-picked without
+  conflicts from v0.54.4 onto upstream v0.54.5 as `bb5933a0bf0d…`
+  ([xitcoin-xtc/cosmos-sdk#1](https://github.com/xitcoin-xtc/cosmos-sdk/pull/1),
+  base branch identical to the upstream tag). Upstream v0.54.5 differs from
+  v0.54.4 by the x/feegrant queue migration (consensus version 2 to 3),
+  dependency updates and retractions of v0.54.0 to v0.54.4. In the fork, `go mod
+  verify`, `go build ./...` and the crypto, keyring, armor-compatibility and
+  feegrant tests pass. The requirement now names v0.54.5. The fork has no
+  v0.54.5 tag, so the pseudo-version is computed from v0.54.4
+  (`v0.54.5-0.20261121191520-bb5933a0bf0d`). Its contents are v0.54.5 plus the
+  armor patch. Mirroring the upstream tag into the fork is left to the owner.
+- **State-breaking.** The feegrant migration changes state. A new upgrade
+  handler, `xitcoin-security-hardening-v1`, runs the release's module
+  migrations and adds no store. The testnet keeps its current binary until an
+  upgrade is scheduled by its operators.
+- **go-ethereum requirement.** It now names v1.17.2, the upstream release that
+  the Cosmos Geth fork is based on. The replacement and its sums are
+  unchanged. No GitHub advisory covers 1.17.2 at the time of review.
+- **Routine updates** from the open Dependabot groups: btcutil 1.2.0 (pulls
+  btcec/v2 2.5.0, used here only for HD key derivation, not consensus
+  signature checks), ledger-cosmos-go 1.0.1, deque 1.2.3, go-metrics 0.7.0,
+  grocksdb 1.11.1 (only with the `rocksdb` build tag), gjson 1.20.3, sjson
+  1.2.9, otelgrpc 0.72.0, x/sync 0.25.0, x/text 0.44.0, grpc 1.85.0, client/v2
+  2.11.0, pflag 1.1.0, and the test libraries ginkgo, gomega and testify.
+  `golang.org/x/crypto` stays at 0.58.0, because 0.59.0 removes the openpgp
+  package that the armor compatibility test uses as its oracle.
+- **Evidence.** Full root (54 packages) and evmd (21 packages) tests pass
+  locally. `govulncheck` root, evmd and binary scans report zero called
+  vulnerabilities. The module-level records are the same as above. The fork
+  provenance verifies in both modules. The evmd anchor is
+  `f449f3ec4b1c28ab6d04dc4fe39b6d4071100444`, which is not GPG-signed.
+
+The review window is unchanged and no scanner exception is added.
