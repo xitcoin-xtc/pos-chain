@@ -28,6 +28,7 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	GetSupply(ctx context.Context, denom string) sdk.Coin
+	BlockedAddr(addr sdk.AccAddress) bool
 }
 
 // Authority returns the account allowed to initialize the first route.
@@ -70,8 +71,10 @@ func (k Keeper) MarkProcessed(ctx sdk.Context, id [32]byte) {
 	ctx.KVStore(k.storeKey).Set(processedKey(id), []byte{1})
 }
 
-// ConsumeAttestation atomically reserves a valid attestation identifier in the
-// transaction state. A second call for the same ID fails before settlement.
+// ConsumeAttestation atomically reserves the source-deposit replay key of a
+// valid attestation in the transaction state. A second call for the same
+// source deposit fails before settlement, whatever its deadline or other
+// signed fields.
 func (k Keeper) ConsumeAttestation(ctx sdk.Context, attestation types.Attestation) ([32]byte, error) {
 	id, err := attestation.ID()
 	if err != nil {
@@ -82,6 +85,25 @@ func (k Keeper) ConsumeAttestation(ctx sdk.Context, attestation types.Attestatio
 	}
 	k.MarkProcessed(ctx, id)
 	return id, nil
+}
+
+// ProcessedSourceDeposits returns every consumed source-deposit replay key
+// in store order.
+func (k Keeper) ProcessedSourceDeposits(ctx sdk.Context) [][32]byte {
+	store := ctx.KVStore(k.storeKey)
+	iterator := storetypes.KVStorePrefixIterator(store, types.KeyProcessedAttestationPrefix)
+	defer iterator.Close()
+	var keys [][32]byte
+	for ; iterator.Valid(); iterator.Next() {
+		raw := iterator.Key()[len(types.KeyProcessedAttestationPrefix):]
+		if len(raw) != 32 {
+			continue
+		}
+		var id [32]byte
+		copy(id[:], raw)
+		keys = append(keys, id)
+	}
+	return keys
 }
 
 func processedKey(id [32]byte) []byte {

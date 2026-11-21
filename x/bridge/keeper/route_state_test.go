@@ -5,14 +5,13 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 func TestGuardianCanOnlyPauseRoute(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_pause_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_pause_test")).WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 	guardian, err := crypto.GenerateKey()
 	if err != nil {
@@ -22,7 +21,7 @@ func TestGuardianCanOnlyPauseRoute(t *testing.T) {
 	config.Enabled = true
 	config.Guardian = crypto.PubkeyToAddress(guardian.PublicKey).Hex()
 	action := types.GuardianPauseAction{RouteID: config.RouteID, Nonce: 1, ExpiresUnix: 1800003600}
-	digest, err := types.GuardianPauseDigest(action)
+	digest, err := types.GuardianPauseDigest(action, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +42,7 @@ func TestGuardianCanOnlyPauseRoute(t *testing.T) {
 
 func TestNonGuardianCannotPauseRoute(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_bad_pause_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_bad_pause_test")).WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 	guardian, err := crypto.GenerateKey()
 	if err != nil {
@@ -56,7 +55,7 @@ func TestNonGuardianCannotPauseRoute(t *testing.T) {
 	config := keeperRouteConfig()
 	config.Guardian = crypto.PubkeyToAddress(guardian.PublicKey).Hex()
 	action := types.GuardianPauseAction{RouteID: config.RouteID, Nonce: 1, ExpiresUnix: 1800003600}
-	digest, err := types.GuardianPauseDigest(action)
+	digest, err := types.GuardianPauseDigest(action, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}

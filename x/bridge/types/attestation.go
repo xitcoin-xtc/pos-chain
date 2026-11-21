@@ -25,8 +25,19 @@ const (
 	DirectionXitcoinToCronos Direction = "xitcoin_to_cronos"
 )
 
+// SourceDepositDomain separates source-deposit replay keys from every other
+// hash used by the bridge.
+const SourceDepositDomain = "xitcoin-bridge-source-deposit-v1"
+
 // Attestation binds one source-chain event to a destination and amount.
-// Its ID is the later replay-protection key. Amount uses atomic units.
+// Amount uses atomic units.
+//
+// ID is the replay-protection key and identifies only the source deposit
+// (source chain ID and source reference, i.e. the Cronos vault depositId,
+// which itself commits to the vault, route, depositor, recipient, amount and
+// deposit nonce). It deliberately excludes the deadline and every other
+// signed field, so two approvals for one deposit share one replay key.
+// SigningDigest commits to every field plus the destination chain ID.
 type Attestation struct {
 	RouteID       string
 	Direction     Direction
@@ -45,8 +56,8 @@ func (a Attestation) Validate() error {
 	if a.Direction != DirectionCronosToXitcoin && a.Direction != DirectionXitcoinToCronos {
 		return errors.New("invalid bridge direction")
 	}
-	if strings.TrimSpace(a.SourceChainID) == "" {
-		return errors.New("source chain ID is required")
+	if err := ValidateEVMChainID(a.SourceChainID); err != nil {
+		return err
 	}
 	if !validHexReference(a.SourceRef) {
 		return errors.New("source reference must be a 32-byte hexadecimal transaction identifier")
@@ -67,13 +78,40 @@ func (a Attestation) Validate() error {
 	return nil
 }
 
-// ID returns a deterministic identifier only for a valid attestation.
+// ID returns the source-deposit replay key, only for a valid attestation.
 func (a Attestation) ID() ([32]byte, error) {
 	if err := a.Validate(); err != nil {
 		return [32]byte{}, err
 	}
+	return SourceDepositKey(a.SourceChainID, a.SourceRef)
+}
+
+// SourceDepositKey is sha256(SourceDepositDomain || 0x00 || sourceChainID ||
+// 0x00 || lowercase 64-hex source reference without 0x).
+func SourceDepositKey(sourceChainID, sourceRef string) ([32]byte, error) {
+	if err := ValidateEVMChainID(sourceChainID); err != nil {
+		return [32]byte{}, err
+	}
+	if !validHexReference(sourceRef) {
+		return [32]byte{}, errors.New("source reference must be a 32-byte hexadecimal transaction identifier")
+	}
+	fields := []string{SourceDepositDomain, sourceChainID, normalizeHexReference(sourceRef)}
+	return sha256.Sum256([]byte(strings.Join(fields, "\x00"))), nil
+}
+
+// PayloadHash commits to every attestation field and to the destination
+// (Xitcoin) chain ID: sha256 of the fields joined with 0x00 in this order:
+// destination chain ID, route ID, direction, source chain ID, source
+// reference (lowercase hex, no 0x), nonce, destination, amount, deadline.
+func (a Attestation) PayloadHash(destinationChainID string) ([32]byte, error) {
+	if err := a.Validate(); err != nil {
+		return [32]byte{}, err
+	}
+	if err := ValidateChainID(destinationChainID); err != nil {
+		return [32]byte{}, err
+	}
 	fields := []string{
-		a.RouteID, string(a.Direction), a.SourceChainID, normalizeHexReference(a.SourceRef),
+		destinationChainID, a.RouteID, string(a.Direction), a.SourceChainID, normalizeHexReference(a.SourceRef),
 		fmt.Sprintf("%d", a.Nonce), strings.TrimSpace(a.Destination), a.Amount, fmt.Sprintf("%d", a.DeadlineUnix),
 	}
 	return sha256.Sum256([]byte(strings.Join(fields, "\x00"))), nil

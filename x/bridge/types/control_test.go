@@ -29,7 +29,7 @@ func TestVerifyControlApprovalsRequiresTwoConfiguredSigners(t *testing.T) {
 		keys[i] = key
 		signers[i] = crypto.PubkeyToAddress(key.PublicKey).Hex()
 	}
-	digest, err := ControlDigest(validControlAction())
+	digest, err := ControlDigest(validControlAction(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestVerifyControlApprovalsRequiresTwoConfiguredSigners(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := VerifyControlApprovals(validControlAction(), signers, [][]byte{first, second}); err != nil {
+	if _, err := VerifyControlApprovals(validControlAction(), testChainID, signers, [][]byte{first, second}); err != nil {
 		t.Fatalf("expected valid governance approvals: %v", err)
 	}
 }
@@ -63,7 +63,7 @@ func TestControlActionRejectsInvalidWindowAndDuplicateSigner(t *testing.T) {
 		keys[i] = key
 		signers[i] = crypto.PubkeyToAddress(key.PublicKey).Hex()
 	}
-	digest, err := ControlDigest(validControlAction())
+	digest, err := ControlDigest(validControlAction(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestControlActionRejectsInvalidWindowAndDuplicateSigner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := VerifyControlApprovals(validControlAction(), signers, [][]byte{signature, signature}); err == nil {
+	if _, err := VerifyControlApprovals(validControlAction(), testChainID, signers, [][]byte{signature, signature}); err == nil {
 		t.Fatal("duplicate signer approval was accepted")
 	}
 }

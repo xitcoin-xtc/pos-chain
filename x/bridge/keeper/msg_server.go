@@ -23,7 +23,10 @@ func NewMsgServer(k Keeper) types.MsgServer {
 }
 
 // InitializeRouteConfig creates exactly one disabled, paused bridge route.
-// It performs no token, bank, reserve, relayer, mint, burn, or transfer action.
+// The message has no source chain field: the route's Cronos source chain ID is
+// derived from this chain's ID (types.DefaultSourceChainID) and stored
+// explicitly. It performs no token, bank, reserve, relayer, mint, burn, or
+// transfer action.
 func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgInitializeRouteConfig) (*types.MsgInitializeRouteConfigResponse, error) {
 	if req == nil {
 		return nil, errors.New("bridge: empty initial route configuration")
@@ -41,6 +44,7 @@ func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgIn
 		return nil, errors.New("bridge: initial route configuration already exists")
 	}
 	config := req.RouteConfig()
+	config.SourceChainID = types.DefaultSourceChainID(ctx.ChainID())
 	if err := s.keeper.SetRouteConfig(ctx, config); err != nil {
 		return nil, err
 	}
@@ -49,7 +53,7 @@ func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgIn
 		return nil, err
 	}
 	ctx.KVStore(s.keeper.storeKey).Set(routeStateKey, encoded)
-	ctx.EventManager().EmitEvent(sdk.NewEvent("bridge_route_initialized", sdk.NewAttribute("route_id", config.RouteID), sdk.NewAttribute("enabled", "false"), sdk.NewAttribute("paused", "true")))
+	ctx.EventManager().EmitEvent(sdk.NewEvent("bridge_route_initialized", sdk.NewAttribute("route_id", config.RouteID), sdk.NewAttribute("source_chain_id", config.SourceChainID), sdk.NewAttribute("enabled", "false"), sdk.NewAttribute("paused", "true")))
 	return &types.MsgInitializeRouteConfigResponse{}, nil
 }
 
@@ -123,6 +127,9 @@ func (s msgServer) UpdateRouteConfig(goCtx context.Context, req *types.MsgUpdate
 		return nil, ErrRouteDisabled
 	}
 	next := req.RouteConfig()
+	// The source chain is immutable and not part of the message; the signed
+	// payload hash covers the configuration including the preserved value.
+	next.SourceChainID = current.SourceChainID
 	payloadHash, err := types.RouteConfigPayloadHash(next)
 	if err != nil {
 		return nil, err
@@ -172,6 +179,8 @@ func (s msgServer) SubmitAttestation(goCtx context.Context, req *types.MsgSubmit
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		"bridge_inbound_settled",
 		sdk.NewAttribute("attestation_id", hex.EncodeToString(id[:])),
+		sdk.NewAttribute("source_chain_id", attestation.SourceChainID),
+		sdk.NewAttribute("source_ref", attestation.SourceRef),
 		sdk.NewAttribute("route_id", config.RouteID),
 		sdk.NewAttribute("destination", attestation.Destination),
 		sdk.NewAttribute("amount", attestation.Amount),

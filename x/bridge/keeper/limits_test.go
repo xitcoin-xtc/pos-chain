@@ -5,7 +5,6 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
@@ -28,7 +27,7 @@ func limitsConfig() types.RouteConfig {
 
 func TestLimitsRejectDisabledRouteAndExcesses(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_limits_test")).
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_limits_test")).
 		WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 
@@ -44,7 +43,7 @@ func TestLimitsRejectDisabledRouteAndExcesses(t *testing.T) {
 
 func TestLimitsTrackDailyUsageByBlockDay(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_daily_test")).
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_daily_test")).
 		WithBlockTime(time.Unix(1800000000, 0))
 	k := NewKeeper(key)
 	config := limitsConfig()

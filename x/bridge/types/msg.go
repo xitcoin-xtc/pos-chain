@@ -3,10 +3,8 @@ package types
 import (
 	"errors"
 	"math/big"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var _ types.Msg = &MsgSubmitAttestation{}
@@ -56,9 +54,8 @@ func (m *MsgInitiateOutboundTransfer) ValidateBasic() error {
 	if !validRouteID(m.RouteId) {
 		return errors.New("invalid route ID")
 	}
-	destination := strings.TrimSpace(m.Destination)
-	if !common.IsHexAddress(destination) || common.HexToAddress(destination) == (common.Address{}) {
-		return errors.New("invalid Cronos destination")
+	if _, err := ValidateCronosDestination(m.Destination); err != nil {
+		return err
 	}
 	amount, ok := new(big.Int).SetString(m.Amount, 10)
 	if !ok || amount.Sign() <= 0 {

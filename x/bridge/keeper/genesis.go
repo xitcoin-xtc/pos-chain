@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 
 	sdkmath "cosmossdk.io/math"
@@ -11,7 +12,11 @@ import (
 
 func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 	if state.RouteConfig != nil {
-		if err := k.SetRouteConfig(ctx, *state.RouteConfig); err != nil {
+		config := *state.RouteConfig
+		if config.SourceChainID == "" {
+			config.SourceChainID = types.DefaultSourceChainID(ctx.ChainID())
+		}
+		if err := k.SetRouteConfig(ctx, config); err != nil {
 			panic(err)
 		}
 		if state.Paused {
@@ -32,6 +37,16 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 			encoded := make([]byte, 8)
 			binary.BigEndian.PutUint64(encoded, state.OutboundNonce)
 			ctx.KVStore(k.storeKey).Set(types.KeyOutboundNonce, encoded)
+		}
+		if state.ControlNonce != 0 {
+			k.setControlNonce(ctx, state.ControlNonce)
+		}
+		for _, value := range state.ProcessedSourceDeposits {
+			id, _, err := types.ParseAttestationID(value)
+			if err != nil {
+				panic(err)
+			}
+			k.MarkProcessed(ctx, id)
 		}
 	}
 }
@@ -56,6 +71,10 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) types.GenesisState {
 	value := ctx.KVStore(k.storeKey).Get(types.KeyOutboundNonce)
 	if len(value) == 8 {
 		genesis.OutboundNonce = binary.BigEndian.Uint64(value)
+	}
+	genesis.ControlNonce = k.ControlNonce(ctx)
+	for _, id := range k.ProcessedSourceDeposits(ctx) {
+		genesis.ProcessedSourceDeposits = append(genesis.ProcessedSourceDeposits, "0x"+hex.EncodeToString(id[:]))
 	}
 	return genesis
 }

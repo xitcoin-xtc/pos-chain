@@ -31,8 +31,9 @@ func RouteStatePayloadHash(config types.RouteConfig, state RouteState) ([32]byte
 	return sha256.Sum256(encoded), nil
 }
 
-// ResumeRoute requires two current bridge signers. The guardian has no path to
-// this method. This method changes only Paused from true to false.
+// ResumeRoute requires two current bridge signers and the next sequential
+// control nonce. The guardian has no path to this method. This method changes
+// only Paused from true to false.
 func (k Keeper) ResumeRoute(ctx sdk.Context, config types.RouteConfig, action types.ControlAction, signatures [][]byte) error {
 	if err := config.Validate(); err != nil {
 		return err
@@ -62,22 +63,17 @@ func (k Keeper) ResumeRoute(ctx sdk.Context, config types.RouteConfig, action ty
 	if !strings.EqualFold(common.BytesToHash(payloadHash[:]).Hex(), action.PayloadHash) {
 		return ErrControlPayloadMismatch
 	}
-	id, err := action.ID()
-	if err != nil {
+	if err := k.requireNextControlNonce(ctx, action.Nonce); err != nil {
 		return err
 	}
-	store := ctx.KVStore(k.storeKey)
-	if store.Has(processedControlKey(id)) {
-		return ErrControlActionProcessed
-	}
-	if _, err := types.VerifyControlApprovals(action, config.BridgeSigners, signatures); err != nil {
+	if _, err := types.VerifyControlApprovals(action, ctx.ChainID(), config.BridgeSigners, signatures); err != nil {
 		return err
 	}
 	encoded, err := json.Marshal(next)
 	if err != nil {
 		return err
 	}
-	store.Set(routeStateKey, encoded)
-	store.Set(processedControlKey(id), []byte{1})
+	ctx.KVStore(k.storeKey).Set(routeStateKey, encoded)
+	k.setControlNonce(ctx, action.Nonce)
 	return nil
 }
