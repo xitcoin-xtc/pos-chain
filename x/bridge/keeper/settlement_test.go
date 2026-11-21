@@ -8,16 +8,20 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 type fakeBankKeeper struct {
-	supply sdkmath.Int
-	minted sdk.Coins
-	burned sdk.Coins
+	supply  sdkmath.Int
+	minted  sdk.Coins
+	burned  sdk.Coins
+	blocked map[string]bool
+}
+
+func (f *fakeBankKeeper) BlockedAddr(addr sdk.AccAddress) bool {
+	return f.blocked[addr.String()]
 }
 
 func (f *fakeBankKeeper) MintCoins(_ context.Context, _ string, amount sdk.Coins) error {
@@ -52,7 +56,7 @@ func settlementRouteConfig() types.RouteConfig {
 
 func TestInboundSettlementAndOwnerBurn(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_settlement_test")).
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_settlement_test")).
 		WithBlockTime(time.Unix(1800000000, 0))
 	bank := &fakeBankKeeper{supply: sdkmath.NewInt(100)}
 	keeper, err := NewSettlementKeeper(key, bank, "axtc", "200", testAuthority())
@@ -63,7 +67,7 @@ func TestInboundSettlementAndOwnerBurn(t *testing.T) {
 	attestation := types.Attestation{
 		RouteID:       settlementRouteConfig().RouteID,
 		Direction:     types.DirectionCronosToXitcoin,
-		SourceChainID: "cronos-testnet",
+		SourceChainID: "338",
 		SourceRef:     "0x" + string(bytes.Repeat([]byte{'a'}, 64)),
 		Nonce:         1,
 		Destination:   recipient.String(),
@@ -102,7 +106,7 @@ func TestInboundSettlementAndOwnerBurn(t *testing.T) {
 
 func TestSettlementCaps(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_settlement_caps_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_settlement_caps_test"))
 	bank := &fakeBankKeeper{supply: sdkmath.NewInt(195)}
 	keeper, err := NewSettlementKeeper(key, bank, "axtc", "200", testAuthority())
 	if err != nil {

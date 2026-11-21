@@ -17,14 +17,14 @@ func GetQueryCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	cmd.AddCommand(GetAttestationStatusCmd())
+	cmd.AddCommand(GetAttestationStatusCmd(), GetRouteCmd(), GetSourceDepositKeyCmd())
 	return cmd
 }
 
 func GetAttestationStatusCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestation-status ATTESTATION_ID",
-		Short: "Query whether a bridge attestation has been processed",
+		Short: "Query whether a source deposit (replay key, see source-deposit-key) has been minted",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)

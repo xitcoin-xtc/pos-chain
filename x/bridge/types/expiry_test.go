@@ -9,7 +9,7 @@ func TestValidateAtRejectsExpiredAttestation(t *testing.T) {
 	a := Attestation{
 		RouteID:       "cronos-testnet-xitcoin-testnet",
 		Direction:     DirectionCronosToXitcoin,
-		SourceChainID: "cronos-testnet",
+		SourceChainID: "338",
 		SourceRef:     "0x" + strings.Repeat("a", 64),
 		Nonce:         1,
 		Destination:   "xitcoin1testdestination",

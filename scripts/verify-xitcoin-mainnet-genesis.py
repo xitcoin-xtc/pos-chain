@@ -70,6 +70,45 @@ def collect_testnet_identities(testnet):
     return accounts, operator_addresses, consensus_keys, signer_keys, authority
 
 
+CRONOS_MAINNET_CHAIN_ID = "25"
+
+
+def validate_bridge(bridge, expected_bootstrap):
+    """Bridge genesis: one paused, disabled route backed by the bootstrap.
+
+    Genesis XTC is backed by the Cronos bootstrap reserve that the escrow
+    moves into the vault. The chain lets holders burn (bridge out) only up to
+    bridge.outstanding_amount, so it must equal the bootstrap exactly: zero
+    would strand every genesis holder, more would let burns exceed the
+    collateral. Nothing may be pre-consumed.
+    """
+    if bridge.get("paused") is not True:
+        fail("bridge must be paused in the mainnet genesis")
+    route = bridge.get("route_config")
+    if not isinstance(route, dict):
+        fail("bridge.route_config is required (paused requires a route)")
+    if route.get("enabled") is not False:
+        fail("bridge route must be disabled in the mainnet genesis")
+    if route.get("source_chain_id") != CRONOS_MAINNET_CHAIN_ID:
+        fail("bridge.route_config.source_chain_id must be Cronos mainnet (25)")
+    try:
+        outstanding = int(str(bridge.get("outstanding_amount", "")))
+    except ValueError:
+        fail("bridge.outstanding_amount must be a decimal integer")
+    if outstanding != expected_bootstrap:
+        fail("bridge.outstanding_amount must equal the Cronos bootstrap")
+    try:
+        max_outstanding = int(str(route.get("max_outstanding_amount", "")))
+    except ValueError:
+        fail("bridge.route_config.max_outstanding_amount must be a decimal integer")
+    if max_outstanding < expected_bootstrap:
+        fail("bridge max_outstanding_amount is below the Cronos bootstrap")
+    if bridge.get("processed_source_deposits"):
+        fail("bridge must not start with processed source deposits")
+    if bridge.get("control_nonce", 0) != 0 or bridge.get("outbound_nonce", 0) != 0:
+        fail("bridge control and outbound nonces must start at zero")
+
+
 def validate(candidate, testnet, expected_bootstrap):
     if candidate.get("chain_id") != "xitcoin":
         fail("mainnet Cosmos chain ID must be xitcoin")
@@ -85,8 +124,7 @@ def validate(candidate, testnet, expected_bootstrap):
         fail("candidate genesis contains the testnet administrative multisig")
 
     app = require(candidate, "app_state")
-    if require(app, "bridge", "paused") is not True:
-        fail("bridge must be paused in the mainnet genesis")
+    validate_bridge(require(app, "bridge"), expected_bootstrap)
 
     for path in (
         ("evm", "params", "evm_denom"),

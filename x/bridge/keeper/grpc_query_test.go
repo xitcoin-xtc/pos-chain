@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
@@ -15,7 +14,7 @@ import (
 func queryContext(t *testing.T) (Keeper, context.Context) {
 	t.Helper()
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_query_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_query_test"))
 	return NewKeeper(key), sdk.WrapSDKContext(ctx)
 }
 

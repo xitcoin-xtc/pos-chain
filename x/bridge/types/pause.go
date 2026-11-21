@@ -10,8 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-const GuardianPauseDomain = "xitcoin-bridge-testnet-guardian-pause-v1"
-
 // GuardianPauseAction can request a suspension only. It cannot change limits,
 // resume a route, transfer assets, mint, or access reserves.
 type GuardianPauseAction struct {
@@ -33,28 +31,39 @@ func (a GuardianPauseAction) Validate() error {
 	return nil
 }
 
-func (a GuardianPauseAction) ID() ([32]byte, error) {
+// ID contains every signed pause field and the network-specific guardian
+// domain of chainID.
+func (a GuardianPauseAction) ID(chainID string) ([32]byte, error) {
 	if err := a.Validate(); err != nil {
 		return [32]byte{}, err
 	}
-	payload := strings.Join([]string{GuardianPauseDomain, a.RouteID, strconv.FormatUint(a.Nonce, 10), strconv.FormatInt(a.ExpiresUnix, 10)}, "\x00")
+	domain, err := GuardianPauseDomain(chainID)
+	if err != nil {
+		return [32]byte{}, err
+	}
+	payload := strings.Join([]string{domain, a.RouteID, strconv.FormatUint(a.Nonce, 10), strconv.FormatInt(a.ExpiresUnix, 10)}, "\x00")
 	return sha256.Sum256([]byte(payload)), nil
 }
 
-func GuardianPauseDigest(action GuardianPauseAction) (common.Hash, error) {
-	id, err := action.ID()
+// GuardianPauseDigest is keccak256(GuardianPauseDomain(chainID) || ID(chainID)).
+func GuardianPauseDigest(action GuardianPauseAction, chainID string) (common.Hash, error) {
+	id, err := action.ID(chainID)
 	if err != nil {
 		return common.Hash{}, err
 	}
-	return crypto.Keccak256Hash([]byte(GuardianPauseDomain), id[:]), nil
+	domain, err := GuardianPauseDomain(chainID)
+	if err != nil {
+		return common.Hash{}, err
+	}
+	return crypto.Keccak256Hash([]byte(domain), id[:]), nil
 }
 
 // VerifyGuardianPause verifies a single signature from the dedicated guardian.
-func VerifyGuardianPause(action GuardianPauseAction, guardian string, signature []byte) (common.Address, error) {
+func VerifyGuardianPause(action GuardianPauseAction, chainID, guardian string, signature []byte) (common.Address, error) {
 	if !common.IsHexAddress(strings.TrimSpace(guardian)) {
 		return common.Address{}, errors.New("invalid bridge guardian")
 	}
-	digest, err := GuardianPauseDigest(action)
+	digest, err := GuardianPauseDigest(action, chainID)
 	if err != nil {
 		return common.Address{}, err
 	}

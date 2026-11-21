@@ -18,7 +18,7 @@ func TestVerifyApprovalsRequiresTwoConfiguredSigners(t *testing.T) {
 		keys[i] = key
 		signers[i] = crypto.PubkeyToAddress(key.PublicKey).Hex()
 	}
-	digest, err := SigningDigest(validAttestation())
+	digest, err := SigningDigest(validAttestation(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func TestVerifyApprovalsRequiresTwoConfiguredSigners(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	recovered, err := VerifyApprovals(validAttestation(), signers, [][]byte{first, second})
+	recovered, err := VerifyApprovals(validAttestation(), testChainID, signers, [][]byte{first, second})
 	if err != nil {
 		t.Fatalf("expected valid two-of-three approvals: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestVerifyApprovalsRejectsDuplicateAndUnauthorized(t *testing.T) {
 			signers[i] = crypto.PubkeyToAddress(key.PublicKey).Hex()
 		}
 	}
-	digest, err := SigningDigest(validAttestation())
+	digest, err := SigningDigest(validAttestation(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,10 +64,10 @@ func TestVerifyApprovalsRejectsDuplicateAndUnauthorized(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := VerifyApprovals(validAttestation(), signers, [][]byte{first, first}); err == nil {
+	if _, err := VerifyApprovals(validAttestation(), testChainID, signers, [][]byte{first, first}); err == nil {
 		t.Fatal("duplicate signer must be rejected")
 	}
-	if _, err := VerifyApprovals(validAttestation(), signers, [][]byte{first, outsider}); err == nil {
+	if _, err := VerifyApprovals(validAttestation(), testChainID, signers, [][]byte{first, outsider}); err == nil {
 		t.Fatal("unauthorized signer must be rejected")
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
@@ -49,7 +48,7 @@ func signedConfigAction(t *testing.T, current, next types.RouteConfig, keys []*e
 		NotBeforeUnix: 1800000000,
 		ExpiresUnix:   1800003600,
 	}
-	digest, err := types.ControlDigest(action)
+	digest, err := types.ControlDigest(action, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +64,7 @@ func signedConfigAction(t *testing.T, current, next types.RouteConfig, keys []*e
 
 func TestApplyRouteConfigUpdateRequiresBoundTwoOfThreeApproval(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_control_apply_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_control_apply_test"))
 	ctx = ctx.WithBlockTime(time.Unix(1800000100, 0))
 	k := NewKeeper(key)
 	current, keys := controlledRouteConfig(t)
@@ -89,7 +88,7 @@ func TestApplyRouteConfigUpdateRequiresBoundTwoOfThreeApproval(t *testing.T) {
 
 func TestApplyRouteConfigUpdateRejectsWrongPayloadAndOneSignature(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_control_reject_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_control_reject_test"))
 	ctx = ctx.WithBlockTime(time.Unix(1800000100, 0))
 	k := NewKeeper(key)
 	current, keys := controlledRouteConfig(t)

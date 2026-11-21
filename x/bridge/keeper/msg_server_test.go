@@ -9,7 +9,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
@@ -18,7 +17,7 @@ import (
 
 func TestSubmitAttestationRejectsDefaultUnconfiguredBridge(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_msg_disabled_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_msg_disabled_test")).WithBlockTime(time.Unix(1800000000, 0))
 	k, err := NewSettlementKeeper(key, &fakeBankKeeper{supply: sdkmath.ZeroInt()}, "axtc", "1000", testAuthority())
 	if err != nil {
 		t.Fatal(err)
@@ -32,7 +31,7 @@ func TestSubmitAttestationRejectsDefaultUnconfiguredBridge(t *testing.T) {
 
 func TestInitializeRouteConfigRequiresAuthorityAndRunsOncePaused(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_initialize_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_initialize_test"))
 	k, err := NewSettlementKeeper(key, &fakeBankKeeper{supply: sdkmath.ZeroInt()}, "axtc", "1000", testAuthority())
 	if err != nil {
 		t.Fatal(err)
@@ -44,7 +43,7 @@ func TestInitializeRouteConfigRequiresAuthorityAndRunsOncePaused(t *testing.T) {
 			"0x0000000000000000000000000000000000000002",
 			"0x0000000000000000000000000000000000000003",
 		},
-		Guardian: "0x0000000000000000000000000000000000000004",
+		Guardian:          "0x0000000000000000000000000000000000000004",
 		MaxTransferAmount: "10", DailyLimit: "100", MaxOutstandingAmount: "1000",
 	}
 	wrong := *request
@@ -76,7 +75,7 @@ func TestInitializeRouteConfigRequiresAuthorityAndRunsOncePaused(t *testing.T) {
 
 func TestSubmitAttestationRecordsOnlyApprovedAttestation(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_msg_admit_test")).WithBlockTime(time.Unix(1800000000, 0))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_msg_admit_test")).WithBlockTime(time.Unix(1800000000, 0))
 	bank := &fakeBankKeeper{supply: sdkmath.ZeroInt()}
 	k, err := NewSettlementKeeper(key, bank, "axtc", "1000", testAuthority())
 	if err != nil {
@@ -113,7 +112,7 @@ func TestSubmitAttestationRecordsOnlyApprovedAttestation(t *testing.T) {
 	}
 	msg := validBridgeMessage(t, config.RouteID, nil)
 	attestation := msg.Attestation()
-	digest, err := types.SigningDigest(attestation)
+	digest, err := types.SigningDigest(attestation, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +148,7 @@ func validBridgeMessage(t *testing.T, routeID string, signatures [][]byte) types
 		Submitter:     sdk.AccAddress(make([]byte, 20)).String(),
 		RouteId:       routeID,
 		Direction:     string(types.DirectionCronosToXitcoin),
-		SourceChainId: "cronos-testnet",
+		SourceChainId: "338",
 		SourceRef:     "0x" + strings.Repeat("c", 64),
 		Nonce:         1,
 		Destination:   sdk.AccAddress(bytes.Repeat([]byte{1}, 20)).String(),
