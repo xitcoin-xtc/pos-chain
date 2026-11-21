@@ -3,7 +3,7 @@ package cosmos.evm.bridge.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/bridge/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/bridge/types";
 
 // Query exposes canonical, read-only bridge settlement state.
 service Query {

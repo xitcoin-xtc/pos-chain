@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
-	txpoolmocks "github.com/xitcoin-org/pos-chain/mempool/txpool/mocks"
-	"github.com/xitcoin-org/pos-chain/rpc/backend/mocks"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
+	txpoolmocks "github.com/xitcoin-xtc/pos-chain/mempool/txpool/mocks"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend/mocks"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

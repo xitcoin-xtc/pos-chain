@@ -25,14 +25,14 @@ import (
 	cmttypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/xitcoin-org/pos-chain/indexer"
-	evmmempool "github.com/xitcoin-org/pos-chain/mempool"
-	evmmetrics "github.com/xitcoin-org/pos-chain/metrics"
-	"github.com/xitcoin-org/pos-chain/rpc/backend"
-	ethdebug "github.com/xitcoin-org/pos-chain/rpc/namespaces/ethereum/debug"
-	cosmosevmserverconfig "github.com/xitcoin-org/pos-chain/server/config"
-	srvflags "github.com/xitcoin-org/pos-chain/server/flags"
-	servertypes "github.com/xitcoin-org/pos-chain/server/types"
+	"github.com/xitcoin-xtc/pos-chain/indexer"
+	evmmempool "github.com/xitcoin-xtc/pos-chain/mempool"
+	evmmetrics "github.com/xitcoin-xtc/pos-chain/metrics"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	ethdebug "github.com/xitcoin-xtc/pos-chain/rpc/namespaces/ethereum/debug"
+	cosmosevmserverconfig "github.com/xitcoin-xtc/pos-chain/server/config"
+	srvflags "github.com/xitcoin-xtc/pos-chain/server/flags"
+	servertypes "github.com/xitcoin-xtc/pos-chain/server/types"
 
 	"cosmossdk.io/log/v2"
 

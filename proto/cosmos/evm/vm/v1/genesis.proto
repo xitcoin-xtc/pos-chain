@@ -6,7 +6,7 @@ import "amino/amino.proto";
 import "cosmos/evm/vm/v1/evm.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/vm/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/vm/types";
 
 // GenesisState defines the evm module's genesis state.
 message GenesisState {

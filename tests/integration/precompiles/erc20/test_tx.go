@@ -6,13 +6,13 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/holiman/uint256"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/common/mocks"
-	"github.com/xitcoin-org/pos-chain/precompiles/erc20"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/statedb"
-	vmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/common/mocks"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
+	vmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

@@ -15,8 +15,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	signingtypes "github.com/cosmos/cosmos-sdk/types/tx/signing"

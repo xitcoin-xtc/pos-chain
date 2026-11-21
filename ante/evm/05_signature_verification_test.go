@@ -8,7 +8,7 @@ import (
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/xitcoin-org/pos-chain/ante/evm"
+	"github.com/xitcoin-xtc/pos-chain/ante/evm"
 
 	"cosmossdk.io/log/v2"
 

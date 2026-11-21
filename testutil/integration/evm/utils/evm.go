@@ -8,9 +8,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
-	"github.com/xitcoin-org/pos-chain/contracts"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/contracts"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // GetERC20Balance returns the token balance of a given account address for

@@ -15,7 +15,7 @@ MODULE = sys.argv[1]
 if MODULE not in ('root', 'evmd'):
     raise ValueError('Expected root or evmd')
 CWD = ROOT if MODULE == 'root' else ROOT / 'evmd'
-PACKAGE = 'github.com/xitcoin-org/pos-chain' + ('/evmd' if MODULE == 'evmd' else '')
+PACKAGE = 'github.com/xitcoin-xtc/pos-chain' + ('/evmd' if MODULE == 'evmd' else '')
 OUT = ROOT / 'versioned-evidence'
 OUT.mkdir(exist_ok=True)
 HARNESS = ROOT / ('current-versioned-harness-' + MODULE)

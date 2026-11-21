@@ -10,10 +10,10 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/xitcoin-org/pos-chain/evmd"
-	"github.com/xitcoin-org/pos-chain/evmd/tests/integration"
-	"github.com/xitcoin-org/pos-chain/precompiles/ics02"
-	evmibctesting "github.com/xitcoin-org/pos-chain/testutil/ibc"
+	"github.com/xitcoin-xtc/pos-chain/evmd"
+	"github.com/xitcoin-xtc/pos-chain/evmd/tests/integration"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/ics02"
+	evmibctesting "github.com/xitcoin-xtc/pos-chain/testutil/ibc"
 	"github.com/cosmos/gogoproto/proto"
 	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
 	commitmenttypesv2 "github.com/cosmos/ibc-go/v11/modules/core/23-commitment/types/v2"

@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/precompiles/ics20"
-	evmibctesting "github.com/xitcoin-org/pos-chain/testutil/ibc"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/ics20"
+	evmibctesting "github.com/xitcoin-xtc/pos-chain/testutil/ibc"
 	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 )
 

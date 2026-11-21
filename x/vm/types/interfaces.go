@@ -10,7 +10,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/math"

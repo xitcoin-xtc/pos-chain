@@ -9,7 +9,7 @@ import (
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/xitcoin-org/pos-chain/x/bridge/types"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 func TestAdmitAttestationRequiresMatchingEnabledRouteAndTwoSignatures(t *testing.T) {

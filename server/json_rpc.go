@@ -14,11 +14,11 @@ import (
 
 	rpcclient "github.com/cometbft/cometbft/rpc/client"
 
-	"github.com/xitcoin-org/pos-chain/rpc"
-	"github.com/xitcoin-org/pos-chain/rpc/backend"
-	"github.com/xitcoin-org/pos-chain/rpc/stream"
-	serverconfig "github.com/xitcoin-org/pos-chain/server/config"
-	"github.com/xitcoin-org/pos-chain/server/types"
+	"github.com/xitcoin-xtc/pos-chain/rpc"
+	"github.com/xitcoin-xtc/pos-chain/rpc/backend"
+	"github.com/xitcoin-xtc/pos-chain/rpc/stream"
+	serverconfig "github.com/xitcoin-xtc/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/server/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"

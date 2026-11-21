@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/xitcoin-org/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 
 	errorsmod "cosmossdk.io/errors"
 

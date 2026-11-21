@@ -13,9 +13,9 @@ import (
 	"github.com/holiman/uint256"
 	"go.opentelemetry.io/otel/metric"
 
-	"github.com/xitcoin-org/pos-chain/mempool/internal/heightsync"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/reaplist"
-	"github.com/xitcoin-org/pos-chain/mempool/reserver"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/heightsync"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist"
+	"github.com/xitcoin-xtc/pos-chain/mempool/reserver"
 
 	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"

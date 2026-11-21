@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	protov2 "google.golang.org/protobuf/proto"
 
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 	"github.com/cosmos/gogoproto/proto"
 
 	"cosmossdk.io/log/v2"

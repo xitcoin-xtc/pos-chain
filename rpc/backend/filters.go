@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	evmtrace "github.com/xitcoin-org/pos-chain/trace"
+	evmtrace "github.com/xitcoin-xtc/pos-chain/trace"
 )
 
 // GetLogs returns all the logs from all the ethereum transactions in a block.

@@ -11,8 +11,8 @@ import (
 
 	cmtcfg "github.com/cometbft/cometbft/config"
 
-	serverconfig "github.com/xitcoin-org/pos-chain/server/config"
-	"github.com/xitcoin-org/pos-chain/testutil/constants"
+	serverconfig "github.com/xitcoin-xtc/pos-chain/server/config"
+	"github.com/xitcoin-xtc/pos-chain/testutil/constants"
 )
 
 func TestDefaultConfig(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	sm "github.com/cometbft/cometbft/state"
 	cmtstore "github.com/cometbft/cometbft/store"
 
-	"github.com/xitcoin-org/pos-chain/indexer"
+	"github.com/xitcoin-xtc/pos-chain/indexer"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"

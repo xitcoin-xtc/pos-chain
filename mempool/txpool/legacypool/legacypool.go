@@ -31,10 +31,10 @@ import (
 	"time"
 
 	cosmoslog "cosmossdk.io/log/v2"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/heightsync"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/reaplist"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/txtracker"
-	"github.com/xitcoin-org/pos-chain/mempool/reserver"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/heightsync"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/txtracker"
+	"github.com/xitcoin-xtc/pos-chain/mempool/reserver"
 	lru "github.com/hashicorp/golang-lru/v2"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -53,10 +53,10 @@ import (
 	"go.opentelemetry.io/otel/metric"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
 )
 
-var meter = otel.Meter("github.com/xitcoin-org/pos-chain/mempool/txpool/legacypool")
+var meter = otel.Meter("github.com/xitcoin-xtc/pos-chain/mempool/txpool/legacypool")
 
 const (
 	// txSlotSize is used to calculate how many data slots a single transaction

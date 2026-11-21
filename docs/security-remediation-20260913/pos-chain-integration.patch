@@ -131,7 +131,7 @@
  	// replace broken goleveldb
 @@ -384,3 +382,5 @@
  	github.com/tidwall/btree => github.com/cosmos/btree v0.0.0-20250924232609-2c6195d95951
- 	github.com/xitcoin-org/pos-chain => ../
+ 	github.com/xitcoin-xtc/pos-chain => ../
  )
 +
 +replace github.com/cosmos/cosmos-sdk => ../../sdk-armor
@@ -206,7 +206,7 @@
 +	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 +	"github.com/cosmos/cosmos-sdk/crypto/keys/bcrypt"
 +	"github.com/cosmos/cosmos-sdk/crypto/xsalsa20symmetric"
-+	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
++	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 +)
 +
 +// This legacy parser is a test oracle only. No test key is used for signing.
@@ -268,9 +268,9 @@
 +	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 +	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 +	"github.com/stretchr/testify/require"
-+	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
-+	"github.com/xitcoin-org/pos-chain/crypto/hd"
-+	"github.com/xitcoin-org/pos-chain/encoding"
++	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
++	"github.com/xitcoin-xtc/pos-chain/crypto/hd"
++	"github.com/xitcoin-xtc/pos-chain/encoding"
 +)
 +
 +// Uses the same encoding setup as NewExampleApp, without starting an app,

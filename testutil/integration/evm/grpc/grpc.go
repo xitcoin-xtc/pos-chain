@@ -3,10 +3,10 @@ package grpc
 import (
 	"github.com/ethereum/go-ethereum/common"
 
-	basegrpc "github.com/xitcoin-org/pos-chain/testutil/integration/base/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	basegrpc "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"

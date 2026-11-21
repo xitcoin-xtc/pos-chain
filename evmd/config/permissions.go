@@ -11,12 +11,12 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	corevm "github.com/ethereum/go-ethereum/core/vm"
-	cosmosevmutils "github.com/xitcoin-org/pos-chain/utils"
-	bridgetypes "github.com/xitcoin-org/pos-chain/x/bridge/types"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	validatorincentivestypes "github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
-	vmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cosmosevmutils "github.com/xitcoin-xtc/pos-chain/utils"
+	bridgetypes "github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	validatorincentivestypes "github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
+	vmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 )
 
 // BlockedAddresses returns all the app's blocked account addresses.

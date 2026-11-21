@@ -10,7 +10,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/xitcoin-org/pos-chain/x/vm/types";
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/vm/types";
 
 // Msg defines the evm Msg service.
 service Msg {

@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/xitcoin-org/pos-chain/x/vm/keeper"
-	vmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
-	"github.com/xitcoin-org/pos-chain/x/vm/types/mocks"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/keeper"
+	vmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/x/vm/types/mocks"
 
 	sdkmath "cosmossdk.io/math"
 

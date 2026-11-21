@@ -16,16 +16,16 @@ import (
 
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	"github.com/xitcoin-org/pos-chain/mempool/internal/heightsync"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/queue"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/reaplist"
-	"github.com/xitcoin-org/pos-chain/mempool/internal/txtracker"
-	"github.com/xitcoin-org/pos-chain/mempool/miner"
-	"github.com/xitcoin-org/pos-chain/mempool/reserver"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool"
-	"github.com/xitcoin-org/pos-chain/mempool/txpool/legacypool"
-	"github.com/xitcoin-org/pos-chain/rpc/stream"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/heightsync"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/queue"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/reaplist"
+	"github.com/xitcoin-xtc/pos-chain/mempool/internal/txtracker"
+	"github.com/xitcoin-xtc/pos-chain/mempool/miner"
+	"github.com/xitcoin-xtc/pos-chain/mempool/reserver"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool"
+	"github.com/xitcoin-xtc/pos-chain/mempool/txpool/legacypool"
+	"github.com/xitcoin-xtc/pos-chain/rpc/stream"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
@@ -52,7 +52,7 @@ const (
 // This should be used only in tests to ensure deterministic behavior
 var AllowUnsafeSyncInsert = false
 
-var meter = otel.Meter("github.com/xitcoin-org/pos-chain/mempool")
+var meter = otel.Meter("github.com/xitcoin-xtc/pos-chain/mempool")
 
 var (
 	selectByDuration      metric.Float64Histogram

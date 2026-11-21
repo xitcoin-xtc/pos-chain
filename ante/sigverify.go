@@ -3,7 +3,7 @@ package ante
 import (
 	"fmt"
 
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 
 	errorsmod "cosmossdk.io/errors"
 

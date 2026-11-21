@@ -7,8 +7,8 @@ package utils
 import (
 	"fmt"
 
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 
 	"cosmossdk.io/math"

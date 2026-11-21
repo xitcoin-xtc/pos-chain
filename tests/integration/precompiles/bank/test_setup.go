@@ -4,12 +4,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/suite"
 
-	bank2 "github.com/xitcoin-org/pos-chain/precompiles/bank"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/utils"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
+	bank2 "github.com/xitcoin-xtc/pos-chain/precompiles/bank"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/utils"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	"cosmossdk.io/math"
 

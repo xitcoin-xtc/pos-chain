@@ -20,7 +20,7 @@ EXAMPLE_BINARY := xitcoind
 ###                              Repo Info                                  ###
 ###############################################################################
 
-HTTPS_GIT := https://github.com/xitcoin-org/pos-chain.git
+HTTPS_GIT := https://github.com/xitcoin-xtc/pos-chain.git
 DOCKER := $(shell which docker)
 
 export GO111MODULE = on
@@ -290,7 +290,7 @@ proto-check-breaking:
 ###                                Releasing                                ###
 ###############################################################################
 
-PACKAGE_NAME:=github.com/xitcoin-org/pos-chain
+PACKAGE_NAME:=github.com/xitcoin-xtc/pos-chain
 GOLANG_CROSS_VERSION  = v1.22
 GOPATH ?= '$(HOME)/go'
 release-dry-run:

@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 	usb "github.com/zondax/hid"
 
-	"github.com/xitcoin-org/pos-chain/wallets/accounts"
+	"github.com/xitcoin-xtc/pos-chain/wallets/accounts"
 )
 
 // Maximum time between wallet health checks to detect USB unplugs.

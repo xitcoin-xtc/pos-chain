@@ -5,7 +5,7 @@ import (
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
 
-	"github.com/xitcoin-org/pos-chain/utils"
+	"github.com/xitcoin-xtc/pos-chain/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

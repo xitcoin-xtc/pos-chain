@@ -3,7 +3,7 @@ package factory
 import (
 	"fmt"
 
-	"github.com/xitcoin-org/pos-chain/testutil/keyring"
+	"github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"

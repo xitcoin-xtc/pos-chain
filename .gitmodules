@@ -36,4 +36,4 @@
 	url = https://github.com/foundry-rs/forge-std
 [submodule "networks"]
 	path = networks
-	url = https://github.com/xitcoin-org/testnets.git
+	url = https://github.com/xitcoin-xtc/testnets.git

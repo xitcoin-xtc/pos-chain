@@ -3,10 +3,10 @@ package ante
 import (
 	"math/big"
 
-	evmante "github.com/xitcoin-org/pos-chain/ante/evm"
-	"github.com/xitcoin-org/pos-chain/testutil"
-	testutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	evmante "github.com/xitcoin-xtc/pos-chain/ante/evm"
+	"github.com/xitcoin-xtc/pos-chain/testutil"
+	testutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

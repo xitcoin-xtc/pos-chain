@@ -13,15 +13,15 @@ import (
 	//nolint:revive // dot imports are fine for Ginkgo
 	. "github.com/onsi/gomega"
 
-	cmn "github.com/xitcoin-org/pos-chain/precompiles/common"
-	"github.com/xitcoin-org/pos-chain/precompiles/gov"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil/contracts"
-	commonfactory "github.com/xitcoin-org/pos-chain/testutil/integration/base/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testutiltx "github.com/xitcoin-org/pos-chain/testutil/tx"
-	testutiltypes "github.com/xitcoin-org/pos-chain/testutil/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/gov"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil/contracts"
+	commonfactory "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
+	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
 

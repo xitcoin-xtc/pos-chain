@@ -9,7 +9,7 @@ import (
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cometbft/cometbft/types"
 
-	servertypes "github.com/xitcoin-org/pos-chain/server/types"
+	servertypes "github.com/xitcoin-xtc/pos-chain/server/types"
 )
 
 const (

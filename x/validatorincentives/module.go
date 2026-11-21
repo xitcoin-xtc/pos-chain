@@ -21,8 +21,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/keeper"
-	"github.com/xitcoin-org/pos-chain/x/validatorincentives/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/keeper"
+	"github.com/xitcoin-xtc/pos-chain/x/validatorincentives/types"
 )
 
 const consensusVersion = 2

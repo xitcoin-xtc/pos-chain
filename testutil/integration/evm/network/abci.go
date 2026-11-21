@@ -7,7 +7,7 @@ import (
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	evmmempool "github.com/xitcoin-org/pos-chain/mempool"
+	evmmempool "github.com/xitcoin-xtc/pos-chain/mempool"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 )

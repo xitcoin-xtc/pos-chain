@@ -15,12 +15,12 @@ import (
 	cmttypes "github.com/cometbft/cometbft/types"
 	"github.com/cometbft/cometbft/version"
 
-	"github.com/xitcoin-org/pos-chain"
-	"github.com/xitcoin-org/pos-chain/testutil/integration"
-	basenetwork "github.com/xitcoin-org/pos-chain/testutil/integration/base/network"
-	erc20types "github.com/xitcoin-org/pos-chain/x/erc20/types"
-	feemarkettypes "github.com/xitcoin-org/pos-chain/x/feemarket/types"
-	evmtypes "github.com/xitcoin-org/pos-chain/x/vm/types"
+	"github.com/xitcoin-xtc/pos-chain"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration"
+	basenetwork "github.com/xitcoin-xtc/pos-chain/testutil/integration/base/network"
+	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
+	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	sdkmath "cosmossdk.io/math"
 

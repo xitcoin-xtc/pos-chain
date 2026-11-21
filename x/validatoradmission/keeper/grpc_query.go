@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/xitcoin-org/pos-chain/x/validatoradmission/types"
+	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 )
 
 var _ types.QueryServer = Keeper{}

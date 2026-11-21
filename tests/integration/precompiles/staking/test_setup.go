@@ -3,13 +3,13 @@ package staking
 import (
 	"github.com/stretchr/testify/suite"
 
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
-	"github.com/xitcoin-org/pos-chain/precompiles/staking"
-	testconstants "github.com/xitcoin-org/pos-chain/testutil/constants"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/factory"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/grpc"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/staking"
+	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/factory"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/grpc"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 
 	sdkmath "cosmossdk.io/math"
 

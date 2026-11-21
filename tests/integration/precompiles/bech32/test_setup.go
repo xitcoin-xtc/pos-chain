@@ -3,9 +3,9 @@ package bech32
 import (
 	"github.com/stretchr/testify/suite"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/bech32"
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	testkeyring "github.com/xitcoin-org/pos-chain/testutil/keyring"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/bech32"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	testkeyring "github.com/xitcoin-xtc/pos-chain/testutil/keyring"
 )
 
 // PrecompileTestSuite is the implementation of the TestSuite interface for ERC20 precompile

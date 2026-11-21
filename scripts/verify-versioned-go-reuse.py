@@ -140,7 +140,7 @@ def download_history(policy, directory):
         if not target.exists():
             partial = target.with_suffix('.partial')
             with partial.open('wb') as output:
-                subprocess.run(['gh', 'api', 'repos/xitcoin-org/pos-chain/actions/artifacts/'
+                subprocess.run(['gh', 'api', 'repos/xitcoin-xtc/pos-chain/actions/artifacts/'
                                 + str(item['id']) + '/zip'], stdout=output, check=True)
             require(digest(partial.read_bytes()) == item['sha256'], 'download digest mismatch')
             partial.rename(target)

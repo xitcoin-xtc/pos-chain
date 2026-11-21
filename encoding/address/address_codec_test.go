@@ -6,7 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
-	evmaddress "github.com/xitcoin-org/pos-chain/encoding/address"
+	evmaddress "github.com/xitcoin-xtc/pos-chain/encoding/address"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

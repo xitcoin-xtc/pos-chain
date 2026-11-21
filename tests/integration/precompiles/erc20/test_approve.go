@@ -7,8 +7,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	"github.com/xitcoin-org/pos-chain/precompiles/erc20"
-	"github.com/xitcoin-org/pos-chain/precompiles/testutil"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/erc20"
+	"github.com/xitcoin-xtc/pos-chain/precompiles/testutil"
 )
 
 //nolint:dupl // tests are not duplicate between the functions

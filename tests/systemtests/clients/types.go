@@ -4,7 +4,7 @@ import (
 	"crypto/ecdsa"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xitcoin-org/pos-chain/crypto/ethsecp256k1"
+	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 	"github.com/ethereum/go-ethereum/common"
 )
 

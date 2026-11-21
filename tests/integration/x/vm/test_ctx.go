@@ -1,8 +1,8 @@
 package vm
 
 import (
-	"github.com/xitcoin-org/pos-chain/testutil/integration/evm/network"
-	evmante "github.com/xitcoin-org/pos-chain/x/vm/ante"
+	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/network"
+	evmante "github.com/xitcoin-xtc/pos-chain/x/vm/ante"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 )

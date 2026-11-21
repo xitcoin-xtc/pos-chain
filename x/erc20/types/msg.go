@@ -4,7 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	protov2 "google.golang.org/protobuf/proto"
 
-	erc20api "github.com/xitcoin-org/pos-chain/api/cosmos/evm/erc20/v1"
+	erc20api "github.com/xitcoin-xtc/pos-chain/api/cosmos/evm/erc20/v1"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"

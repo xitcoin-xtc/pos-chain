@@ -9,9 +9,9 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 
-	"github.com/xitcoin-org/pos-chain/ethereum/eip712"
-	"github.com/xitcoin-org/pos-chain/wallets/accounts"
-	"github.com/xitcoin-org/pos-chain/wallets/usbwallet"
+	"github.com/xitcoin-xtc/pos-chain/ethereum/eip712"
+	"github.com/xitcoin-xtc/pos-chain/wallets/accounts"
+	"github.com/xitcoin-xtc/pos-chain/wallets/usbwallet"
 
 	sdkledger "github.com/cosmos/cosmos-sdk/crypto/ledger"
 	sdk "github.com/cosmos/cosmos-sdk/types"
