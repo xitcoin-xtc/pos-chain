@@ -14,7 +14,7 @@ var (
 )
 
 var (
-	routeStateKey        = []byte{0x05}
+	routeStateKey        = types.KeyRouteState
 	processedPausePrefix = []byte{0x06}
 )
 
@@ -66,7 +66,7 @@ func (k Keeper) PauseRoute(ctx sdk.Context, config types.RouteConfig, action typ
 	if ctx.BlockTime().Unix() >= action.ExpiresUnix {
 		return errors.New("guardian pause action has expired")
 	}
-	id, err := action.ID()
+	id, err := action.ID(ctx.ChainID())
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (k Keeper) PauseRoute(ctx sdk.Context, config types.RouteConfig, action typ
 	if store.Has(processedPauseKey(id)) {
 		return ErrControlActionProcessed
 	}
-	if _, err := types.VerifyGuardianPause(action, config.Guardian, signature); err != nil {
+	if _, err := types.VerifyGuardianPause(action, ctx.ChainID(), config.Guardian, signature); err != nil {
 		return err
 	}
 	state, err := k.GetRouteState(ctx)

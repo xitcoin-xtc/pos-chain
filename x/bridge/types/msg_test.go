@@ -16,7 +16,7 @@ func validSubmitMessage() MsgSubmitAttestation {
 		Submitter:     sdk.AccAddress(make([]byte, 20)).String(),
 		RouteId:       "cronos-testnet-xitcoin-testnet",
 		Direction:     string(DirectionCronosToXitcoin),
-		SourceChainId: "cronos-testnet",
+		SourceChainId: "338",
 		SourceRef:     "0x" + strings.Repeat("a", 64),
 		Nonce:         1,
 		Destination:   "xitcoin1testdestination",

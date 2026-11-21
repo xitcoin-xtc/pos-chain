@@ -14,7 +14,7 @@ func TestVerifyGuardianPause(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	digest, err := GuardianPauseDigest(validGuardianPause())
+	digest, err := GuardianPauseDigest(validGuardianPause(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestVerifyGuardianPause(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := VerifyGuardianPause(validGuardianPause(), crypto.PubkeyToAddress(guardian.PublicKey).Hex(), signature); err != nil {
+	if _, err := VerifyGuardianPause(validGuardianPause(), testChainID, crypto.PubkeyToAddress(guardian.PublicKey).Hex(), signature); err != nil {
 		t.Fatalf("valid guardian pause rejected: %v", err)
 	}
 }
@@ -36,7 +36,7 @@ func TestVerifyGuardianPauseRejectsOtherSigner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	digest, err := GuardianPauseDigest(validGuardianPause())
+	digest, err := GuardianPauseDigest(validGuardianPause(), testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func TestVerifyGuardianPauseRejectsOtherSigner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := VerifyGuardianPause(validGuardianPause(), crypto.PubkeyToAddress(guardian.PublicKey).Hex(), signature); err == nil {
+	if _, err := VerifyGuardianPause(validGuardianPause(), testChainID, crypto.PubkeyToAddress(guardian.PublicKey).Hex(), signature); err == nil {
 		t.Fatal("non-guardian pause was accepted")
 	}
 }

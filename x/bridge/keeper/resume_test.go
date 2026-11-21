@@ -6,7 +6,6 @@ import (
 	"time"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -17,7 +16,7 @@ import (
 func pausedRouteForResume(t *testing.T) (sdkContext sdk.Context, k Keeper, config types.RouteConfig, keys []*ecdsa.PrivateKey) {
 	t.Helper()
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	sdkContext = sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_resume_test")).WithBlockTime(time.Unix(1800000100, 0))
+	sdkContext = testContext(key, storetypes.NewTransientStoreKey("bridge_resume_test")).WithBlockTime(time.Unix(1800000100, 0))
 	k = NewKeeper(key)
 	keys = make([]*ecdsa.PrivateKey, 3)
 	signers := make([]string, 3)
@@ -46,7 +45,7 @@ func signedResume(t *testing.T, config types.RouteConfig, keys []*ecdsa.PrivateK
 		t.Fatal(err)
 	}
 	action := types.ControlAction{RouteID: config.RouteID, Action: types.ActionResumeRoute, PayloadHash: common.BytesToHash(payloadHash[:]).Hex(), Nonce: 1, NotBeforeUnix: 1800000000, ExpiresUnix: 1800003600}
-	digest, err := types.ControlDigest(action)
+	digest, err := types.ControlDigest(action, testChainID)
 	if err != nil {
 		t.Fatal(err)
 	}

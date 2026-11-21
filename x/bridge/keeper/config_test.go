@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	sdktestutil "github.com/cosmos/cosmos-sdk/testutil"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
@@ -26,7 +25,7 @@ func keeperRouteConfig() types.RouteConfig {
 
 func TestRouteConfigRoundTrip(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_config_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_config_test"))
 	k := NewKeeper(key)
 
 	if _, found, err := k.GetRouteConfig(ctx); err != nil || found {
@@ -47,7 +46,7 @@ func TestRouteConfigRoundTrip(t *testing.T) {
 
 func TestRouteConfigRejectsInvalidInput(t *testing.T) {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ctx := sdktestutil.DefaultContext(key, storetypes.NewTransientStoreKey("bridge_bad_config_test"))
+	ctx := testContext(key, storetypes.NewTransientStoreKey("bridge_bad_config_test"))
 	k := NewKeeper(key)
 	config := keeperRouteConfig()
 	config.MaxTransferAmount = "0"
