@@ -1,6 +1,6 @@
 module github.com/xitcoin-xtc/pos-chain/tests/jsonrpc/simulator
 
-go 1.26.10
+go 1.26.11
 
 require (
 	github.com/ethereum/go-ethereum v1.17.0
