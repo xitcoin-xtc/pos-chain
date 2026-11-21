@@ -34,6 +34,12 @@ const ValidatorIncentivesDailyV2UpgradeName = "xitcoin-validator-incentives-dail
 // enable, or resume a route by itself.
 const BridgeInitialRouteUpgradeName = "xitcoin-bridge-initial-route-v1"
 
+// SecurityHardeningUpgradeName is the coordinated binary upgrade for the
+// November 2026 security release. It runs the module migrations of that
+// release, including the Cosmos SDK v0.54.5 x/feegrant queue migration
+// (consensus version 2 to 3). It adds or removes no store.
+const SecurityHardeningUpgradeName = "xitcoin-security-hardening-v1"
+
 func (app EVMD) RegisterUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
@@ -87,6 +93,13 @@ func (app EVMD) RegisterUpgradeHandlers() {
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		BridgeInitialRouteUpgradeName,
+		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+		},
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		SecurityHardeningUpgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 		},
