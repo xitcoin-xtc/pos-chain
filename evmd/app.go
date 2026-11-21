@@ -253,6 +253,11 @@ func NewExampleApp(
 		txDecoder,
 		baseAppOptions...,
 	)
+	// The EVM chain ID is read from app.toml; a public network refuses any
+	// other value so that its nodes cannot disagree on transaction validity.
+	if err := evmconfig.ValidateEVMChainID(bApp.ChainID(), evmChainID); err != nil {
+		panic(err)
+	}
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(txConfig.TxEncoder())
@@ -375,7 +380,7 @@ func NewExampleApp(
 		app.BankKeeper,
 		evmconfig.NativeDenom,
 		evmconfig.MaximumSupplyAtomic,
-		mustTestnetAdministrativeAuthority(),
+		mustAdministrativeAuthority(bApp.ChainID()),
 	)
 
 	app.MintKeeper = mintkeeper.NewKeeper(
@@ -433,15 +438,16 @@ func NewExampleApp(
 		skipUpgradeHeights[int64(h)] = true
 	}
 	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
-	// Software upgrades require the dedicated 2-of-3 administrative
-	// multisignature. Executable governance proposals are rejected by ante.
+	// Software upgrades require the network's administrative authority (the
+	// 2-of-3 multisig on the testnet, see config.AdministrativeAuthority).
+	// Executable governance proposals are rejected by ante.
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
 		runtime.NewKVStoreService(keys[upgradetypes.StoreKey]),
 		appCodec,
 		homePath,
 		app.BaseApp,
-		mustTestnetAdministrativeAuthority(),
+		mustAdministrativeAuthority(bApp.ChainID()),
 	)
 
 	// Create IBC Keeper
@@ -541,9 +547,7 @@ func NewExampleApp(
 			precompiletypes.WithSlashingMsgServerDecorator(func(inner slashingtypes.MsgServer) slashingtypes.MsgServer {
 				return validatoradmission.NewSlashingMsgServer(app.ValidatorAdmissionKeeper, inner)
 			}),
-			precompiletypes.WithGovernanceProposalSubmission(
-				cast.ToBool(appOpts.Get(UnsafeEnableGovernanceProposalSubmissionOption)),
-			),
+			precompiletypes.WithGovernanceProposalSubmission(governanceProposalSubmissionEnabled()),
 		),
 	)
 
@@ -800,7 +804,7 @@ func NewExampleApp(
 	app.setAnteHandler(
 		app.txConfig,
 		maxGasWanted,
-		cast.ToBool(appOpts.Get(UnsafeEnableGovernanceProposalSubmissionOption)),
+		governanceProposalSubmissionEnabled(),
 	)
 
 	// set the EVM priority nonce mempool
@@ -957,6 +961,9 @@ func (app *EVMD) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci
 	if err := app.validateValidatorAdmissionGenesis(genesisState); err != nil {
 		return nil, err
 	}
+	if err := validateNetworkAuthorities(ctx.ChainID(), genesisState); err != nil {
+		return nil, err
+	}
 
 	if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
 		panic(err)
@@ -1069,7 +1076,7 @@ func (app *EVMD) DefaultGenesis() map[string]json.RawMessage {
 	genesis[erc20types.ModuleName] = app.appCodec.MustMarshalJSON(erc20GenState)
 
 	incentiveGenState := validatorincentivestypes.DefaultGenesisState()
-	incentiveGenState.Authority = mustTestnetAdministrativeAuthority()
+	incentiveGenState.Authority = mustAdministrativeAuthority(app.ChainID())
 	incentiveGenesis, err := json.Marshal(incentiveGenState)
 	if err != nil {
 		panic(err)

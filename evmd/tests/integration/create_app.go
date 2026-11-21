@@ -43,7 +43,9 @@ func CreateEvmd(chainID string, evmChainID uint64, customBaseAppOptions ...func(
 	logger := log.NewNopLogger()
 	loadLatest := true
 	appOptions := NewAppOptionsWithFlagHomeAndChainID(defaultNodeHome, evmChainID)
-	appOptions[evmd.UnsafeEnableGovernanceProposalSubmissionOption] = true
+	// Legacy integration suites submit governance proposals; release
+	// binaries cannot enable this.
+	evmd.EnableGovernanceProposalSubmissionForTests(true)
 
 	baseAppOptions := append(customBaseAppOptions, baseapp.SetChainID(chainID))
 
