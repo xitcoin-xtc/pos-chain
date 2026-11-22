@@ -7,13 +7,13 @@
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
   "scope": "Current main 9e49329 plus the organisation rename to xitcoin-xtc and the klauspost/compress, OpenTelemetry and Go 1.26.11 patches; Cosmos SDK fork rebased on v0.54.5, go-ethereum requirement v1.17.2 and the Dependabot minor/patch groups; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
-  "assessment_sha256": "90a5e9749e92d2d4a2cc86b01f55c28282e6f2d024736fb9d8888a5342473eef",
-  "provenance_sha256": "1a8e9d71632a9c4e102aba4aac65cc6d7dfdb1d6664d3d2cc2d3bc2618b4e4c0",
+  "assessment_sha256": "a59a55eede4be778e87ea3d43d08b7c7b20e6fd94b6cb7f8e17731646eb8a5f6",
+  "provenance_sha256": "d368d257122c69d29acfc57e1a5d125702d0a25ced68f13a340d5e773693542b",
   "lock_sha256": {
     "go.mod": "81791c38837025419477eff2a46722b3c967db3d8387cb3ab9067f808ad28cf2",
     "go.sum": "e20f93a19a6f79a9de5db4dfe09bd978a82de706e13dcc7fac32003799130c48",
-    "evmd/go.mod": "4bd8a5594128a00b0185664d61de035c90ecfa00c52841c330778454f9440892",
-    "evmd/go.sum": "010e1ebab2c8ef7380b9a8fb172523b55c9442ba16cf8c76382a2dc3338c1390",
+    "evmd/go.mod": "503a444ef36efede017b9af39337c3f66034a8ba294506818a095364af01f535",
+    "evmd/go.sum": "08096e27b93f98fd3f64c0d2c1763f1bf422e746d8122a727fa6102ba64e7ca8",
     "tests/speedtest/go.mod": "54558c9e65db03d839c80d4645e78afc31d7ba9faeea4a2f1435574ec4e255ad",
     "tests/speedtest/go.sum": "c44bfcc9475a901ef32c10d78a3156e17b0b3a071afe4da8b801a0daeabec2c5"
   },
@@ -49,22 +49,23 @@
       "evmd_packages_ok": 21
     },
     "govulncheck": "v1.7.0 root, evmd and symbol-bearing binary: 0 called, 0 imported-package findings; module-level GO-2026-5932 and GO-2025-3442",
-    "evmd_root_anchor": "cbab2828b2c59aab7ef123afc7340de0877af8fc"
+    "evmd_root_anchor": "ac5392f6186cf2dc32427bfe1c53220030619901"
   },
   "current_head_qualification": "Mandatory fresh root/evmd checkout and published-module matrix, strict source and binary scans and the speedtest command qualification on the pull request head; no historical artifact reuse",
   "known_open_findings": [
-    "cosmos/evm 2026-11-02 advisories not yet ported (GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8; GHSA-c6xv and GHSA-9xwc to check)",
     "node-local unsafe-enable-governance-proposal-submission affects consensus paths",
     "testnet multisig hard-coded as authority; CLI defaults to the testnet EVM chain id"
   ],
   "state_breaking": [
     "Cosmos SDK v0.54.5 x/feegrant migration (consensus version 2 -> 3); upgrade handler xitcoin-security-hardening-v1",
-    "validator admission: authz MsgExec walk, MsgGrant restriction, MinSelfDelegation rule, staking hook, gov v1beta1 submission blocked"
+    "validator admission: authz MsgExec walk, MsgGrant restriction, MinSelfDelegation rule, staking hook, gov v1beta1 submission blocked",
+    "cosmos/evm ports: GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8, GHSA-c6xv, GHSA-9xwc (gas, fee checks, EIP-712 validity, self-destruct)"
   ],
   "follow_ups": [
     "2026-11-21: SDK v0.54.5 base, go-ethereum requirement and dependency refresh (review section 2)",
-    "2026-11-22: validator admission through authz MsgExec and direct callers (review section 3); state-breaking (transaction validity)"
+    "2026-11-22: validator admission through authz MsgExec and direct callers (review section 3); state-breaking (transaction validity)",
+    "2026-11-22: Cosmos EVM security fixes of 2026-11-02 ported (review section 4); state-breaking (execution results)"
   ],
-  "go_source_sha256": "8107cb1c712715b8e79abb3839f772e7ee66f4f4fa1abd5bf28ce12dfd3ffc91",
-  "go_source_input_count": 1112
+  "go_source_sha256": "bdc94b85d1ab12a89f0cc2c0141c9d65e30031d8d30258493538a48d3ed20592",
+  "go_source_input_count": 1114
 }

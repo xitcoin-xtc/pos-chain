@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 	github.com/tyler-smith/go-bip39 v1.1.0
-	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261122033017-cbab2828b2c5
+	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261122044419-ac5392f6186c
 	golang.org/x/sync v0.25.0
 	google.golang.org/grpc v1.85.0
 )
