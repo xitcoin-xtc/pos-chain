@@ -26,7 +26,9 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
           go-version-file: go.mod
-          cache-dependency-path: go.sum
+          cache-dependency-path: |
+            go.sum
+            evmd/go.sum
 
       - name: Verify canonical release state
         run: python3 scripts/verify-xitcoin-release-state.py
@@ -41,6 +43,16 @@ jobs:
 
       - name: Run Go tests
         run: go test -tags=test ./...
+
+      - name: Run evmd Go tests
+        # evmd is a separate module (application, keepers wiring, integration
+        # suites); it is not covered by the root module run above.
+        working-directory: evmd
+        run: go test -tags=test ./...
+
+      - name: Run evmd vulnerability analysis
+        working-directory: evmd
+        run: bash ../scripts/run-govulncheck.sh ./...
 
       - name: Build xitcoind
         # Scan and publish the same symbol-bearing artifact. A stripped binary
@@ -69,7 +81,7 @@ jobs:
           ./build/xitcoind version --long
 
       - name: Upload Linux release artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: xitcoin-linux-amd64-${{ github.sha }}
           path: |
