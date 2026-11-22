@@ -32,11 +32,19 @@ func NewStakingHooks(admissionKeeper keeper.Keeper, validators ValidatorReader) 
 }
 
 // AfterValidatorCreated rejects the creation of a validator that is not
-// approved, and after genesis a validator whose MinSelfDelegation is below the
-// on-chain minimum. The staking module calls it before the self delegation is
-// made; an error aborts the whole message.
+// approved or whose MinSelfDelegation is below the on-chain minimum. The
+// staking module calls it before the self delegation is made; an error aborts
+// the whole message.
+//
+// It does nothing during InitChain: x/staking also calls it for validators
+// imported from genesis state (for example an exported chain, which can hold
+// revoked validators), and genesis transactions are checked by the ante
+// handler and by the application's genesis validation instead.
 func (h StakingHooks) AfterValidatorCreated(goCtx context.Context, valAddr sdk.ValAddress) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	if isGenesis(ctx) {
+		return nil
+	}
 	validator, err := h.validators.GetValidator(goCtx, valAddr)
 	if err != nil {
 		return err

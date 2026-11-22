@@ -229,8 +229,11 @@ func TestStakingHookEnforcesAdmission(t *testing.T) {
 	if err := hooks.AfterValidatorCreated(f.ctx, valAddr); err == nil {
 		t.Fatal("validator with a low min_self_delegation passed the staking hook")
 	}
+	// Genesis import (InitChain) is checked elsewhere: exported state may hold
+	// validators whose approval was revoked.
+	f.keeper.SetApprovedValidator(f.ctx, f.validator, false)
 	if err := hooks.AfterValidatorCreated(f.ctx.WithBlockHeight(0), valAddr); err != nil {
-		t.Fatalf("genesis validator was rejected by the staking hook: %v", err)
+		t.Fatalf("genesis validator import was rejected by the staking hook: %v", err)
 	}
 }
 
