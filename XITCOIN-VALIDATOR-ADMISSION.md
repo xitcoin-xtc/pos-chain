@@ -45,7 +45,7 @@ The planning model contains:
 
 These positions are future capacity only. They do not transfer funds, approve operators, activate validators or create automatic entitlements.
 
-The 39 territorial consolidations in the allocation dataset are statistical population mappings and do not create additional positions.
+The planned Member-State allocation uses the UN population figure published for each Member State, without territorial consolidation (canonical dataset in xitcoin-xtc/testnets). It does not create additional positions.
 
 ## Authority and governance boundary
 
@@ -63,6 +63,15 @@ Production custody, recovery and signer-change procedures must be documented and
 - Revoke: remove an address and deactivate the associated validator according to protocol rules.
 - Protect: a revoked validator must not recreate or unjail itself without renewed approval.
 - Audit: approvals, revocations and parameter updates must remain visible in blockchain state and transaction history.
+
+## Enforcement in the node software
+
+- Validator creation requires an approved operator, a self-delegation of at least 5,000,000 XTC and, after genesis, `min_self_delegation` of at least 5,000,000 XTC, so the staking module keeps enforcing the minimum for the life of the validator.
+- `MsgCreateValidator` and `MsgUnjail` must be signed by the operator itself. They are rejected inside an authz `MsgExec` at any depth, including a self-granted one, and grants for them are rejected.
+- The checks also run inside the staking module (staking hook) and in front of the staking and slashing precompiles, which are inactive on the testnet.
+- A revoked validator cannot unjail through any of these paths.
+
+Releases before this change checked only top-level messages; see the security review of 2026-11-21 in `docs/`.
 
 ## Mandatory validation
 
