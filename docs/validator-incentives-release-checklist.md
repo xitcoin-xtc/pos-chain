@@ -2,8 +2,8 @@
 
 Status date: 2 September 2026
 
-This checklist is the canonical technical release record. The public GitBook
-describes the product and links here instead of duplicating test logs, audit
+This checklist is the canonical technical release record. The public
+documentation at https://xitcoin.com/docs/ describes the product and links here instead of duplicating test logs, audit
 evidence or deployment procedures.
 
 ## Current readiness
@@ -25,7 +25,7 @@ Completion of the public testnet does not by itself authorize a mainnet launch.
 - [x] daily balance-derived reward policy specified;
 - [x] canonical Staking keeper used for eligible bonded stake;
 - [x] canonical Bank keeper used for treasury balance;
-- [x] governance module account configured as authority;
+- [x] authority configured in genesis (on the testnet, the 2-of-3 administrative multisig; executable governance proposals are disabled);
 - [x] treasury account has no mint or burn permission;
 - [x] public read-only parameter, period and treasury queries;
 - [x] CLI and Cosmos message handlers;

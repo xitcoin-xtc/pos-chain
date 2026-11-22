@@ -24,12 +24,12 @@ The canonical four-validator testnet is publicly active. The sentry, four valida
 
 | Service | Endpoint |
 | --- | --- |
-| Cosmos RPC | `https://rpc-testnet.xitcoin.org` |
-| Cosmos REST API | `https://api-testnet.xitcoin.org` |
-| EVM JSON-RPC | `https://evm-rpc-testnet.xitcoin.org` |
-| Cosmos explorer | `https://explorer-testnet.xitcoin.org` |
-| EVM explorer | `https://evm-explorer-testnet.xitcoin.org` |
-| Faucet | `https://faucet-testnet.xitcoin.org` |
+| Cosmos RPC | `https://rpc-testnet.xitchain.com` |
+| Cosmos REST API | `https://api-testnet.xitchain.com` |
+| EVM JSON-RPC | `https://evm-rpc-testnet.xitchain.com` |
+| Cosmos explorer | `https://explorer-testnet.xitchain.com` |
+| EVM explorer | `https://evm-explorer-testnet.xitchain.com` |
+| Faucet | `https://faucet-testnet.xitchain.com` |
 
 The faucet sends 10 testnet XTC per accepted request. Address and IP windows are 24 hours, with at most three accepted requests per IP in that window. It spends from a finite 50,000,000 XTC genesis allocation and does not mint automatically.
 
@@ -41,7 +41,7 @@ The faucet sends 10 testnet XTC per accepted request. Address and IP windows are
 - Validator capacity and admission cap: 258.
 - Genesis bank allocations: 386,000,000 XTC sovereign reserve; 50,000,000 XTC faucet; 20,000,000 XTC validator-incentives module; and 21,000,000 XTC across the four validator accounts before genesis transactions execute.
 - Of the validator accounts' 21,000,000 XTC, 20,000,000 XTC is self-delegated and 1,000,000 XTC remains liquid.
-- No bridge route is configured. The default `paused=false` field alone does not enable one.
+- No bridge route is configured in genesis. The route was initialized afterwards, on 2026-09-03 (height 74270), and is disabled and paused; no transfer has been processed.
 
 ## Canonical genesis
 

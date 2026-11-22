@@ -5,12 +5,15 @@ Reference date: 27 August 2026
 
 ## Authority model
 
-The Validator Incentive module uses the Cosmos governance module account as
-its on-chain authority. The module account has no private key. A personal
-account cannot impersonate it.
+The Validator Incentive module's on-chain authority is stored in its genesis
+state. On Xitcoin Testnet it is the 2-of-3 administrative multisig
+`xtc1vza8zsgvrfwmve084ytd8xqdkkm7u9e5csctc2`, set in the testnet genesis. It is
+not the Cosmos governance module account. Executable governance proposals are
+disabled on every node. The mainnet authority is not decided yet; the node
+software refuses the testnet multisig on the mainnet chain ID.
 
 This authority may update the treasury release policy or pause future reward
-calculation after the applicable governance process. It does not approve or
+calculation with a transaction signed by two of its three keys. It does not approve or
 revoke validators. Validator admission remains a separate policy and execution
 path.
 

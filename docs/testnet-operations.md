@@ -5,7 +5,7 @@
 Check CometBFT identity and synchronization:
 
 ```bash
-curl -fsS https://rpc-testnet.xitcoin.org/status |
+curl -fsS https://rpc-testnet.xitchain.com/status |
   jq '.result | {
     chain_id: .node_info.network,
     height: .sync_info.latest_block_height,
@@ -22,7 +22,7 @@ Check the EVM Chain ID:
 curl -fsS \
   -H 'content-type: application/json' \
   --data '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}' \
-  https://evm-rpc-testnet.xitcoin.org |
+  https://evm-rpc-testnet.xitchain.com |
   jq -r '.result'
 ```
 
@@ -32,7 +32,7 @@ Check Cosmos staking parameters:
 
 ```bash
 curl -fsS \
-  https://api-testnet.xitcoin.org/cosmos/staking/v1beta1/params |
+  https://api-testnet.xitchain.com/cosmos/staking/v1beta1/params |
   jq '.params | {max_validators, bond_denom}'
 ```
 
@@ -56,11 +56,11 @@ Compare the chain and explorer heights:
 
 ```bash
 CHAIN_HEIGHT="$(
-  curl -fsS https://rpc-testnet.xitcoin.org/status |
+  curl -fsS https://rpc-testnet.xitchain.com/status |
     jq -r '.result.sync_info.latest_block_height'
 )"
 BLOCKSCOUT_HEIGHT="$(
-  curl -fsS https://evm-explorer-testnet.xitcoin.org/api/v2/stats |
+  curl -fsS https://evm-explorer-testnet.xitchain.com/api/v2/stats |
     jq -r '.total_blocks'
 )"
 printf 'chain=%s blockscout=%s lag=%s\n' \

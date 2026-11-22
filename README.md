@@ -60,16 +60,16 @@ During the current launch phase, only the canonical on-chain validator-admission
 | [`contracts`](https://github.com/xitcoin-xtc/contracts) | Canonical Cronos V1, V2, migration and bridge-contract sources, deployments and audit scope |
 | [`bridge-relayer`](https://github.com/xitcoin-xtc/bridge-relayer) | Public bridge protocol, relayer and operational safety tooling |
 | [`testnets`](https://github.com/xitcoin-xtc/testnets) | Canonical public testnet genesis, checksum and network manifest |
-| [`guide`](https://github.com/xitcoin-xtc/guide) | Canonical public user, developer and operator guide |
+| `guide` (private) | Source of the public user, developer and operator guide published at https://xitcoin.com/docs/ |
 | [`explorer-testnet`](https://github.com/xitcoin-xtc/explorer-testnet) | Canonical Cosmos explorer source, faucet interface and Blockscout configuration |
 | [`explorer-evm-testnet`](https://github.com/xitcoin-xtc/explorer-evm-testnet) | Reproducible standalone Blockscout configuration and provenance records |
-| [`brand`](https://github.com/xitcoin-xtc/brand) | Approved standalone Xitcoin token artwork and color references |
+| `brand` (private) | Approved standalone Xitcoin token artwork and color references |
 
 Contract addresses and audit claims are maintained only in `contracts`. Network identity and native-asset rules are maintained only in `pos-chain`. Other repositories link to those canonical records instead of duplicating them.
 
 ## Build
 
-Prerequisites: Go 1.26.7, Node.js 24 and the toolchain documented by the project.
+Prerequisites: Go 1.26.11 (see `go.mod`), Node.js 24 and the toolchain documented by the project.
 
 ```bash
 git clone https://github.com/xitcoin-xtc/pos-chain.git
@@ -87,7 +87,9 @@ go test -tags=test ./x/bridge/...
 ```
 
 Root and `evmd/` are separate Go modules; root `./...` does not test evmd.
-PR44 dependency dispositions and limits are recorded in
+CI runs both on every push and pull request. The current internal security
+review is [docs/security-review-2026-11-21.md](docs/security-review-2026-11-21.md);
+the September dependency dispositions are in
 [SECURITY-ASSESSMENT.md](SECURITY-ASSESSMENT.md).
 
 ## Documentation
