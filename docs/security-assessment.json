@@ -6,14 +6,14 @@
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "Main 9e49329 plus the pull requests reviewed in docs/security-review-2026-11-21.md: organisation rename and reachable-advisory patches, Cosmos SDK v0.54.5 base and dependency refresh, validator admission fix, Cosmos EVM 2026-11-02 security ports, per-network authorities and governance option; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
-  "assessment_sha256": "bd5f3dd11d28b862f6cbec5bc7299e16f89ea3f2bf2847d42333922d2ea2ad1f",
-  "provenance_sha256": "d368d257122c69d29acfc57e1a5d125702d0a25ced68f13a340d5e773693542b",
+  "scope": "Main 9e49329 plus the pull requests reviewed in docs/security-review-2026-11-21.md: organisation rename and reachable-advisory patches, Cosmos SDK v0.54.5 base and dependency refresh, validator admission fix, Cosmos EVM 2026-11-02 security ports, bridge protocol v2 (#69), per-network authorities and governance option; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
+  "assessment_sha256": "c92fb7a61d92edcfdd4737cd2f1ec4cac76e2e9787295de8a6aa8f55b813c8dc",
+  "provenance_sha256": "5000f1e950e5a662e5470634e4d168e09859c4883480e8df4017210b79259b18",
   "lock_sha256": {
     "go.mod": "81791c38837025419477eff2a46722b3c967db3d8387cb3ab9067f808ad28cf2",
     "go.sum": "e20f93a19a6f79a9de5db4dfe09bd978a82de706e13dcc7fac32003799130c48",
-    "evmd/go.mod": "503a444ef36efede017b9af39337c3f66034a8ba294506818a095364af01f535",
-    "evmd/go.sum": "08096e27b93f98fd3f64c0d2c1763f1bf422e746d8122a727fa6102ba64e7ca8",
+    "evmd/go.mod": "f9304f607b1404f6236853490157c334ec6b07a4ce23afb09c83dc0011b8c28a",
+    "evmd/go.sum": "facbc0c995317ad7ec2f8debe7713435cefc3a3c7e104f7bb13ba4f68f68b703",
     "tests/speedtest/go.mod": "54558c9e65db03d839c80d4645e78afc31d7ba9faeea4a2f1435574ec4e255ad",
     "tests/speedtest/go.sum": "c44bfcc9475a901ef32c10d78a3156e17b0b3a071afe4da8b801a0daeabec2c5"
   },
@@ -49,7 +49,7 @@
       "evmd_packages_ok": 21
     },
     "govulncheck": "v1.7.0 root, evmd and symbol-bearing binary: 0 called, 0 imported-package findings; module-level GO-2026-5932 and GO-2025-3442",
-    "evmd_root_anchor": "ac5392f6186cf2dc32427bfe1c53220030619901"
+    "evmd_root_anchor": "59c8a2cf60943a394e7654ff6821edf5390d2cbd"
   },
   "current_head_qualification": "Mandatory fresh root/evmd checkout and published-module matrix, strict source and binary scans and the speedtest command qualification on the pull request head; no historical artifact reuse",
   "known_open_findings": [],
@@ -57,14 +57,16 @@
     "Cosmos SDK v0.54.5 x/feegrant migration (consensus version 2 -> 3); upgrade handler xitcoin-security-hardening-v1",
     "validator admission: authz MsgExec walk, MsgGrant restriction, MinSelfDelegation rule, staking hook, gov v1beta1 submission blocked",
     "cosmos/evm ports: GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8, GHSA-c6xv, GHSA-9xwc (gas, fee checks, EIP-712 validity, self-destruct)",
-    "governance submission no longer a node option; per-network authority and EVM chain ID checks"
+    "governance submission no longer a node option; per-network authority and EVM chain ID checks",
+    "bridge v2 (#69): source-deposit replay key, network-bound v2 signing domains, sequential control nonce, destination checks"
   ],
   "follow_ups": [
     "2026-11-21: SDK v0.54.5 base, go-ethereum requirement and dependency refresh (review section 2)",
     "2026-11-22: validator admission through authz MsgExec and direct callers (review section 3); state-breaking (transaction validity)",
     "2026-11-22: Cosmos EVM security fixes of 2026-11-02 ported (review section 4); state-breaking (execution results)",
-    "2026-11-22: per-network authorities, EVM chain ID and governance option (review section 5); state-breaking only for nodes that set the removed option"
+    "2026-11-22: per-network authorities, EVM chain ID and governance option (review section 5); state-breaking only for nodes that set the removed option",
+    "2026-11-22: bridge attestation protocol v2, pull request #69 (review section 6); state-breaking, to be merged with bridge-relayer#50"
   ],
-  "go_source_sha256": "bf3de0521063a1d6192b339329167e733372cad70f9b48066f33a623c602356b",
-  "go_source_input_count": 1117
+  "go_source_sha256": "45536d9392c2cd1dcc2582299823b06c782d2cb568da097f80e76f140335a85a",
+  "go_source_input_count": 1124
 }

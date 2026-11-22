@@ -104,7 +104,7 @@ class GateTests(unittest.TestCase):
         self.cfg["modules"]["root"][LIBRARY] = {"Path": LIBRARY, "Main": True}
         self.cfg["modules"]["evmd"][LIBRARY] = {
             "Path": LIBRARY, "Version": manifest["root_library"]["version"],
-            "Sum": "h1:Zbon0AWRVohbCrHNmzpvtCRQ/sEm18e2S2EXSHFobiE=",
+            "Sum": "h1:IWL/tVLc7GNmjqMULG2aF2m8TdkFVasW7Pu9hDIWEkE=",
             "GoModSum": "h1:EA4zbBu+KFdpVp/tEfyy9/5C3H9xO/FuatoCPVuoBLM=",
         }
 
