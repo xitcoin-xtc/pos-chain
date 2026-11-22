@@ -1,6 +1,7 @@
 package network
 
 import (
+	"encoding/json"
 	"fmt"
 	"maps"
 	"slices"
@@ -13,6 +14,7 @@ import (
 	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
 	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
+	validatoradmissiontypes "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 
@@ -515,7 +517,45 @@ func newDefaultGenesisState(cosmosEVMApp evm.EvmApp, evmChainID uint64, params d
 	genesisState = setDefaultMintGenesisState(cosmosEVMApp, genesisState, params.mint)
 	genesisState = setDefaultErc20GenesisState(cosmosEVMApp, evmChainID, genesisState)
 	genesisState = setDefaultVMGenesisState(cosmosEVMApp, evmChainID, genesisState)
+	genesisState = setDefaultValidatorAdmissionGenesisState(cosmosEVMApp, genesisState, params.genAccounts)
 
+	return genesisState
+}
+
+// setDefaultValidatorAdmissionGenesisState approves the pre-funded test
+// accounts as validator operators, with a minimum self delegation of one
+// atomic unit and the first pre-funded account as authority, on applications
+// that have the Xitcoin validator admission module. Suites that create validators (for example through the staking
+// precompile) then exercise an approved operator; the admission rules
+// themselves are tested in x/validatoradmission.
+func setDefaultValidatorAdmissionGenesisState(cosmosEVMApp evm.EvmApp, genesisState testutil.GenesisState, genAccounts []authtypes.GenesisAccount) testutil.GenesisState {
+	raw, found := genesisState[validatoradmissiontypes.ModuleName]
+	if !found {
+		return genesisState
+	}
+	var state validatoradmissiontypes.GenesisState
+	if err := json.Unmarshal(raw, &state); err != nil {
+		panic(err)
+	}
+	var stakingState stakingtypes.GenesisState
+	cosmosEVMApp.AppCodec().MustUnmarshalJSON(genesisState[stakingtypes.ModuleName], &stakingState)
+	for _, account := range genAccounts {
+		operator := sdktypes.ValAddress(account.GetAddress()).String()
+		if !slices.Contains(state.ApprovedValidators, operator) {
+			state.ApprovedValidators = append(state.ApprovedValidators, operator)
+		}
+	}
+	state.MinimumSelfDelegation = "1" + stakingState.Params.BondDenom
+	if state.Authority == "" && len(genAccounts) > 0 {
+		// The first pre-funded account is the admission authority, so suites
+		// can approve operators they create during a test.
+		state.Authority = genAccounts[0].GetAddress().String()
+	}
+	updated, err := json.Marshal(state)
+	if err != nil {
+		panic(err)
+	}
+	genesisState[validatoradmissiontypes.ModuleName] = updated
 	return genesisState
 }
 

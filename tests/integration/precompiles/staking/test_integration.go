@@ -27,6 +27,7 @@ import (
 	"github.com/xitcoin-xtc/pos-chain/testutil/integration/evm/utils"
 	testutiltx "github.com/xitcoin-xtc/pos-chain/testutil/tx"
 	testutiltypes "github.com/xitcoin-xtc/pos-chain/testutil/types"
+	validatoradmissiontypes "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	errorsmod "cosmossdk.io/errors"
@@ -262,6 +263,7 @@ func TestPrecompileIntegrationTestSuite(t *testing.T, create network.CreateEvmAp
 					err := utils.FundAccountWithBaseDenom(s.factory, s.network, s.keyring.GetKey(0), newAddr, math.NewInt(2e18))
 					Expect(err).To(BeNil(), "error while sending coins")
 					Expect(s.network.NextBlock()).To(BeNil())
+					approveValidatorOperator(s, newAddr)
 
 					description := staking.Description{
 						Moniker:         "new node",
@@ -1616,6 +1618,7 @@ func TestPrecompileIntegrationTestSuite(t *testing.T, create network.CreateEvmAp
 				err = utils.FundAccountWithBaseDenom(s.factory, s.network, s.keyring.GetKey(0), valAddr.Bytes(), math.NewInt(1e18))
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 				Expect(s.network.NextBlock()).To(BeNil())
+				approveValidatorOperator(s, valAddr)
 			})
 
 			It("tx from validator operator - should NOT create a validator", func() {
@@ -1718,6 +1721,7 @@ func TestPrecompileIntegrationTestSuite(t *testing.T, create network.CreateEvmAp
 				err = utils.FundAccountWithBaseDenom(s.factory, s.network, s.keyring.GetKey(0), valAddr.Bytes(), math.NewInt(2e18))
 				Expect(err).To(BeNil(), "error while funding account: %v", err)
 				Expect(s.network.NextBlock()).To(BeNil())
+				approveValidatorOperator(s, valAddr)
 
 				description = staking.Description{
 					Moniker:         "original moniker",
@@ -3747,4 +3751,17 @@ func TestPrecompileIntegrationTestSuite(t *testing.T, create network.CreateEvmAp
 	// Run Ginkgo integration tests
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Distribution Precompile Suite")
+}
+
+// approveValidatorOperator approves an operator created during a test in the
+// Xitcoin validator admission policy. The integration network makes the first
+// pre-funded account the admission authority.
+func approveValidatorOperator(s *PrecompileTestSuite, operator sdk.AccAddress) {
+	msg := &validatoradmissiontypes.MsgApproveValidator{
+		Authority:        s.keyring.GetAccAddr(0).String(),
+		ValidatorAddress: sdk.ValAddress(operator).String(),
+	}
+	_, err := s.factory.CommitCosmosTx(s.keyring.GetPrivKey(0), basefactory.CosmosTxArgs{Msgs: []sdk.Msg{msg}})
+	Expect(err).To(BeNil(), "error while approving the validator operator")
+	Expect(s.network.NextBlock()).To(BeNil())
 }
