@@ -203,3 +203,36 @@ finding 1 above and a related gap found while fixing it.
   `cbab2828b2c59aab7ef123afc7340de0877af8fc`, which is not GPG-signed.
 
 The review window is unchanged and no scanner exception is added.
+
+## Follow-up: Cosmos EVM security fixes of 2026-11-02 — 2026-11-22
+
+This section closes open finding 2 above. The six fixes released upstream in
+Cosmos EVM v0.7.4 and v0.6.4 are ported from the commits on upstream `main`,
+or from the v0.7.4 commit where `main` has none. All patches applied without
+changes except the CHANGELOG hunks and import paths. Each fix is its own commit
+and names the upstream commit. The upstream tests are included.
+
+| Advisory | Upstream | Change |
+| --- | --- | --- |
+| GHSA-wm4f-qpxp-rch4 (high) | d319ba440b | Precompile call counter is `uint64`, checked before it is incremented; reverted calls still count. A `uint8` counter wrapped and reopened the limit of 20. |
+| GHSA-2m6r-q6x4-4w5g (high) | 5f7a18534f | Fee checker clamps the tip cap to the fee cap and avoids the overflowing `baseFee + tipCap`; the mempool rechecker recovers ante panics. |
+| GHSA-7xxp-gq2c-x47x (medium) | 03c3ba7854 | EIP-712 sign docs with timeout timestamp, unordered flag, fee granter or fee payer are rejected (current and legacy encoders), because the typed data does not cover them. |
+| GHSA-p8x8-4gg6-prcc (high) | bd334caaf8 | Internal EVM calls are capped at the gas remaining on the Cosmos gas meter, and gas used before a StateDB flush or commit error is charged instead of dropped. |
+| GHSA-c6xv-pppp-rjw6 (high) | 93b2c25cd7 | Self-destruct of an account that still has delegations, redelegations or unbonding delegations fails, so staking claims cannot be replayed against the not-bonded pool. |
+| GHSA-9xwc-4fgh-f64f (medium) | ac0febdc0a (v0.7.4) | Panics in the asynchronous mempool insert queue are recovered and reported as insert errors instead of crashing the node. |
+
+Upstream also released v0.6.5 on 2026-11-13. Its only fix (skip StateDB-commit
+error transactions in block RPCs, upstream #1107) is already in this
+repository.
+
+- **State-breaking.** Yes: gas accounting, fee checks, EIP-712 validity and
+  self-destruct behaviour change execution results. They belong to the
+  coordinated `xitcoin-security-hardening-v1` upgrade. No store migration.
+- **Evidence.** Full root and evmd tests pass locally, including the upstream
+  unit and integration tests for each fix (the integration tests run through
+  evmd). The `govulncheck` root, evmd and binary scans report zero called
+  vulnerabilities.
+
+The review window is unchanged and no scanner exception is added.
+The evmd anchor for this section is `ac5392f6186cf2dc32427bfe1c53220030619901`,
+which is not GPG-signed.
