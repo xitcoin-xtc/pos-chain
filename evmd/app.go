@@ -411,7 +411,13 @@ func NewExampleApp(
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+		stakingtypes.NewMultiStakingHooks(
+			app.DistrKeeper.Hooks(),
+			app.SlashingKeeper.Hooks(),
+			// Validator admission is enforced inside x/staking as well, so it
+			// holds for every path that creates a validator.
+			validatoradmission.NewStakingHooks(app.ValidatorAdmissionKeeper, app.StakingKeeper),
+		),
 	)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(
@@ -527,6 +533,14 @@ func NewExampleApp(
 			app.GovKeeper,
 			app.SlashingKeeper,
 			appCodec,
+			// The staking and slashing precompiles call their message servers
+			// directly, without the transaction ante handler.
+			precompiletypes.WithStakingMsgServerDecorator(func(inner stakingtypes.MsgServer) stakingtypes.MsgServer {
+				return validatoradmission.NewStakingMsgServer(app.ValidatorAdmissionKeeper, inner)
+			}),
+			precompiletypes.WithSlashingMsgServerDecorator(func(inner slashingtypes.MsgServer) slashingtypes.MsgServer {
+				return validatoradmission.NewSlashingMsgServer(app.ValidatorAdmissionKeeper, inner)
+			}),
 			precompiletypes.WithGovernanceProposalSubmission(
 				cast.ToBool(appOpts.Get(UnsafeEnableGovernanceProposalSubmissionOption)),
 			),
