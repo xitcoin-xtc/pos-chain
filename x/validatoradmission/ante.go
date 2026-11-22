@@ -5,7 +5,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -13,68 +15,128 @@ import (
 	"github.com/xitcoin-xtc/pos-chain/x/validatoradmission/keeper"
 )
 
+// maxNestedMessages bounds the authz MsgExec nesting depth that is inspected.
+// It matches the limit of the authz limiter decorator in the EVM ante chain.
+const maxNestedMessages = 7
+
+// NewAdmissionAnteHandler enforces the Xitcoin validator admission, fixed
+// monetary policy and governance safeguards for every message of a
+// transaction, including messages wrapped in authz MsgExec at any depth.
+//
+// Validator creation and unjailing, mint parameter changes and governance
+// proposals are never accepted inside MsgExec: they must be signed directly
+// by the validator operator or proposer, where the full checks apply. Granting
+// an authorization for those message types is rejected as well.
 func NewAdmissionAnteHandler(
 	admissionKeeper keeper.Keeper,
 	next sdk.AnteHandler,
 	allowGovernanceProposalSubmission ...bool,
 ) sdk.AnteHandler {
-	allowGovernance := len(allowGovernanceProposalSubmission) > 0 &&
-		allowGovernanceProposalSubmission[0]
+	checker := admissionChecker{
+		keeper: admissionKeeper,
+		allowGovernance: len(allowGovernanceProposalSubmission) > 0 &&
+			allowGovernanceProposalSubmission[0],
+	}
 
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
-		for _, message := range tx.GetMsgs() {
-			switch msg := message.(type) {
-			case *stakingtypes.MsgCreateValidator:
-				if !admissionKeeper.IsApprovedValidator(ctx, msg.ValidatorAddress) {
-					return ctx, errorsmod.Wrap(
-						sdkerrors.ErrUnauthorized,
-						"Validator Admission: validator is not approved by Xitcoin",
-					)
-				}
+		if err := checker.checkMessages(ctx, tx.GetMsgs(), 0); err != nil {
+			return ctx, err
+		}
+		return next(ctx, tx, simulate)
+	}
+}
 
-				minimumSelfDelegation, err := sdk.ParseCoinNormalized(
-					admissionKeeper.GetMinimumSelfDelegation(ctx),
-				)
-				if err != nil {
-					return ctx, errorsmod.Wrap(
-						sdkerrors.ErrInvalidRequest,
-						"Validator Admission: invalid on-chain minimum self delegation",
-					)
-				}
-				if msg.Value.Denom != minimumSelfDelegation.Denom ||
-					msg.Value.Amount.LT(minimumSelfDelegation.Amount) {
-					return ctx, errorsmod.Wrapf(
-						sdkerrors.ErrUnauthorized,
-						"Validator Admission: self delegation must be at least %s",
-						minimumSelfDelegation.String(),
-					)
-				}
+type admissionChecker struct {
+	keeper          keeper.Keeper
+	allowGovernance bool
+}
 
-			case *slashingtypes.MsgUnjail:
-				if !admissionKeeper.IsApprovedValidator(ctx, msg.ValidatorAddr) {
-					return ctx, errorsmod.Wrap(
-						sdkerrors.ErrUnauthorized,
-						"Validator Admission: revoked validator cannot unjail",
-					)
-				}
+func (c admissionChecker) checkMessages(ctx sdk.Context, messages []sdk.Msg, depth int) error {
+	if depth >= maxNestedMessages {
+		return errorsmod.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"Validator Admission: authz messages nested deeper than %d levels",
+			maxNestedMessages,
+		)
+	}
 
-			case *minttypes.MsgUpdateParams:
-				return ctx, errorsmod.Wrap(
+	nested := depth > 0
+	for _, message := range messages {
+		if nested && c.isRestricted(message) {
+			return errorsmod.Wrapf(
+				sdkerrors.ErrUnauthorized,
+				"Validator Admission: %s cannot be executed through authz",
+				sdk.MsgTypeURL(message),
+			)
+		}
+
+		switch msg := message.(type) {
+		case *authz.MsgExec:
+			inner, err := msg.GetMessages()
+			if err != nil {
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+			}
+			if err := c.checkMessages(ctx, inner, depth+1); err != nil {
+				return err
+			}
+
+		case *authz.MsgGrant:
+			authorization, err := msg.GetAuthorization()
+			if err != nil {
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+			}
+			if c.isRestrictedTypeURL(authorization.MsgTypeURL()) {
+				return errorsmod.Wrapf(
 					sdkerrors.ErrUnauthorized,
-					"Fixed monetary policy: Mint parameters cannot be changed",
+					"Validator Admission: authorizations for %s are not allowed",
+					authorization.MsgTypeURL(),
 				)
+			}
 
-			case *govtypes.MsgSubmitProposal:
-				if allowGovernance {
-					continue
-				}
-				return ctx, errorsmod.Wrap(
+		case *stakingtypes.MsgCreateValidator:
+			if err := ValidateCreateValidator(ctx, c.keeper, msg); err != nil {
+				return err
+			}
+
+		case *slashingtypes.MsgUnjail:
+			if err := ValidateUnjail(ctx, c.keeper, msg.ValidatorAddr); err != nil {
+				return err
+			}
+
+		case *minttypes.MsgUpdateParams:
+			return errorsmod.Wrap(
+				sdkerrors.ErrUnauthorized,
+				"Fixed monetary policy: Mint parameters cannot be changed",
+			)
+
+		case *govtypes.MsgSubmitProposal, *govv1beta1.MsgSubmitProposal:
+			if !c.allowGovernance {
+				return errorsmod.Wrap(
 					sdkerrors.ErrUnauthorized,
 					"Governance safeguards: executable on-chain proposals are disabled",
 				)
 			}
 		}
+	}
 
-		return next(ctx, tx, simulate)
+	return nil
+}
+
+func (c admissionChecker) isRestricted(message sdk.Msg) bool {
+	return c.isRestrictedTypeURL(sdk.MsgTypeURL(message))
+}
+
+// isRestrictedTypeURL lists the message types that must be signed directly.
+func (c admissionChecker) isRestrictedTypeURL(typeURL string) bool {
+	switch typeURL {
+	case sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
+		sdk.MsgTypeURL(&slashingtypes.MsgUnjail{}),
+		sdk.MsgTypeURL(&minttypes.MsgUpdateParams{}):
+		return true
+	case sdk.MsgTypeURL(&govtypes.MsgSubmitProposal{}),
+		sdk.MsgTypeURL(&govv1beta1.MsgSubmitProposal{}):
+		return !c.allowGovernance
+	default:
+		return false
 	}
 }

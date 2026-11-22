@@ -18,7 +18,9 @@ import (
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // Optionals define some optional params that can be applied to _some_ precompiles.
@@ -29,6 +31,13 @@ type Optionals struct {
 	ValidatorAddrCodec address.Codec // used by slashing
 	ConsensusAddrCodec address.Codec // used by slashing
 	AllowGovSubmit     bool          // used by governance
+
+	// StakingMsgServerDecorator and SlashingMsgServerDecorator wrap the
+	// message servers that the staking and slashing precompiles call
+	// directly, so that application policies (for example validator
+	// admission) also apply to EVM callers. Nil leaves the server unchanged.
+	StakingMsgServerDecorator  func(stakingtypes.MsgServer) stakingtypes.MsgServer
+	SlashingMsgServerDecorator func(slashingtypes.MsgServer) slashingtypes.MsgServer
 }
 
 func defaultOptionals() Optionals {
@@ -57,6 +66,20 @@ func WithValidatorAddrCodec(codec address.Codec) Option {
 func WithConsensusAddrCodec(codec address.Codec) Option {
 	return func(opts *Optionals) {
 		opts.ConsensusAddrCodec = codec
+	}
+}
+
+// WithStakingMsgServerDecorator wraps the message server used by the staking precompile.
+func WithStakingMsgServerDecorator(decorator func(stakingtypes.MsgServer) stakingtypes.MsgServer) Option {
+	return func(opts *Optionals) {
+		opts.StakingMsgServerDecorator = decorator
+	}
+}
+
+// WithSlashingMsgServerDecorator wraps the message server used by the slashing precompile.
+func WithSlashingMsgServerDecorator(decorator func(slashingtypes.MsgServer) slashingtypes.MsgServer) Option {
+	return func(opts *Optionals) {
+		opts.SlashingMsgServerDecorator = decorator
 	}
 }
 

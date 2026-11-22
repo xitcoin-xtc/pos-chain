@@ -27,6 +27,7 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 type StaticPrecompiles map[common.Address]vm.PrecompiledContract
@@ -65,9 +66,14 @@ func (s StaticPrecompiles) WithStakingPrecompile(
 		opt(&options)
 	}
 
+	var stakingMsgServer stakingtypes.MsgServer = stakingkeeper.NewMsgServerImpl(&stakingKeeper)
+	if options.StakingMsgServerDecorator != nil {
+		stakingMsgServer = options.StakingMsgServerDecorator(stakingMsgServer)
+	}
+
 	stakingPrecompile := stakingprecompile.NewPrecompile(
 		stakingKeeper,
-		stakingkeeper.NewMsgServerImpl(&stakingKeeper),
+		stakingMsgServer,
 		stakingkeeper.NewQuerier(&stakingKeeper),
 		bankKeeper,
 		options.AddressCodec,
@@ -178,9 +184,14 @@ func (s StaticPrecompiles) WithSlashingPrecompile(
 		opt(&options)
 	}
 
+	slashingMsgServer := slashingkeeper.NewMsgServerImpl(slashingKeeper)
+	if options.SlashingMsgServerDecorator != nil {
+		slashingMsgServer = options.SlashingMsgServerDecorator(slashingMsgServer)
+	}
+
 	slashingPrecompile := slashingprecompile.NewPrecompile(
 		slashingKeeper,
-		slashingkeeper.NewMsgServerImpl(slashingKeeper),
+		slashingMsgServer,
 		bankKeeper,
 		options.ValidatorAddrCodec,
 		options.ConsensusAddrCodec,
