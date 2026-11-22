@@ -6,8 +6,8 @@
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "Current main 9e49329 plus the organisation rename to xitcoin-xtc and the klauspost/compress, OpenTelemetry and Go 1.26.11 patches; Cosmos SDK fork rebased on v0.54.5, go-ethereum requirement v1.17.2 and the Dependabot minor/patch groups; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
-  "assessment_sha256": "a59a55eede4be778e87ea3d43d08b7c7b20e6fd94b6cb7f8e17731646eb8a5f6",
+  "scope": "Main 9e49329 plus the pull requests reviewed in docs/security-review-2026-11-21.md: organisation rename and reachable-advisory patches, Cosmos SDK v0.54.5 base and dependency refresh, validator admission fix, Cosmos EVM 2026-11-02 security ports, per-network authorities and governance option; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
+  "assessment_sha256": "bd5f3dd11d28b862f6cbec5bc7299e16f89ea3f2bf2847d42333922d2ea2ad1f",
   "provenance_sha256": "d368d257122c69d29acfc57e1a5d125702d0a25ced68f13a340d5e773693542b",
   "lock_sha256": {
     "go.mod": "81791c38837025419477eff2a46722b3c967db3d8387cb3ab9067f808ad28cf2",
@@ -52,20 +52,19 @@
     "evmd_root_anchor": "ac5392f6186cf2dc32427bfe1c53220030619901"
   },
   "current_head_qualification": "Mandatory fresh root/evmd checkout and published-module matrix, strict source and binary scans and the speedtest command qualification on the pull request head; no historical artifact reuse",
-  "known_open_findings": [
-    "node-local unsafe-enable-governance-proposal-submission affects consensus paths",
-    "testnet multisig hard-coded as authority; CLI defaults to the testnet EVM chain id"
-  ],
+  "known_open_findings": [],
   "state_breaking": [
     "Cosmos SDK v0.54.5 x/feegrant migration (consensus version 2 -> 3); upgrade handler xitcoin-security-hardening-v1",
     "validator admission: authz MsgExec walk, MsgGrant restriction, MinSelfDelegation rule, staking hook, gov v1beta1 submission blocked",
-    "cosmos/evm ports: GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8, GHSA-c6xv, GHSA-9xwc (gas, fee checks, EIP-712 validity, self-destruct)"
+    "cosmos/evm ports: GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8, GHSA-c6xv, GHSA-9xwc (gas, fee checks, EIP-712 validity, self-destruct)",
+    "governance submission no longer a node option; per-network authority and EVM chain ID checks"
   ],
   "follow_ups": [
     "2026-11-21: SDK v0.54.5 base, go-ethereum requirement and dependency refresh (review section 2)",
     "2026-11-22: validator admission through authz MsgExec and direct callers (review section 3); state-breaking (transaction validity)",
-    "2026-11-22: Cosmos EVM security fixes of 2026-11-02 ported (review section 4); state-breaking (execution results)"
+    "2026-11-22: Cosmos EVM security fixes of 2026-11-02 ported (review section 4); state-breaking (execution results)",
+    "2026-11-22: per-network authorities, EVM chain ID and governance option (review section 5); state-breaking only for nodes that set the removed option"
   ],
-  "go_source_sha256": "bdc94b85d1ab12a89f0cc2c0141c9d65e30031d8d30258493538a48d3ed20592",
-  "go_source_input_count": 1114
+  "go_source_sha256": "bf3de0521063a1d6192b339329167e733372cad70f9b48066f33a623c602356b",
+  "go_source_input_count": 1117
 }

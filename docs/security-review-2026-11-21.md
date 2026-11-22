@@ -236,3 +236,42 @@ repository.
 The review window is unchanged and no scanner exception is added.
 The evmd anchor for this section is `ac5392f6186cf2dc32427bfe1c53220030619901`,
 which is not GPG-signed.
+
+## Follow-up: per-network authorities, EVM chain ID and the governance option — 2026-11-22
+
+This section closes open findings 3 and 4 above.
+
+- **Authorities.** `evmd/config/network.go` holds the identity of each public
+  network, selected by the Cosmos chain ID and compiled into the binary. The
+  x/upgrade and x/bridge authorities and the default validator_incentives
+  genesis authority come from it. `xitcoin-testnet-v2-1` keeps the 2-of-3
+  multisig `xtc1vza8…`, so testnet behaviour is unchanged. Mainnet
+  (`xitcoin`) values are not decided: this release refuses to start on that
+  chain ID and can never take the testnet multisig there. InitChain refuses a
+  mainnet genesis whose validator_admission, validator_incentives or bridge
+  authority is the testnet multisig, and `verify-xitcoin-mainnet-genesis.py`
+  refuses the multisig anywhere in a candidate. Other chain IDs (local and
+  test chains) keep the previous default. Consensus-parameter
+  `AuthorityParams` are not used, because setting them would hand every module
+  to one account; that is an owner decision.
+- **EVM chain ID.** New nodes get `evm-chain-id` 101089 on the testnet and
+  101088 on mainnet. A public network refuses to start with another value,
+  since nodes with different EVM chain IDs disagree on transaction validity.
+  The value stays in `app.toml`. Devnet (`xitcoin-devnet`, 101090 in the
+  identity document) is not yet a known network and keeps the previous
+  default.
+- **Governance option.** `unsafe-enable-governance-proposal-submission`
+  was read from node configuration and changed the ante handler and the
+  governance precompile, so nodes with different settings could split. It is
+  no longer read. Proposal submission is disabled on every node; only test
+  code can re-enable it. A node that had set the option behaves like every
+  other node after the upgrade.
+- **State-breaking.** Only for a node that had set the removed option. The
+  testnet authorities, EVM chain ID and defaults are unchanged. It belongs to
+  the coordinated release.
+- **Evidence.** New tests cover the network table, the refusal of a wrong EVM
+  chain ID and of the undecided mainnet, the mainnet genesis guard, and an
+  app that still sets the old option rejecting a governance proposal. Full
+  evmd and root tests pass locally. The `govulncheck` gates pass.
+
+The review window is unchanged and no scanner exception is added.
