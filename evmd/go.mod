@@ -25,9 +25,10 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 	github.com/tyler-smith/go-bip39 v1.1.0
-	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261122044419-ac5392f6186c
+	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261122092447-59c8a2cf6094
 	golang.org/x/sync v0.25.0
 	google.golang.org/grpc v1.85.0
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
@@ -357,7 +358,6 @@ require (
 	google.golang.org/genproto v0.0.0-20260511170946-3700d4141b60 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260928230214-8a89bd6388cc // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260928230214-8a89bd6388cc // indirect
-	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect

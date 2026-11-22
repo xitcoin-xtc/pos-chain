@@ -275,3 +275,59 @@ This section closes open findings 3 and 4 above.
   evmd and root tests pass locally. The `govulncheck` gates pass.
 
 The review window is unchanged and no scanner exception is added.
+
+## Follow-up: bridge attestation protocol v2 (pull request #69) — 2026-11-22
+
+This section reviews the x/bridge changes of pull request #69, written by the
+bridge engineer. It must be merged together with xitcoin-xtc/bridge-relayer#50. The
+whole x/bridge diff was read, and the module tests were run on the rebased
+branch.
+
+- **Replay protection.** The processed-attestation key used to be a hash of
+  every signed field, including the deadline, so two approvals for one Cronos
+  deposit with different deadlines could both mint. It is now
+  `sha256("xitcoin-bridge-source-deposit-v1" || source chain ID || deposit
+  reference)`. One deposit can mint only once, whatever the other fields. The
+  same prefix (`0x01`) is used. A read of the live testnet store on
+  2026-11-22 found no key under `0x01`, so no v1 entry needs migrating.
+- **Network binding.** Attestation, control and guardian-pause digests use
+  `xitcoin-bridge-*-v2/<chain id>`, and the attestation payload also commits to
+  the destination chain ID. An approval made for the testnet cannot be
+  replayed on mainnet or on another chain ID. `ValidateChainID` rejects
+  separator and whitespace bytes, so the embedded chain ID is unambiguous.
+- **Source chain.** Inbound attestations must carry the route's source chain
+  ID (canonical decimal). A stored configuration without one, which is the
+  case on the testnet, falls back to 338 (Cronos Testnet) except on chain ID
+  `xitcoin`, where it uses 25. The value is immutable across
+  `update_route_config`.
+- **Control actions.** `update_route_config` and `resume_route` require the
+  next sequential nonce (`0x09`). An older signed action can no longer be
+  applied after a newer one inside its validity window. The v1 processed
+  set (`0x04`) is no longer read; the live store holds no key there. The
+  unhandled `pause_route` and `close_route` names are removed; pausing stays a
+  guardian action.
+- **Destinations.** Outbound burns to the zero or `0x…dEaD` address, which the
+  Cronos vault would refuse, are rejected before any burn. Inbound mints to
+  blocked module accounts are rejected.
+- **Genesis and tooling.** Genesis exports the control nonce and the processed
+  deposit keys and validates them (canonical, unique, not without a route).
+  The mainnet genesis verifier requires a paused, disabled route with source
+  chain 25 and `outstanding_amount` equal to the Cronos bootstrap. The
+  `query bridge route` CLI reads the raw store.
+- **Not changed.** There are no new bank, mint, burn or custody capabilities
+  and no store migration. The module consensus version is unchanged.
+- **State-breaking.** Yes: signatures, replay keys and control semantics
+  change. The chain binary, the relayer and the three signers must be upgraded
+  together, as described in `docs/migrations/xitcoin-bridge-v2.md`. On the
+  testnet the route is disabled and paused (live store read on 2026-11-22:
+  route configuration present with `enabled: false`, route state
+  `{"paused":true}`, nothing processed), so no transfer is affected.
+- **Evidence.** `go test ./x/bridge/...` passes, including the new
+  remediation tests, which share replay keys, payload hashes and digests with
+  the relayer fixtures. Full root and evmd tests pass with evmd pinned to the
+  bridge commit. The `govulncheck` root, evmd and binary scans report zero
+  called vulnerabilities.
+
+The review window is unchanged and no scanner exception is added.
+The evmd anchor for this section is `59c8a2cf60943a394e7654ff6821edf5390d2cbd`,
+the bridge commit rebased on main, which is not GPG-signed.
