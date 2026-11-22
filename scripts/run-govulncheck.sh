@@ -61,7 +61,7 @@ require_module github.com/ProtonMail/go-crypto v1.4.1
 # Pin both archive and go.mod sums for evmd's already qualified root library.
 if [[ "$module_file" == "$repo_root/evmd/go.mod" ]]; then
   root_sums="$(go list -m -f '{{.Sum}} {{.GoModSum}}' github.com/xitcoin-xtc/pos-chain)"
-  if [[ "$root_sums" != 'h1:c2OkjoXuZA4WYL0bwF2n4hgIDCw7m/0rrw3KKTkWZjU= h1:EA4zbBu+KFdpVp/tEfyy9/5C3H9xO/FuatoCPVuoBLM=' ]]; then
+  if [[ "$root_sums" != 'h1:4eGZfXt1Y71C9Wv5odd1BgQpoc+OCQc+XOyk8szJB3s= h1:EA4zbBu+KFdpVp/tEfyy9/5C3H9xO/FuatoCPVuoBLM=' ]]; then
     echo 'evmd: root library checksums differ from the reviewed anchor' >&2
     exit 1
   fi

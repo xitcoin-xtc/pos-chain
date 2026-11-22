@@ -158,3 +158,48 @@ findings 5 and 6 above.
   `f449f3ec4b1c28ab6d04dc4fe39b6d4071100444`, which is not GPG-signed.
 
 The review window is unchanged and no scanner exception is added.
+
+## Follow-up: validator admission through authz and direct callers — 2026-11-22
+
+This section reviews the third pull request of the window. It closes open
+finding 1 above and a related gap found while fixing it.
+
+- **Finding.** The admission ante handler looked only at top-level messages.
+  An authz `MsgExec` wrapping `MsgCreateValidator` or `MsgUnjail` skipped the
+  approval check and the 5,000,000 XTC minimum. Because the authz keeper
+  accepts `MsgExec` without a grant when granter and grantee are the same
+  account, any account could use it. The mint parameter and governance
+  safeguards could be bypassed the same way. The legacy gov v1beta1
+  `MsgSubmitProposal` (registered by the SDK gov module) was not checked even
+  at top level. The staking and slashing precompiles call their message
+  servers directly. Both are inactive on the testnet
+  (`active_static_precompiles` is empty in the genesis).
+- **Fix.** The ante handler walks `MsgExec` recursively, bounded at seven
+  levels like the existing authz limiter. It rejects `MsgCreateValidator`,
+  `MsgUnjail`, mint `MsgUpdateParams` and gov v1/v1beta1 `MsgSubmitProposal`
+  inside `MsgExec`, and rejects `MsgGrant` for those types. After genesis,
+  `MsgCreateValidator.MinSelfDelegation` must be at least the on-chain minimum,
+  so x/staking keeps enforcing the minimum after creation. Genesis transactions
+  keep their historical value, because the testnet gentxs use 1 and must
+  replay. A staking hook (`AfterValidatorCreated`) repeats the approval and
+  `MinSelfDelegation` checks inside x/staking. This covers every creation path,
+  including the precompile. Message-server wrappers apply the same checks in
+  front of the staking and slashing precompiles.
+- **Residual.** Other routes that could dispatch these messages, such as
+  governance execution, the group module and interchain-account hosts, are
+  either disabled by the governance safeguard or not wired in this
+  application. Unjailing has no x/slashing hook. The direct-signature rule,
+  the authz walk and the precompile wrapper cover the wired paths.
+- **State-breaking.** Yes: these rules change which transactions are valid and
+  belong to the coordinated `xitcoin-security-hardening-v1` upgrade. No
+  stored state changes.
+- **Evidence.** The new tests cover MsgExec self-grant, nested MsgExec, unjail
+  of a revoked validator (direct, wrapped and double-wrapped), governance and
+  mint messages through MsgExec, restricted grants, the `MinSelfDelegation`
+  rule and its genesis exemption, the staking hook and the precompile wrappers.
+  These tests fail against the previous ante handler. Full root and evmd
+  tests pass locally. The `govulncheck` root, evmd and binary scans report
+  zero called vulnerabilities. The evmd anchor is
+  `cbab2828b2c59aab7ef123afc7340de0877af8fc`, which is not GPG-signed.
+
+The review window is unchanged and no scanner exception is added.
