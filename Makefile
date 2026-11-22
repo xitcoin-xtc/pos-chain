@@ -107,7 +107,7 @@ build-linux:
 
 # Install into $(BINDIR)
 install: go.sum
-	@echo "🚚  Installing evmd to $(BINDIR) ..."
+	@echo "🚚  Installing evmd (development binary name) to $(BINDIR) ..."
 	@echo "BUILD_FLAGS: $(BUILD_FLAGS)"
 	@cd $(EVMD_DIR) && CGO_ENABLED="1" \
 	  go install $(BUILD_FLAGS) $(EVMD_MAIN_PKG)
@@ -290,38 +290,9 @@ proto-check-breaking:
 ###                                Releasing                                ###
 ###############################################################################
 
-PACKAGE_NAME:=github.com/xitcoin-xtc/pos-chain
-GOLANG_CROSS_VERSION  = v1.22
-GOPATH ?= '$(HOME)/go'
-release-dry-run:
-	docker run \
-		--rm \
-		--privileged \
-		-e CGO_ENABLED=1 \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v `pwd`:/go/src/$(PACKAGE_NAME) \
-		-v ${GOPATH}/pkg:/go/pkg \
-		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
-		--clean --skip validate --skip publish --snapshot
-
-release:
-	@if [ ! -f ".release-env" ]; then \
-		echo "\033[91m.release-env is required for release\033[0m";\
-		exit 1;\
-	fi
-	docker run \
-		--rm \
-		--privileged \
-		-e CGO_ENABLED=1 \
-		--env-file .release-env \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v `pwd`:/go/src/$(PACKAGE_NAME) \
-		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
-		release --clean --skip validate
-
-.PHONY: release-dry-run release
+# Release artifacts are built and published by .github/workflows/build.yml
+# (tagged testnet releases). The former goreleaser targets referenced a
+# configuration file that does not exist and were removed.
 
 ###############################################################################
 ###                        Compile Solidity Contracts                       ###
@@ -362,7 +333,7 @@ localnet-stop:
 	docker compose down
 
 # localnet-start will run a 4-node testnet locally. The nodes are
-# based off the docker images in: ./contrib/images/simd-env
+# based off the docker image in: ./contrib/images/evmd-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 

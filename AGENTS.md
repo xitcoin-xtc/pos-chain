@@ -44,7 +44,7 @@ Top-level directories:
 
 - Go: see `go.mod` (currently 1.26.11).
 - CGO required for builds (`CGO_ENABLED=1`).
-- `golangci-lint` v2.10.1 (pinned in Makefile).
+- `golangci-lint` v2.12.2 (pinned in Makefile).
 - Docker required for protobuf generation, localnet, and rpc-compat tests.
 - Foundry (`forge`) required for `tests/systemtests/Counter`.
 - Python (pylint, flake8, black, isort) for scripts.
