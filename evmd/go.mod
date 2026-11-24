@@ -18,7 +18,7 @@ require (
 	github.com/cosmos/ibc-go/v11 v11.2.0
 	github.com/ethereum/go-ethereum v1.17.2
 	github.com/onsi/ginkgo/v2 v2.34.0
-	github.com/onsi/gomega v1.40.0
+	github.com/onsi/gomega v1.44.0
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.1.0
