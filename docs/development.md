@@ -41,9 +41,9 @@ For upstream attribution, see [UPSTREAMS.md](../UPSTREAMS.md).
 
 ## Current security and qualification
 
-[Current technical review](security-review-2026-11-04.md) records fresh source
-and versioned-binary evidence, full tests, all six historical advisory identities
-and the remaining limitations. Root tests alone do not cover evmd. The current
+[Current technical review](security-review-2026-11-27.md) records source and
+binary scan evidence, full tests, the six historical advisory identities and the
+known open findings. Root tests alone do not cover evmd. The current
 versioned workflow tests both checkout modules and the exact published PR head,
 checks graph/checksum identity and scans a symbol-bearing versioned binary.
 It does not reuse September results. The strict scanner gate accepts no advisory

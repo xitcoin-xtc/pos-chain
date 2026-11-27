@@ -1,21 +1,21 @@
 {
   "schema": 2,
-  "assessed_on": "2026-11-21",
-  "review_by": "2026-11-28",
+  "assessed_on": "2026-11-27",
+  "review_by": "2026-12-04",
   "assessment_author": "Internal automated technical review under the Thomas-Cabrit maintainer account (not independent)",
   "independent_approval": false,
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
-  "scope": "Main 9e49329 plus the pull requests reviewed in docs/security-review-2026-11-21.md: organisation rename and reachable-advisory patches, Cosmos SDK v0.54.5 base and dependency refresh, validator admission fix, Cosmos EVM 2026-11-02 security ports, bridge protocol v2 (#69), per-network authorities and governance option; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
-  "assessment_sha256": "c92fb7a61d92edcfdd4737cd2f1ec4cac76e2e9787295de8a6aa8f55b813c8dc",
-  "provenance_sha256": "5000f1e950e5a662e5470634e4d168e09859c4883480e8df4017210b79259b18",
+  "scope": "Main 958f6fd plus the pull request reviewed in docs/security-review-2026-11-27.md: gorilla/websocket GO-2026-6278 fix, Dependabot Go updates #75 and #74 (gomega, gjson, sjson, x/crypto 0.59.0, x/net 0.63.0), evmd root anchor caab55b, test-only modules aligned; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
+  "assessment_sha256": "b2199b09ad82e927350b6cd7f7b662943af0ece70ac708e077b8b812bc05b74b",
+  "provenance_sha256": "86a4c4927fc7ea24684b8791eec8a83ffd2bcdd9a12a7227e2451611020e95c3",
   "lock_sha256": {
-    "go.mod": "81791c38837025419477eff2a46722b3c967db3d8387cb3ab9067f808ad28cf2",
-    "go.sum": "e20f93a19a6f79a9de5db4dfe09bd978a82de706e13dcc7fac32003799130c48",
-    "evmd/go.mod": "f9304f607b1404f6236853490157c334ec6b07a4ce23afb09c83dc0011b8c28a",
-    "evmd/go.sum": "facbc0c995317ad7ec2f8debe7713435cefc3a3c7e104f7bb13ba4f68f68b703",
-    "tests/speedtest/go.mod": "54558c9e65db03d839c80d4645e78afc31d7ba9faeea4a2f1435574ec4e255ad",
-    "tests/speedtest/go.sum": "c44bfcc9475a901ef32c10d78a3156e17b0b3a071afe4da8b801a0daeabec2c5"
+    "go.mod": "ec9054a24f39de66f7c1574ab60af053cd85369acec34664c7adf2214ad1b030",
+    "go.sum": "e7bc7d3372e6d15a0c5141fb5c5c9b4cdce2b9cddebf6066ac29c446756c4a31",
+    "evmd/go.mod": "c8ff5f252ce990314d92753789d00fe604bbf4522c96d850fecb560db3690015",
+    "evmd/go.sum": "524026405d737e91f4e3b80f64358a9759411fc90fb92a062706d8921f6c8d2f",
+    "tests/speedtest/go.mod": "4efa08b5e9849cca6ce81e7e9a4ac71863c543ee552d7c511e95efcad592abf1",
+    "tests/speedtest/go.sum": "ad621bdccac5be62e16f21f0db5b3b07bbdbaa1e8acba174eda97477c4aec974"
   },
   "dispositions": {
     "GO-2023-1821": "NOT_APPLICABLE_TO_WIRING",
@@ -25,31 +25,33 @@
     "GO-2026-4479": "OBSOLETE_PRODUCTION_PATH_REMOVED_V3_FIXED",
     "GO-2026-5932": "OBSOLETE_ARMOR_REPLACED"
   },
-  "expiry_reason": "Seven-day re-examination window, the same length as the previous review; the known open findings listed in the review document are being changed in follow-up pull requests; no automatic renewal.",
+  "expiry_reason": "Seven-day re-examination window, the same length as the previous reviews; no automatic renewal.",
   "accepted_scanner_advisories": [],
-  "assessment_document": "docs/security-review-2026-11-21.md",
-  "historical_assessment": "docs/security-assessment-2026-11-04.json",
+  "assessment_document": "docs/security-review-2026-11-27.md",
+  "historical_assessment": "docs/security-assessment-2026-11-21.json",
   "previous_review": {
-    "assessment_record_sha256": "1fa30156adcbb73d019713738f6869880dc5a1be0530dd915e6085021367431b",
-    "assessed_on": "2026-11-04",
-    "review_by": "2026-11-11",
-    "expired": true
+    "assessment_record_sha256": "58ec892a31b00f82262d03491772f57027dfaae6c0187f23987f022a918c706c",
+    "assessed_on": "2026-11-21",
+    "review_by": "2026-11-28",
+    "expired": false
   },
   "patched_advisories": {
-    "GO-2026-6865": "github.com/klauspost/compress 1.18.7 -> 1.20.5",
-    "GO-2026-6859": "Go 1.26.10 -> 1.26.11",
-    "GHSA-q7gw-24fr-5p69": "go.opentelemetry.io/otel/sdk, trace and sdk/log -> 1.47.0",
-    "GHSA-689v-6xwf-5jf3": "go-ethereum requirement v1.16.9 -> v1.17.2 (the effective code was already the Cosmos Geth v1.17.2 fork)",
-    "cosmos-sdk-retraction": "Cosmos SDK fork base v0.54.4 (retracted) -> v0.54.5"
+    "GO-2026-6278": "github.com/gorilla/websocket v1.5.3 -> v1.5.4-0.20240701034025-d67f41855da4 (upstream fix commit d67f41855da4) in root, evmd, speedtest, systemtests and the JSON-RPC simulator",
+    "GHSA-fq3v-74gv-27gm": "github.com/xuri/excelize/v2 -> v2.11.1 in the JSON-RPC simulator test tool only"
+  },
+  "dependency_updates": {
+    "#75": "gomega 1.44.0, gjson 1.20.5, sjson 1.2.11, golang.org/x/crypto 0.59.0 (openpgp oracle via golang.org/x/crypto/openpgp v0.1.0-deprecated, tests only), golang.org/x/net 0.63.0, x/sys 0.50.0, x/term 0.48.0",
+    "#74": "gomega 1.44.0 in evmd"
   },
   "local_evidence": {
     "toolchain": "go1.26.11",
     "full_tests": {
       "root_packages_ok": 54,
-      "evmd_packages_ok": 21
+      "evmd_packages_ok": 22
     },
-    "govulncheck": "v1.7.0 root, evmd and symbol-bearing binary: 0 called, 0 imported-package findings; module-level GO-2026-5932 and GO-2025-3442",
-    "evmd_root_anchor": "59c8a2cf60943a394e7654ff6821edf5390d2cbd"
+    "govulncheck": "v1.7.0 (database 2026-11-24) root, evmd, speedtest and symbol-bearing binary: 0 called, 0 imported-package findings; module-level GO-2025-3442 only. Main 958f6fd: GO-2026-6278 called in root, evmd and speedtest",
+    "gates": "verify-security-assessment, run-govulncheck root/evmd/binary, test-govulncheck-gate (9 tests), verify-go-fork-provenance root/evmd, qualify-speedtest: pass",
+    "evmd_root_anchor": "caab55b4c1b6122e24ade842d17476929a8d649b"
   },
   "current_head_qualification": "Mandatory fresh root/evmd checkout and published-module matrix, strict source and binary scans and the speedtest command qualification on the pull request head; no historical artifact reuse",
   "known_open_findings": [],
@@ -58,15 +60,14 @@
     "validator admission: authz MsgExec walk, MsgGrant restriction, MinSelfDelegation rule, staking hook, gov v1beta1 submission blocked",
     "cosmos/evm ports: GHSA-wm4f, GHSA-2m6r, GHSA-7xxp, GHSA-p8x8, GHSA-c6xv, GHSA-9xwc (gas, fee checks, EIP-712 validity, self-destruct)",
     "governance submission no longer a node option; per-network authority and EVM chain ID checks",
-    "bridge v2 (#69): source-deposit replay key, network-bound v2 signing domains, sequential control nonce, destination checks"
+    "bridge v2 (#69): source-deposit replay key, network-bound v2 signing domains, sequential control nonce, destination checks",
+    "2026-11-27 review: no additional state-breaking change (WebSocket mask keys, test libraries, x/crypto and x/net updates; EIP-712 typed data unchanged with gjson 1.20.5 and sjson 1.2.11)"
   ],
   "follow_ups": [
-    "2026-11-21: SDK v0.54.5 base, go-ethereum requirement and dependency refresh (review section 2)",
-    "2026-11-22: validator admission through authz MsgExec and direct callers (review section 3); state-breaking (transaction validity)",
-    "2026-11-22: Cosmos EVM security fixes of 2026-11-02 ported (review section 4); state-breaking (execution results)",
-    "2026-11-22: per-network authorities, EVM chain ID and governance option (review section 5); state-breaking only for nodes that set the removed option",
-    "2026-11-22: bridge attestation protocol v2, pull request #69 (review section 6); state-breaking, to be merged with bridge-relayer#50"
+    "Move gorilla/websocket to the first upstream tag that contains d67f41855da4 when one is published",
+    "Dependabot #75 and #74 are folded into this pull request and can be closed after it is merged",
+    "Testnet binary predates this review and the 2026-11-21 changes; deployment through the coordinated xitcoin-security-hardening-v1 upgrade is an operator decision"
   ],
-  "go_source_sha256": "45536d9392c2cd1dcc2582299823b06c782d2cb568da097f80e76f140335a85a",
+  "go_source_sha256": "f25e3c90879739c97d9f0724539c76db67e6ecb7c893755c8f2714e865467c0c",
   "go_source_input_count": 1124
 }

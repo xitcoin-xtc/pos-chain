@@ -8,9 +8,10 @@ Do not open a public issue for an undisclosed vulnerability.
 
 ## Current Go dependency review
 
-[Current review](docs/security-review-2026-11-04.md) records PR55's fresh
-source scans, full tests, published-module binary evidence and residual risks.
-The gate accepts no scanner advisory exceptions. It retains exact source,
+[Current review](docs/security-review-2026-11-27.md) is an internal,
+non-independent review of current main: source and binary scans, full tests and
+known open findings. [The 2026-11-04 review](docs/security-review-2026-11-04.md)
+records PR55's published-module binary evidence. The gate accepts no scanner advisory exceptions. It retains exact source,
 manifest, embedded-resource, fork/checksum and dated-assessment checks;
 obsolete production imports, raw-key RPC methods, scanner findings/errors,
 source drift and expiry block CI.
@@ -19,7 +20,7 @@ The versioned workflow repeats qualification on the current checkout and exact
 published PR head. It builds and tests the published modules, compares graphs,
 verifies checksums and scans a symbol-bearing binary. No historical evidence
 is reused to qualify current code. JSON output alone does not establish a clean
-scan. The two module-only advisory matches remain visible with their traces.
+scan. Module-only advisory matches remain visible with their traces.
 
 [Historical assessment](SECURITY-ASSESSMENT.md) and
 [its original record](docs/security-assessment-2026-09-14.json) retain all six

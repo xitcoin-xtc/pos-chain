@@ -66,7 +66,7 @@ class GateTests(unittest.TestCase):
             (self.root / name).mkdir()
         for name in ["scripts/run-govulncheck.sh", "scripts/verify-go-fork-provenance.py",
                      "docs/go-fork-provenance.json", "docs/security-assessment.json",
-                     "SECURITY-ASSESSMENT.md", "docs/security-review-2026-11-21.md", "scripts/verify-security-assessment.py"]:
+                     "SECURITY-ASSESSMENT.md", "docs/security-review-2026-11-27.md", "scripts/verify-security-assessment.py"]:
             shutil.copyfile(ROOT / name, self.root / name)
         for name in ["go.mod", "go.sum", "evmd/go.mod", "evmd/go.sum"]:
             shutil.copyfile(ROOT / name, self.root / name)
@@ -88,7 +88,7 @@ class GateTests(unittest.TestCase):
         for path, version in {
             SDK: "v0.54.5", GETH: "v1.17.2",
             "github.com/cometbft/cometbft": "v0.39.4",
-            "github.com/pion/dtls/v2": "v2.2.12", "golang.org/x/crypto": "v0.58.0",
+            "github.com/pion/dtls/v2": "v2.2.12", "golang.org/x/crypto": "v0.59.0",
             "github.com/pion/stun/v3": "v3.1.5", "github.com/pion/dtls/v3": "v3.1.4",
             "github.com/ProtonMail/go-crypto": "v1.4.1",
         }.items():
@@ -100,12 +100,12 @@ class GateTests(unittest.TestCase):
             }
         self.cfg = {"modules": {"root": copy.deepcopy(modules), "evmd": copy.deepcopy(modules)},
                     "packages": {"root": [LIBRARY + "/crypto"], "evmd": [LIBRARY + "/evmd"]},
-                    "date": "2026-11-21", "scanner_output": "simulated scanner output", "scanner_status": 0}
+                    "date": "2026-11-27", "scanner_output": "simulated scanner output", "scanner_status": 0}
         self.cfg["modules"]["root"][LIBRARY] = {"Path": LIBRARY, "Main": True}
         self.cfg["modules"]["evmd"][LIBRARY] = {
             "Path": LIBRARY, "Version": manifest["root_library"]["version"],
-            "Sum": "h1:IWL/tVLc7GNmjqMULG2aF2m8TdkFVasW7Pu9hDIWEkE=",
-            "GoModSum": "h1:EA4zbBu+KFdpVp/tEfyy9/5C3H9xO/FuatoCPVuoBLM=",
+            "Sum": "h1:/zIhYsHMFgTetckR91KDMc/6iEnSggWfiMGrMe3lMek=",
+            "GoModSum": "h1:RibuPS7fGQaoWBhmcfAG5mpQwtHaYwnR9mB8ip9ojnI=",
         }
 
     def run_gate(self, module, expected, message="", scanned=False):
@@ -131,21 +131,21 @@ class GateTests(unittest.TestCase):
     def test_valid_locks_scanner_and_expiry(self):
         for module in ["root", "evmd"]:
             with self.subTest(module=module):
-                self.cfg["date"] = "2026-11-21"
+                self.cfg["date"] = "2026-11-27"
                 self.run_gate(module, 0, scanned=True)
-                self.cfg["date"] = "2026-11-29"
+                self.cfg["date"] = "2026-12-05"
                 self.run_gate(module, 1, "expired exception review still blocks", scanned=True)
 
     def test_current_assessment_boundaries_and_integrity(self):
         for module in ["root", "evmd"]:
-            for date in ["2026-11-21", "2026-11-28"]:
+            for date in ["2026-11-27", "2026-12-04"]:
                 self.cfg["date"] = date
                 self.run_gate(module, 0, scanned=True)
-            for date in ["2026-11-20", "invalid"]:
+            for date in ["2026-11-26", "invalid"]:
                 self.cfg["date"] = date
                 self.run_gate(module, 1, "not yet valid")
-        self.cfg["date"] = "2026-11-21"
-        for name in ["docs/security-assessment.json", "docs/security-review-2026-11-21.md",
+        self.cfg["date"] = "2026-11-27"
+        for name in ["docs/security-assessment.json", "docs/security-review-2026-11-27.md",
                      "docs/go-fork-provenance.json", "go.mod", "go.sum",
                      "evmd/go.mod", "evmd/go.sum"]:
             path = self.root / name
@@ -215,9 +215,9 @@ class GateTests(unittest.TestCase):
                 (3, "unparseable", 3), (2, "scanner failure", 2),
             ]:
                 with self.subTest(module=module, status=status, output=output):
-                    self.cfg.update(scanner_status=status, scanner_output=output, date="2026-11-21")
+                    self.cfg.update(scanner_status=status, scanner_output=output, date="2026-11-27")
                     self.run_gate(module, expected, scanned=True)
-                    self.cfg["date"] = "2026-11-29"
+                    self.cfg["date"] = "2026-12-05"
                     self.run_gate(module, 1, "expired exception review still blocks", scanned=True)
 
     def test_untrusted_source_symlink(self):
