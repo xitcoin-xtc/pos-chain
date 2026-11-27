@@ -60,7 +60,16 @@ No bridge route configuration exists in this genesis. The administrative authori
 - bridge route absent at acceptance (it was initialized, disabled and paused, on 2026-09-03);
 - mainnet not launched and no Cronos transaction performed as part of this verification.
 
-On 2026-11-22 the public node reports application version `0.1.0-testnet.4-8-g743e086`, that is, eight commits after the `v0.1.0-testnet.4` tag at source revision `743e086` (pull request #58). Later releases on `main` contain state-breaking fixes and require a coordinated upgrade (upgrade name `xitcoin-security-hardening-v1`). A production release still requires its own reproducible build, published checksums and independent acceptance record.
+## Software version and upgrade history
+
+| Heights | Application version | Source |
+| --- | --- | --- |
+| 1 to 1,455,999 | `0.1.0-testnet.4-8-g743e086` | revision `743e086` (pull request #58) |
+| from 1,456,000 | `0.1.0-testnet.5` | tag `v0.1.0-testnet.5`, revision `1924dad` |
+
+On 2026-11-27 the network applied the coordinated upgrade `xitcoin-security-hardening-v1` at height 1,456,000 (plan submitted by the administrative multisig in transaction `F438B892711526517B58DBD8FEB3CF594EC935B50A5D38B69DF3AA7B6494C0DD`). The release binary is the `v0.1.0-testnet.5` prerelease of this repository (`xitcoind` SHA-256 `1d2f14287c6690477e6a54e95a883e460c311dd99579c108dd2cabea979b3238`). After the upgrade the four validators sign blocks again, the public endpoints, explorers and faucet answer, and the bridge route is still disabled and paused.
+
+A node that synchronizes from genesis runs `0.1.0-testnet.4-8-g743e086` until it halts at height 1,456,000, then continues with `0.1.0-testnet.5`. A production release still requires its own reproducible build, published checksums and independent acceptance record.
 
 No production key, mnemonic, password, node key, validator private key or private backup is stored in this repository. Testnet and mainnet must use independent keys, genesis files, state and operational directories.
 
