@@ -10,7 +10,7 @@ const P256_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000100'
 const WERC20_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
 // Public fixture addresses follow the disposable node, never stored private keys.
-import bech32 from 'bech32';
+import { bech32 } from 'bech32';
 import { getAddress } from 'ethers';
 const GENESIS_VALIDATOR = process.env.TEST_VALIDATOR_ADDRESS || 'cosmosvaloper10jmp6sgh4cc6zt3e8gw05wavvejgr5pw4xyrql'
 const decodedValidator = bech32.decode(GENESIS_VALIDATOR)
