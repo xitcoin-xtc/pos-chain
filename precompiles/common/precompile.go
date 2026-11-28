@@ -177,6 +177,32 @@ func SetupABI(
 	return method, args, nil
 }
 
+// QueryContext returns the context on which a stateful precompile runs one
+// of its query (view) methods, and a function that discards every write made
+// on it; the caller defers that function. Some Cosmos SDK queriers write to
+// the context they are given: the distribution reward queries increment the
+// validator period and the governance tally deletes the votes it counts. The
+// gRPC query server runs them on a query state that is thrown away, but a
+// precompile runs inside a transaction, which would commit those writes,
+// even from a STATICCALL.
+//
+// Inside the EVM the precompile context is backed by the StateDB snapshot
+// multistore, whose CacheMultiStore pushes a snapshot onto the same store
+// instead of branching it, so ctx.CacheContext() would not isolate anything:
+// the writes are reverted to a snapshot instead. The gas meter is shared, so
+// the work done is still charged.
+func QueryContext(ctx sdk.Context) (sdk.Context, func()) {
+	if snapshotter, ok := ctx.MultiStore().(interface {
+		Snapshot() int
+		RevertToSnapshot(int)
+	}); ok {
+		snapshot := snapshotter.Snapshot()
+		return ctx, func() { snapshotter.RevertToSnapshot(snapshot) }
+	}
+	branch, _ := ctx.CacheContext()
+	return branch, func() {}
+}
+
 // HandleGasError handles the out of gas panic by resetting the gas meter and returning an error.
 // This is used in order to avoid panics and to allow for the EVM to continue cleanup if the tx or query run out of gas.
 func HandleGasError(ctx sdk.Context, contract *vm.Contract, initialGas storetypes.Gas, err *error) func() {
