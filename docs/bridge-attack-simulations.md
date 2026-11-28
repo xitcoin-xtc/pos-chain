@@ -3,9 +3,9 @@
 `x/bridge` carries Go native fuzz targets that state the bridge's safety
 properties and try to break them. `go test -tags=test ./x/bridge/...` replays
 every target's seed corpus, so each known attack stays a regression test. The
-`Bridge fuzzing` workflow (`.github/workflows/fuzz.yml`) explores further every
-night with a time box per target and uploads any failing input as an artifact;
-it commits nothing.
+`Attack-simulation fuzzing` workflow (`.github/workflows/fuzz.yml`) explores
+further every night with a time box per target and uploads any failing input
+as an artifact; it commits nothing.
 
 ## Targets
 
