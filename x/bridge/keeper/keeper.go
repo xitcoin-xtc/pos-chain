@@ -5,14 +5,15 @@ import (
 	"context"
 	"errors"
 
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+
 	sdkmath "cosmossdk.io/math"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
-var ErrAttestationAlreadyProcessed = errors.New("bridge attestation already processed")
+var ErrAttestationAlreadyProcessed = types.ErrAttestationAlreadyProcessed
 
 type Keeper struct {
 	storeKey    storetypes.StoreKey

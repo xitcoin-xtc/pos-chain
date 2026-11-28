@@ -1,8 +1,9 @@
 package types
 
 import (
-	"errors"
 	"strings"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 // Signing domains are derived from the Xitcoin chain ID of the chain that
@@ -32,10 +33,10 @@ const (
 // separator bytes, so it can be embedded unambiguously in a signed payload.
 func ValidateChainID(chainID string) error {
 	if chainID == "" || len(chainID) > maxChainIDLength {
-		return errors.New("bridge chain ID must contain 1 to 64 characters")
+		return errorsmod.Wrap(ErrInvalidChainID, "bridge chain ID must contain 1 to 64 characters")
 	}
 	if strings.TrimSpace(chainID) != chainID || strings.ContainsAny(chainID, "\x00/ \t\r\n") {
-		return errors.New("bridge chain ID contains a forbidden character")
+		return errorsmod.Wrap(ErrInvalidChainID, "bridge chain ID contains a forbidden character")
 	}
 	return nil
 }
@@ -43,11 +44,11 @@ func ValidateChainID(chainID string) error {
 // ValidateEVMChainID accepts the canonical decimal form of an EVM chain ID.
 func ValidateEVMChainID(chainID string) error {
 	if chainID == "" || len(chainID) > 20 || chainID[0] == '0' {
-		return errors.New("source chain ID must be a canonical decimal EVM chain ID")
+		return errorsmod.Wrap(ErrInvalidChainID, "source chain ID must be a canonical decimal EVM chain ID")
 	}
 	for _, r := range chainID {
 		if r < '0' || r > '9' {
-			return errors.New("source chain ID must be a canonical decimal EVM chain ID")
+			return errorsmod.Wrap(ErrInvalidChainID, "source chain ID must be a canonical decimal EVM chain ID")
 		}
 	}
 	return nil

@@ -96,6 +96,7 @@ are listed in [SECURITY.md](SECURITY.md).
 - [Testnet](docs/testnet.md)
 - [Testnet operations](docs/testnet-operations.md)
 - [Bridge architecture](docs/bridge-architecture.md)
+- [Transaction signatures](docs/transaction-signatures.md)
 - [Bridge acceptance tests](docs/bridge-testnet-acceptance.md)
 - [Validator admission](docs/validator-admission.md)
 - [Development](docs/development.md)

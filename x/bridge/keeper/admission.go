@@ -1,16 +1,14 @@
 package keeper
 
 import (
-	"errors"
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 var (
-	ErrAttestationRouteMismatch       = errors.New("bridge attestation route does not match configuration")
-	ErrAttestationSourceChainMismatch = errors.New("bridge attestation source chain does not match the route configuration")
+	ErrAttestationRouteMismatch       = types.ErrAttestationRouteMismatch
+	ErrAttestationSourceChainMismatch = types.ErrAttestationSourceChainMismatch
 )
 
 // AdmitAttestation validates one attestation as a single operation: route,

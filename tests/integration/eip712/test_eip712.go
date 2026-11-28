@@ -388,22 +388,31 @@ func (s *TestSuite) verifyEIP712SignatureVerification(expectedSuccess bool, priv
 
 	sig, err := privKey.Sign(eip712Bytes)
 	s.Require().NoError(err)
+	// eth_signTypedData_v4 and the Ledger Ethereum app return V 27 or 28.
+	typedDataSig := append(append([]byte{}, sig[:64]...), sig[64]+ethsecp256k1.EIP712RecoveryOffset)
 
 	// Verify against original payload bytes. This should pass, even though it is not
 	// the original message that was signed.
-	res := pubKey.VerifySignature(signBytes, sig)
+	res := pubKey.VerifySignature(signBytes, typedDataSig)
 	s.Require().True(res)
 
-	// Verify against the signed EIP-712 bytes. This should pass, since it is the message signed.
+	// The same signature with V 0 or 1, or without V, is another encoding of
+	// the EIP-712 signature and is rejected.
+	s.Require().False(pubKey.VerifySignature(signBytes, sig))
+	s.Require().False(pubKey.VerifySignature(signBytes, sig[:64]))
+
+	// Verify against the signed EIP-712 bytes. This should pass, since it is the message signed
+	// (as a plain message: V 0 or 1).
 	res = pubKey.VerifySignature(eip712Bytes, sig)
 	s.Require().True(res)
+	s.Require().False(pubKey.VerifySignature(eip712Bytes, typedDataSig))
 
 	// Verify against random bytes to ensure it does not pass unexpectedly (sanity check).
 	randBytes := make([]byte, len(signBytes))
 	copy(randBytes, signBytes)
 	// Change the first element of signBytes to a different value
 	randBytes[0] = (signBytes[0] + 10) % 255
-	res = pubKey.VerifySignature(randBytes, sig)
+	res = pubKey.VerifySignature(randBytes, typedDataSig)
 	s.Require().False(res)
 }
 

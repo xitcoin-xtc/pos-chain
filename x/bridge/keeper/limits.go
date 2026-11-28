@@ -3,7 +3,6 @@ package keeper
 import (
 	"crypto/sha256"
 	"encoding/binary"
-	"errors"
 	"math/big"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
@@ -14,9 +13,9 @@ import (
 )
 
 var (
-	ErrRouteDisabled         = errors.New("bridge route is disabled")
-	ErrTransferLimitExceeded = errors.New("bridge transfer limit exceeded")
-	ErrDailyLimitExceeded    = errors.New("bridge daily limit exceeded")
+	ErrRouteDisabled         = types.ErrRouteDisabled
+	ErrTransferLimitExceeded = types.ErrTransferLimitExceeded
+	ErrDailyLimitExceeded    = types.ErrDailyLimitExceeded
 )
 
 var dailyUsagePrefix = []byte{0x03}

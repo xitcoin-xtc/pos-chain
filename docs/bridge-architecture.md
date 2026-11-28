@@ -264,6 +264,60 @@ IDs are accepted as 32 hexadecimal bytes with or without `0x`, in any case, and 
 
 The example values are illustrative. Other commands: `xitcoind query bridge source-deposit-key <SOURCE_CHAIN_ID> <DEPOSIT_ID>` computes a replay key offline, and `xitcoind query bridge route` reads the raw route keys through an ABCI store query at one height.
 
+## Error codes
+
+From the `xitcoin-security-hardening-v2` upgrade a failed bridge transaction
+reports one of these codes in codespace `bridge` (`x/bridge/types/errors.go`).
+Before, every bridge failure was code `1`, codespace `undefined`. The codes are
+stable: new ones are only added after the last. The log keeps the error text,
+for a wrapped error prefixed with the detail (for example
+`duplicate signer approval: invalid bridge approvals`). Code `1`, codespace
+`undefined`, now only means an internal error (for example an unreadable
+store value). An invalid account address is the SDK's
+`sdk`/`7` (`ErrInvalidAddress`) and a wrong authority `sdk`/`4`
+(`ErrUnauthorized`). Queries keep their gRPC status codes.
+
+| Code | Error | Meaning | Client action |
+| --- | --- | --- | --- |
+| 2 | `ErrEmptyRequest` | empty bridge message | fix the request |
+| 3 | `ErrInvalidRouteID` | route ID is not 1 to 96 bytes of `[a-z0-9_-]` | fix the request |
+| 4 | `ErrNonCanonicalAmount` | amount is not a canonical positive decimal | fix the request |
+| 5 | `ErrAmountOutOfRange` | amount exceeds 2^256-1 | fix the request |
+| 6 | `ErrInvalidAttestation` | invalid direction, source reference, nonce, destination or deadline | fix the request |
+| 7 | `ErrInvalidCronosDestination` | outbound destination is not an address the Cronos vault releases to | fix the request |
+| 8 | `ErrInvalidXitcoinDestination` | inbound destination is not a Xitcoin account address | fix the request |
+| 9 | `ErrInvalidChainID` | chain ID is empty, too long, has a forbidden character or is not a canonical EVM chain ID | fix the request |
+| 10 | `ErrInvalidRouteConfig` | route configuration (signers, guardian, limits) is invalid. A stored route that fails validation makes every route transaction fail with the code of the failing field (3, 9 or 10) | fix the request, or the route needs repair |
+| 11 | `ErrInvalidControlAction` | control action, payload hash, nonce or validity window is invalid | fix the request |
+| 12 | `ErrInvalidGuardianPause` | guardian pause nonce or expiry is invalid | fix the request |
+| 13 | `ErrInvalidSignature` | an approval or control signature is malformed (length, recovery ID, values) | re-sign |
+| 14 | `ErrInvalidApprovals` | wrong number of approvals, an approval not from a configured signer (or the guardian), or a duplicate approval | collect valid approvals |
+| 15 | `ErrRouteDisabled` | no route is configured, or it is disabled | wait for the route |
+| 16 | `ErrRoutePaused` | the route is paused | wait for the resume |
+| 17 | `ErrRouteAlreadyPaused` | the route is already paused | none |
+| 18 | `ErrRouteNotPaused` | resume of a route that is not paused | none |
+| 19 | `ErrRouteAlreadyInitialized` | a route is already configured | none |
+| 20 | `ErrAttestationRouteMismatch` | route ID differs from the configured route | fix the request |
+| 21 | `ErrAttestationSourceChainMismatch` | source chain differs from the route's | fix the request |
+| 22 | `ErrAttestationAlreadyProcessed` | the source deposit was already processed | done: query the attestation record |
+| 23 | `ErrAttestationExpired` | the attestation deadline has passed | re-attest |
+| 24 | `ErrSettlementUnavailable` | the node has no bank keeper wired | report |
+| 25 | `ErrSettlementDirection` | the attestation is not an inbound Cronos transfer | fix the request |
+| 26 | `ErrBlockedDestination` | the destination is a blocked module account | fix the request |
+| 27 | `ErrTransferLimitExceeded` | amount above `max_transfer_amount` | split or wait for a limit change |
+| 28 | `ErrDailyLimitExceeded` | amount above what remains of `daily_limit` today (UTC) | retry the next UTC day |
+| 29 | `ErrOutstandingLimitExceeded` | mint above `max_outstanding_amount` | wait for burns or a limit change |
+| 30 | `ErrInsufficientOutstanding` | burn above the outstanding bridged amount | lower the amount |
+| 31 | `ErrMaximumSupplyExceeded` | mint above the XTC maximum supply | report |
+| 32 | `ErrCapBelowOutstanding` | update sets `max_outstanding_amount` below the outstanding amount | fix the update |
+| 33 | `ErrControlActionNotActive` | control action outside its validity window | re-sign with a valid window |
+| 34 | `ErrControlActionProcessed` | control nonce already used, or the pause already applied | none |
+| 35 | `ErrControlPayloadMismatch` | control payload does not match the route | fix the request |
+| 36 | `ErrControlNonceGap` | control nonce is not the next one | apply the earlier action first |
+| 37 | `ErrGuardianPauseRouteMismatch` | guardian pause for another route | fix the request |
+| 38 | `ErrGuardianPauseExpired` | guardian pause past its expiry | re-sign |
+| 39 | `ErrSignerSetVersionExhausted` | signer set version cannot be increased | report |
+
 ## Attack simulations
 
 The properties above are checked by Go native fuzz targets in `x/bridge/types/fuzz_test.go` and `x/bridge/keeper/fuzz_test.go`, described in [bridge-attack-simulations.md](bridge-attack-simulations.md).

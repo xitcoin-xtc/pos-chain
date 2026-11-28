@@ -3,9 +3,10 @@ package types
 
 import (
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"strings"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 const (
@@ -48,28 +49,28 @@ type Attestation struct {
 
 func (a Attestation) Validate() error {
 	if !validRouteID(a.RouteID) {
-		return errors.New("invalid route ID")
+		return ErrInvalidRouteID
 	}
 	if a.Direction != DirectionCronosToXitcoin && a.Direction != DirectionXitcoinToCronos {
-		return errors.New("invalid bridge direction")
+		return errorsmod.Wrap(ErrInvalidAttestation, "invalid bridge direction")
 	}
 	if err := ValidateEVMChainID(a.SourceChainID); err != nil {
 		return err
 	}
 	if !validHexReference(a.SourceRef) {
-		return errors.New("source reference must be a 32-byte hexadecimal transaction identifier")
+		return errorsmod.Wrap(ErrInvalidAttestation, "source reference must be a 32-byte hexadecimal transaction identifier")
 	}
 	if a.Nonce == 0 {
-		return errors.New("nonce must be greater than zero")
+		return errorsmod.Wrap(ErrInvalidAttestation, "nonce must be greater than zero")
 	}
 	if !validDestination(a.Destination) {
-		return errors.New("invalid destination")
+		return errorsmod.Wrap(ErrInvalidAttestation, "invalid destination")
 	}
 	if _, err := ParseAmount(a.Amount); err != nil {
 		return err
 	}
 	if a.DeadlineUnix <= 0 {
-		return errors.New("deadline is required")
+		return errorsmod.Wrap(ErrInvalidAttestation, "deadline is required")
 	}
 	return nil
 }
@@ -91,7 +92,7 @@ func SourceDepositKey(sourceChainID, sourceRef string) ([32]byte, error) {
 		return [32]byte{}, err
 	}
 	if !validHexReference(sourceRef) {
-		return [32]byte{}, errors.New("source reference must be a 32-byte hexadecimal transaction identifier")
+		return [32]byte{}, errorsmod.Wrap(ErrInvalidAttestation, "source reference must be a 32-byte hexadecimal transaction identifier")
 	}
 	fields := []string{SourceDepositDomain, sourceChainID, normalizeHexReference(sourceRef)}
 	return sha256.Sum256([]byte(strings.Join(fields, "\x00"))), nil
@@ -123,16 +124,16 @@ func (a Attestation) PayloadHash(destinationChainID string) ([32]byte, error) {
 // cryptographic verifier validates the actual signatures.
 func ValidateApprovalSet(signerIDs []string) error {
 	if len(signerIDs) < RequiredApprovals || len(signerIDs) > MaxBridgeSigners {
-		return fmt.Errorf("approval count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
+		return errorsmod.Wrapf(ErrInvalidApprovals, "approval count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
 	}
 	seen := make(map[string]struct{}, len(signerIDs))
 	for _, signerID := range signerIDs {
 		normalized := strings.ToLower(strings.TrimSpace(signerID))
 		if normalized == "" || len(normalized) > 128 {
-			return errors.New("invalid signer ID")
+			return errorsmod.Wrap(ErrInvalidApprovals, "invalid signer ID")
 		}
 		if _, exists := seen[normalized]; exists {
-			return errors.New("duplicate signer approval")
+			return errorsmod.Wrap(ErrInvalidApprovals, "duplicate signer approval")
 		}
 		seen[normalized] = struct{}{}
 	}
