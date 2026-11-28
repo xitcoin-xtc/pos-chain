@@ -276,6 +276,17 @@ run_forge_script() {
 # Test 1: Deploy ERC20 contract
 run_forge_script "DeployERC20" "Deploying ERC20 contract"
 
+# The next scripts use the deployed token (CONTRACT), unless .env sets it.
+if [ -z "${CONTRACT:-}" ]; then
+	CONTRACT="$(extract_contract_address "DeployERC20")"
+	if [ -z "$CONTRACT" ]; then
+		echo "Error: no ERC20 address in the DeployERC20 broadcast"
+		exit 1
+	fi
+	export CONTRACT
+	echo "Deployed ERC20: $CONTRACT"
+fi
+
 # Test 2: Query Network Info
 run_forge_script "NetworkInfo" "Querying network information"
 
