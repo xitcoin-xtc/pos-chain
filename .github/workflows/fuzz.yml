@@ -1,0 +1,91 @@
+name: Bridge fuzzing
+
+# Nightly, time-boxed exploration of the x/bridge attack simulations
+# (docs/bridge-attack-simulations.md). The seed corpora already run in every
+# `go test`. This workflow commits nothing: a failing input is uploaded as an
+# artifact and the job fails.
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+    inputs:
+      fuzztime:
+        description: Time box per target (Go duration such as 90s, 10m or 1h)
+        required: false
+        default: 10m
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bridge-fuzzing
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { package: x/bridge/types, target: FuzzParseAmount }
+          - { package: x/bridge/types, target: FuzzAmountValidationAgrees }
+          - { package: x/bridge/types, target: FuzzAttestationDigest }
+          - { package: x/bridge/types, target: FuzzSourceDepositKey }
+          - { package: x/bridge/types, target: FuzzSourceDepositKeyArbitrary }
+          - { package: x/bridge/types, target: FuzzApprovals }
+          - { package: x/bridge/types, target: FuzzRouteConfigValidate }
+          - { package: x/bridge/types, target: FuzzMessageDecoding }
+          - { package: x/bridge/keeper, target: FuzzAmountAgreement }
+          - { package: x/bridge/keeper, target: FuzzBridgeOperationSequence }
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Fuzz ${{ matrix.target }}
+        env:
+          FUZZTIME: ${{ inputs.fuzztime || '10m' }}
+          PACKAGE: ${{ matrix.package }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$FUZZTIME" =~ ^[0-9]{1,4}[smh]$ ]]; then
+            echo "invalid fuzztime: $FUZZTIME" >&2
+            exit 1
+          fi
+          set +e
+          go test -tags=test -run='^$' -fuzz="^${TARGET}\$" \
+            -fuzztime="$FUZZTIME" -fuzzminimizetime=30s "./${PACKAGE}/" 2>&1 | tee fuzz.log
+          status=${PIPESTATUS[0]}
+          set -e
+          # A property failure, panic or hang always writes the input to
+          # testdata/fuzz. The engine can also stop with "context deadline
+          # exceeded" when the time box ends while it is minimizing a new
+          # coverage input; that is not a finding.
+          if [[ "$status" -ne 0 ]] && ! compgen -G "${PACKAGE}/testdata/fuzz/${TARGET}/*" > /dev/null \
+            && grep -q 'context deadline exceeded' fuzz.log; then
+            echo "::warning::${TARGET}: time box ended during minimization; no failing input"
+            exit 0
+          fi
+          exit "$status"
+
+      - name: Upload failing inputs
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: fuzz-crashers-${{ matrix.target }}-${{ github.run_id }}
+          path: ${{ matrix.package }}/testdata/fuzz/${{ matrix.target }}/
+          if-no-files-found: ignore
+          retention-days: 30
