@@ -48,7 +48,9 @@ const SecurityHardeningUpgradeName = "xitcoin-security-hardening-v1"
 // addresses must be spelled exactly; a route update cannot set the
 // outstanding cap below the outstanding amount. Its handler raises
 // min_self_delegation of existing validators to the x/validatoradmission
-// minimum (see MigrateValidatorMinSelfDelegation), reports a stored bridge
+// minimum (see MigrateValidatorMinSelfDelegation), removes validator
+// approvals stored under a non-canonical operator spelling (see
+// RemoveNonCanonicalValidatorApprovals), reports a stored bridge
 // route configuration that the new validation rejects and stores the bridge
 // signer set version (see MigrateBridgeSignerSetVersion). From this upgrade
 // x/bridge also records the block height and transaction hash of every

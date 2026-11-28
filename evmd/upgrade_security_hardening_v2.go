@@ -32,6 +32,10 @@ const (
 	// EventTypeBridgeRouteConfigInvalid: the stored bridge route
 	// configuration fails the canonical validation of this release.
 	EventTypeBridgeRouteConfigInvalid = "xitcoin_bridge_route_config_invalid"
+	// EventTypeValidatorApprovalRemoved: a validator-admission approval
+	// stored under a spelling other than the canonical operator address was
+	// removed.
+	EventTypeValidatorApprovalRemoved = "xitcoin_validator_approval_removed"
 )
 
 // MinSelfDelegationMigration reports the outcome for every validator.
@@ -47,6 +51,7 @@ func (app EVMD) securityHardeningV2Handler(ctx context.Context, _ upgradetypes.P
 	if _, err := MigrateValidatorMinSelfDelegation(sdkCtx, app.StakingKeeper, app.ValidatorAdmissionKeeper); err != nil {
 		return nil, err
 	}
+	RemoveNonCanonicalValidatorApprovals(sdkCtx, app.ValidatorAdmissionKeeper)
 	// Reported through an event and the log, never fatal: see
 	// CheckBridgeRouteConfig.
 	_ = CheckBridgeRouteConfig(sdkCtx, app.BridgeKeeper)
@@ -207,4 +212,33 @@ func CheckBridgeRouteConfig(ctx sdk.Context, bridge bridgekeeper.Keeper) error {
 		return err
 	}
 	return nil
+}
+
+// RemoveNonCanonicalValidatorApprovals removes the x/validatoradmission
+// approvals stored under a spelling other than the canonical (lower-case
+// bech32) operator address, such as an approval spelled in upper case. From
+// this release approvals are stored and looked up under the canonical
+// spelling only, so such an entry would never match again. Before it, a
+// revocation spelled differently from the approval left the approval in
+// place: the validator was jailed but could unjail at once. Each removal is
+// logged and reported with an EventTypeValidatorApprovalRemoved event, so the
+// authority can approve the operator again if it meant to. The migration is
+// idempotent and never fails.
+func RemoveNonCanonicalValidatorApprovals(ctx sdk.Context, admission validatoradmissionkeeper.Keeper) []string {
+	removed := admission.RemoveNonCanonicalApprovals(ctx)
+	logger := ctx.Logger().With("upgrade", SecurityHardeningV2UpgradeName)
+	for _, spelling := range removed {
+		canonical := ""
+		if operator, err := sdk.ValAddressFromBech32(spelling); err == nil {
+			canonical = operator.String()
+		}
+		logger.Error("removed a validator approval stored under a non-canonical spelling",
+			"validator", spelling, "canonical", canonical)
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
+			EventTypeValidatorApprovalRemoved,
+			sdk.NewAttribute("validator", spelling),
+			sdk.NewAttribute("canonical", canonical),
+		))
+	}
+	return removed
 }
