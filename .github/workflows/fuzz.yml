@@ -31,6 +31,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - { package: x/validatorincentives/types, target: FuzzPolicyMath }
+          - { package: x/validatorincentives/keeper, target: FuzzIncentiveReleaseSequence }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzStakingPrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzDistributionPrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzBankPrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzBech32PrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzP256PrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzICS02PrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzICS20PrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzGovPrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzSlashingPrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzWERC20PrecompileCalldata }
+          - { module: evmd, package: tests/integration/precompiles/attack, target: FuzzERC20PrecompileCalldata }
           - { package: x/bridge/types, target: FuzzParseAmount }
           - { package: x/bridge/types, target: FuzzAmountValidationAgrees }
           - { package: x/bridge/types, target: FuzzAttestationDigest }
@@ -53,9 +66,12 @@ jobs:
         uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
         with:
           go-version-file: go.mod
-          cache-dependency-path: go.sum
+          cache-dependency-path: |
+            go.sum
+            evmd/go.sum
 
       - name: Fuzz ${{ matrix.target }}
+        working-directory: ${{ matrix.module || '.' }}
         env:
           FUZZTIME: ${{ inputs.fuzztime || '10m' }}
           PACKAGE: ${{ matrix.package }}
@@ -87,6 +103,6 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: fuzz-crashers-${{ matrix.target }}-${{ github.run_id }}
-          path: ${{ matrix.package }}/testdata/fuzz/${{ matrix.target }}/
+          path: ${{ matrix.module || '.' }}/${{ matrix.package }}/testdata/fuzz/${{ matrix.target }}/
           if-no-files-found: ignore
           retention-days: 30
