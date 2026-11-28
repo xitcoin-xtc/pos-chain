@@ -67,15 +67,10 @@ func dailyUsageKey(routeID string, unixTime int64) []byte {
 	return dailyUsageKeyForDay(routeID, UTCDay(unixTime))
 }
 
-// UTCDay returns the number of whole days between 1970-01-01T00:00:00Z and a
-// Unix time: the day of the daily-limit bucket. Block times are later than
-// 1970; an earlier time maps to day 0.
+// UTCDay returns the day of the daily-limit bucket of a Unix time (see
+// types.UTCDay).
 func UTCDay(unixTime int64) uint64 {
-	day := unixTime / 86400
-	if day < 0 {
-		return 0
-	}
-	return uint64(day)
+	return types.UTCDay(unixTime)
 }
 
 // dailyUsageKeyForDay is 0x03 || sha256(route ID) || big-endian UTC day.
