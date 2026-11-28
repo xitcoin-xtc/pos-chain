@@ -58,3 +58,4 @@ jobs:
           ./scripts/tests_compatibility_foundry_uniswap_v3.sh --verbose
         env:
           COMPAT_DIR: ${{ github.workspace }}/tests/evm-tools-compatibility
+          COMPAT_LOCAL_KEYS: '1'

@@ -51,6 +51,8 @@ if [ -f ".env" ]; then
 	echo "Sourcing .env file..."
 	# shellcheck source=/dev/null
 	source .env
+elif [ "${COMPAT_LOCAL_KEYS:-0}" = 1 ]; then
+	load_local_test_keys
 else
 	echo "Error: No .env file found in $TEST_DIR"
 	exit 1

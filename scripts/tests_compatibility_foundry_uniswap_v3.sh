@@ -53,6 +53,12 @@ if [ -f ".env" ]; then
 	echo "Sourcing .env file..."
 	# shellcheck source=/dev/null
 	source .env
+elif [ "${COMPAT_LOCAL_KEYS:-0}" = 1 ]; then
+	load_local_test_keys
+	# NFTDescriptor is the next contract the deployer creates.
+	LIBRARY_CONTRACT="$(cast compute-address "$ACCOUNT_1" \
+		--nonce "$(cast nonce "$ACCOUNT_1" --rpc-url "$CUSTOM_RPC")" | awk '{print $NF}')"
+	export LIBRARY_CONTRACT
 else
 	echo "Error: No .env file found in $TEST_DIR"
 	exit 1
