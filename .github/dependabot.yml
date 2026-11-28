@@ -36,6 +36,20 @@ updates:
           - minor
           - patch
 
+  # Go tools used by CI (tool directives).
+  - package-ecosystem: gomod
+    directory: /tools
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    allow:
+      - dependency-type: all
+    groups:
+      tools:
+        patterns:
+          - '*'
+
   # Test-only Go modules.
   - package-ecosystem: gomod
     directories:

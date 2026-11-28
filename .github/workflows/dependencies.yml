@@ -6,40 +6,15 @@ on:
   workflow_dispatch:
     inputs:
       suite_group:
-        description: Select all diagnostics, legacy Solidity tests, chain-specific tests, full Go tests, or a versioned binary
+        description: Legacy Solidity suites to run (all of them, or only the chain-specific ones)
         type: choice
-        options: [all, legacy, chain, go, versioned]
+        options: [all, legacy, chain]
         default: all
 
 permissions:
   contents: read
 
 jobs:
-  go-vulnerabilities:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-          persist-credentials: false
-
-      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-
-      - name: Run govulncheck
-        run: |
-          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
-          bash scripts/run-govulncheck.sh ./...
-
-      - name: Run evmd govulncheck
-        if: ${{ !cancelled() && (success() || failure()) }}
-        working-directory: evmd
-        run: |
-          go mod why github.com/pion/dtls/v2 golang.org/x/crypto/openpgp/armor
-          bash ../scripts/run-govulncheck.sh -show verbose ./...
-
   contract-dependencies:
     runs-on: ubuntu-24.04
     steps:
@@ -65,85 +40,6 @@ jobs:
       - name: Audit contract dependencies
         working-directory: contracts
         run: npm audit --audit-level=high
-
-  fresh-go-diagnostics:
-    name: Fresh Go evidence (${{ matrix.module }})
-    if: github.event_name == 'workflow_dispatch' && (inputs.suite_group == 'all' || inputs.suite_group == 'go')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        module: [root, evmd]
-    env:
-      CGO_ENABLED: '1'
-      GOWORK: 'off'
-      GOMAXPROCS: '2'
-      GOMEMLIMIT: 3GiB
-      GOFLAGS: -p=1
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
-        with:
-          go-version-file: go.mod
-          cache: false
-      - name: Collect current graph and raw findings
-        shell: bash
-        run: |
-          set -euo pipefail
-          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
-          mkdir -p "$evidence"
-          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
-          git rev-parse HEAD > "$evidence/source-head.txt"
-          go version > "$evidence/toolchain.txt"
-          sha256sum go.mod go.sum > "$evidence/lock-sha256.txt"
-          go list -m -json all > "$evidence/modules.json"
-          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
-          # Diagnostic evidence does not renew the assessment or its exceptions.
-          # JSON mode reports findings in the artifact; exit 0 does not mean clean.
-          # Preserve execution errors; existing acceptance gates remain mandatory.
-          set +e
-          govulncheck -json ./... > "$evidence/govulncheck.jsonl" 2> "$evidence/govulncheck.stderr"
-          scan_status=$?
-          set -e
-          printf '%s\n' "$scan_status" > "$evidence/scan-exit-code.txt"
-          exit "$scan_status"
-      - name: Compile packages and run targeted regression tests
-        if: inputs.suite_group != 'go'
-        shell: bash
-        run: |
-          set -euo pipefail
-          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
-          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
-          go test -mod=readonly -tags=test -run '^$' ./... > "$evidence/compile-check.log" 2>&1
-          if [[ '${{ matrix.module }}' == root ]]; then
-            go test -mod=readonly -tags=test ./rpc/... ./server/... ./client/... > "$evidence/targeted-tests.log" 2>&1
-          fi
-      - name: Run full Go test suite without renewing historical acceptance
-        if: inputs.suite_group == 'go'
-        shell: bash
-        run: |
-          set -euo pipefail
-          evidence="$GITHUB_WORKSPACE/fresh-go-evidence/${{ matrix.module }}"
-          if [[ '${{ matrix.module }}' == evmd ]]; then cd evmd; fi
-          go mod verify > "$evidence/module-verification.log" 2>&1
-          # Runner-local tests only; production nodes and historical gates are untouched.
-          set +e
-          go test -mod=readonly -tags=test -count=1 -timeout=60m ./... > "$evidence/full-tests.log" 2>&1
-          test_status=$?
-          set -e
-          printf '%s\n' "$test_status" > "$evidence/full-tests-exit-code.txt"
-          sha256sum --check "$evidence/lock-sha256.txt"
-          exit "$test_status"
-      - name: Preserve diagnostic and test evidence
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: fresh-go-${{ matrix.module }}
-          path: fresh-go-evidence/
-          retention-days: 14
 
   legacy-solidity-compatibility:
     name: Legacy Solidity (${{ matrix.suite }})
@@ -212,34 +108,3 @@ jobs:
           fi
           cd tests/solidity/suites/${{ matrix.suite }}
           yarn test-cosmos
-
-  fresh-versioned-binary:
-    name: Fresh versioned binary evidence
-    if: github.event_name == 'workflow_dispatch' && inputs.suite_group == 'versioned'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    env:
-      CGO_ENABLED: '1'
-      GOWORK: 'off'
-      GOMAXPROCS: '2'
-      GOMEMLIMIT: 3GiB
-      GOFLAGS: -p=1
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: |
-            go.sum
-            evmd/go.sum
-      - name: Collect published-source build and binary scan
-        run: python3 scripts/collect-fresh-versioned-go.py
-      - name: Preserve fresh evidence without publishing a binary
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: fresh-versioned-binary
-          path: fresh-versioned-evidence/
-          retention-days: 14

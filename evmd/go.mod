@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 	github.com/tyler-smith/go-bip39 v1.1.0
-	github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.5.0.20261128025345-303b2325e443
+	github.com/xitcoin-xtc/pos-chain v0.0.0-00010101000000-000000000000
 	golang.org/x/sync v0.25.0
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
@@ -371,7 +371,7 @@ replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// Xitcoin-maintained Cosmos Geth; immutable revision.
-	// Upstream provenance is recorded in docs/go-fork-provenance.json.
+	// Base, patches and rebase steps: docs/forks.md.
 	github.com/ethereum/go-ethereum => github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 	// Security Advisory https://github.com/advisories/GHSA-h395-qcrw-5vmq
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
@@ -382,3 +382,6 @@ replace (
 )
 
 replace github.com/cosmos/cosmos-sdk => github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20261121191520-bb5933a0bf0d
+
+// Build and test the application against the root module of this checkout.
+replace github.com/xitcoin-xtc/pos-chain => ../
