@@ -225,7 +225,8 @@ One, outside the gated graphs:
   an error type's `Error` method). The result is the same on `main`
   `f0c9a90`, and before 2026-11-27 the same code came from x/crypto 0.58.0.
   The module drives built binaries in system tests; it is not part of the
-  node binary, not covered by the gate, and earlier reviews did not scan it.
+  node binary, not covered by the gate, and earlier reviews report no scan
+  of it.
   Replacing the SDK with the fork there, as `tests/speedtest` does, would
   remove the import; that is left for a separate change.
 

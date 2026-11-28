@@ -7,7 +7,7 @@
   "security_acceptance": false,
   "ci_dispositions_accepted": true,
   "scope": "Main f0c9a90 plus the pull request reviewed in docs/security-review-2026-11-28.md: WebSocket subscription start position and stream wake-up fix (flaky TestSubscribeNewHeadsReturnsCanonicalBlockHash), Dependabot Go update #90 (gjson 1.20.6), evmd root anchor 303b232, test-only modules aligned; root, evmd and speedtest graphs; fresh CI qualification required; no runtime deployment",
-  "assessment_sha256": "8e9c265d0ec69c11a13d4d6e790e6d50b3158f08a98a82dee6028303cea32e2e",
+  "assessment_sha256": "2e0341b1f9508a34bd4791a2fbbd6df09d4042475a82c16ff2aedfb71c23568e",
   "provenance_sha256": "d87d03713b5418d50e8a37fee5f0a930358f900807d137a7bb87f4c85d431587",
   "lock_sha256": {
     "go.mod": "a3c63209776190d37d8fb427e59b2676754a65f4cf43c27e1c93f8b2a77944ae",
