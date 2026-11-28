@@ -48,7 +48,9 @@ func ValidateCreateValidator(
 	if err != nil {
 		return err
 	}
-	if msg.Value.Denom != minimum.Denom || msg.Value.Amount.LT(minimum.Amount) {
+	// A decoded message may carry no amount at all (a nil Int): compare only
+	// a present amount.
+	if msg.Value.Denom != minimum.Denom || msg.Value.Amount.IsNil() || msg.Value.Amount.LT(minimum.Amount) {
 		return errorsmod.Wrapf(
 			sdkerrors.ErrUnauthorized,
 			"Validator Admission: self delegation must be at least %s",

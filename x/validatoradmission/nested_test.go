@@ -198,6 +198,19 @@ func TestAdmissionRequiresMinSelfDelegationAtLeastMinimum(t *testing.T) {
 	}
 }
 
+// A MsgCreateValidator decoded without an amount carries a nil Int. Before
+// the fix the comparison with the minimum panicked in the ante handler for an
+// approved operator, so a block proposer could include such a transaction to
+// get a panic result instead of a rejection.
+func TestAdmissionRejectsCreateValidatorWithoutAmount(t *testing.T) {
+	f := newAdmissionFixture(t)
+	f.keeper.SetApprovedValidator(f.ctx, f.validator, true)
+	msg := f.createValidator(f.minimum.Amount)
+	msg.Value = sdk.Coin{Denom: f.minimum.Denom}
+	f.requireRejected(t, "self delegation must be at least", msg)
+	f.requireRejected(t, "", exec(f.operator, msg))
+}
+
 type fakeValidators map[string]stakingtypes.Validator
 
 func (v fakeValidators) GetValidator(_ context.Context, addr sdk.ValAddress) (stakingtypes.Validator, error) {
