@@ -455,8 +455,12 @@ func (api *pubSubAPI) subscribe(wsConn *wsConn, subID rpc.ID, params []any) (con
 
 func (api *pubSubAPI) subscribeNewHeads(wsConn *wsConn, subID rpc.ID) (context.CancelFunc, error) {
 	ctx, cancel := context.WithCancel(context.Background())
+	headerStream := api.events.HeaderStream()
+	// Take the start position before the subscription ID is returned, so that a
+	// header added right after the response is delivered.
+	_, offset := headerStream.ReadNonBlocking(-1)
 	//nolint: errcheck
-	go api.events.HeaderStream().Subscribe(ctx, func(headers []stream.RPCHeader, _ int) error {
+	go headerStream.Subscribe(ctx, offset, func(headers []stream.RPCHeader, _ int) error {
 		for _, header := range headers {
 			// write to ws conn
 			res := &SubscriptionNotification{
@@ -593,8 +597,12 @@ func (api *pubSubAPI) subscribeLogs(wsConn *wsConn, subID rpc.ID, extra any) (co
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
+	logStream := api.events.LogStream()
+	// Take the start position before the subscription ID is returned, so that
+	// logs added right after the response are delivered.
+	_, offset := logStream.ReadNonBlocking(-1)
 	//nolint: errcheck
-	go api.events.LogStream().Subscribe(ctx, func(txLogs []*ethtypes.Log, _ int) error {
+	go logStream.Subscribe(ctx, offset, func(txLogs []*ethtypes.Log, _ int) error {
 		logs := rpcfilters.FilterLogs(txLogs, crit.FromBlock, crit.ToBlock, crit.Addresses, crit.Topics)
 		if len(logs) == 0 {
 			return nil
@@ -630,8 +638,12 @@ func (api *pubSubAPI) subscribeLogs(wsConn *wsConn, subID rpc.ID, extra any) (co
 
 func (api *pubSubAPI) subscribePendingTransactions(wsConn *wsConn, subID rpc.ID) (context.CancelFunc, error) {
 	ctx, cancel := context.WithCancel(context.Background())
+	txStream := api.events.PendingTxStream()
+	// Take the start position before the subscription ID is returned, so that a
+	// transaction added right after the response is delivered.
+	_, offset := txStream.ReadNonBlocking(-1)
 	//nolint: errcheck
-	go api.events.PendingTxStream().Subscribe(ctx, func(items []common.Hash, _ int) error {
+	go txStream.Subscribe(ctx, offset, func(items []common.Hash, _ int) error {
 		for _, hash := range items {
 			// write to ws conn
 			res := &SubscriptionNotification{

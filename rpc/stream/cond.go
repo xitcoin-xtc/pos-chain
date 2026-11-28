@@ -15,11 +15,19 @@ func NewCond() *Cond {
 	return &Cond{ch: make(chan struct{})}
 }
 
-// Wait returns true if the condition is signaled, false if the context is canceled
-func (c *Cond) Wait(ctx context.Context) bool {
+// Wait releases l, waits until the condition is signaled or the context is
+// canceled, and acquires l again before it returns. The caller must hold l.
+// The channel that Broadcast closes is taken before l is released, so a
+// Broadcast made under the matching write lock after the caller checked its
+// condition is not missed.
+// It returns true if the condition is signaled, false if the context is canceled.
+func (c *Cond) Wait(ctx context.Context, l sync.Locker) bool {
 	c.mu.Lock()
 	ch := c.ch
 	c.mu.Unlock()
+
+	l.Unlock()
+	defer l.Lock()
 
 	select {
 	case <-ch:

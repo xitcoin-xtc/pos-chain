@@ -69,7 +69,7 @@ func TestStreamReadBlocking(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 
-			require.NoError(t, stream.Subscribe(ctx, func(items []int, offset int) error {
+			require.NoError(t, stream.Subscribe(ctx, -1, func(items []int, offset int) error {
 				result[i] = append(result[i], items...)
 				return nil
 			}))
@@ -97,6 +97,48 @@ func TestStreamReadBlocking(t *testing.T) {
 			require.Equal(t, n+1, result[i][j+1])
 		}
 	}
+}
+
+// TestStreamSubscribeFromOffset covers an item added after a subscriber took
+// its start offset and before it first reads the stream: it is delivered.
+func TestStreamSubscribeFromOffset(t *testing.T) {
+	stream := NewStream[int](16, 31)
+	stream.Add(1)
+	_, offset := stream.ReadNonBlocking(-1)
+	stream.Add(2)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var got []int
+	require.NoError(t, stream.Subscribe(ctx, offset, func(items []int, _ int) error {
+		got = append(got, items...)
+		cancel()
+		return nil
+	}))
+	require.Equal(t, []int{2}, got)
+}
+
+// broadcastOnUnlock broadcasts right after it releases the lock, the point at
+// which a waiter that has not yet taken the channel would miss the broadcast.
+type broadcastOnUnlock struct {
+	sync.Mutex
+	cond *Cond
+}
+
+func (l *broadcastOnUnlock) Unlock() {
+	l.Mutex.Unlock()
+	l.cond.Broadcast()
+}
+
+func TestCondWaitSeesBroadcastAfterUnlock(t *testing.T) {
+	cond := NewCond()
+	l := &broadcastOnUnlock{cond: cond}
+	l.Lock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	require.True(t, cond.Wait(ctx, l), "a broadcast made after the lock was released was missed")
+	l.Unlock()
 }
 
 func TestStreamReadFromEnd(t *testing.T) {
