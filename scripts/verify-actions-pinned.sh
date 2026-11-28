@@ -13,7 +13,14 @@ while IFS= read -r entry; do
   value="${value//[[:space:]]/}"
 
   case "$value" in
-    ./* | docker://*) continue ;;
+    ./*) continue ;;
+    docker://*)
+      if [[ ! "$value" =~ ^docker://[^@]+@sha256:[0-9a-f]{64}$ ]]; then
+        printf 'Docker action not pinned by digest: %s: %s\n' "$file" "$value" >&2
+        status=1
+      fi
+      continue
+      ;;
   esac
 
   if [[ ! "$value" =~ ^[^/@]+/[^/@]+@[0-9a-f]{40}$ ]]; then

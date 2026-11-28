@@ -5,8 +5,10 @@ linters:
   default: none
   enable:
     - copyloopvar
+    - depguard
     - dogsled
     - errcheck
+    - forbidigo
     - gocritic
     - gosec
     - govet
@@ -21,8 +23,29 @@ linters:
     - unparam
     - unused
   settings:
+    depguard:
+      rules:
+        banned:
+          files:
+            - $all
+            - '!$test'
+          deny:
+            - pkg: github.com/cosmos/cosmos-sdk/x/crisis
+              desc: deprecated module with unfixed advisories; never wire it into the app
+            - pkg: cosmossdk.io/x/crisis
+              desc: deprecated module with unfixed advisories; never wire it into the app
+            - pkg: golang.org/x/crypto/openpgp
+              desc: unmaintained; key armor uses github.com/ProtonMail/go-crypto through the Cosmos SDK
+            - pkg: github.com/pion/dtls/v2
+              desc: vulnerable major version; use github.com/pion/dtls/v3
+            - pkg: github.com/pion/stun/v2
+              desc: superseded; use github.com/pion/stun/v3
     dogsled:
       max-blank-identifiers: 3
+    forbidigo:
+      forbid:
+        - pattern: ^ImportRawKey$
+          msg: JSON-RPC must not accept raw private keys (personal_importRawKey)
     govet:
       disable:
         - inline
