@@ -15,3 +15,7 @@ server/config/config.go:generic-api-key:482
 tests/evm-tools-compatibility/foundry-uniswap-v3/.env.example:generic-api-key:6
 tests/evm-tools-compatibility/foundry/.env.example:generic-api-key:6
 x/erc20/types/proposal_test.go:generic-api-key:181
+
+# Malformed armor header used as a negative test vector in the September 2026
+# SDK armor patch (no key material).
+4f53683a0b4ce12feab0ce329e687762a65aeb60:docs/security-remediation-20260913/sdk-armor.patch:private-key:86
