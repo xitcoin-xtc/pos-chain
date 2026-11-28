@@ -30,37 +30,34 @@ echo "🔄 Sending transfer exceeding balance..."
 # 1) Send via cast and capture output (suppress exit)
 echo "❌ Attempting transfer that should fail:"
 echo "$ cast send \"$CONTRACT\" 'transfer(address,uint256)' \"$RECIPIENT\" \"$AMOUNT\" --rpc-url \"$RPC_URL\" --private-key \"[HIDDEN]\" --chain-id \"$CHAIN_ID\" --json"
+set +e
 OUTPUT=$(cast send \
 	"$CONTRACT" \
 	'transfer(address,uint256)' "$RECIPIENT" "$AMOUNT" \
 	--rpc-url "$RPC_URL" \
 	--private-key "$PK" \
 	--chain-id "$CHAIN_ID" \
-	--json 2>&1 || true)
+	--json 2>&1)
+STATUS=$?
+set -e
 
-# 2) Try parse JSON
-JSON=$(echo "$OUTPUT" | sed -n 's/.*\({.*\)/\1/p')
-
-if [ -n "$JSON" ]; then
-	# 3a) JSON returned -> parse error field
-	echo "$JSON" | jq -r '
-    if has("error") then
-      "✅ Transaction reverted as expected:\n  " + .error.message
-    else
-      "❌ Expected a revert, but transaction succeeded:\n" + (.|tojson)
-    end'
-else
-	# 3b) No JSON -> fallback to raw text check
-	if echo "$OUTPUT" | grep -q -e 'execution reverted' -e 'ERC20InsufficientBalance'; then
-		echo "✅ Transaction reverted as expected"
-		echo
-		echo "Revert detail:"
-		# Newline before 'Error:'
-		echo "$OUTPUT" | sed -n 's/.*\(Error:.*\)/\1/p'
+# Decide on the exit status and the revert reason, not on the shape of the
+# output: recent cast versions print errors as JSON log lines.
+# 0xe450d38c is the ERC20InsufficientBalance selector.
+if [ "$STATUS" -eq 0 ]; then
+	# A receipt: the transfer must have failed on chain.
+	if echo "$OUTPUT" | jq -e '.status == "0x0"' >/dev/null 2>&1; then
+		echo "✅ Transaction reverted on chain as expected"
 	else
-		echo "❌ Unexpected response (no JSON, no revert message):"
-		echo
+		echo "❌ Expected a revert, but the transfer succeeded:"
 		echo "$OUTPUT"
 		exit 1
 	fi
+elif echo "$OUTPUT" | grep -q -e 'execution reverted' -e 'ERC20InsufficientBalance' -e '0xe450d38c'; then
+	echo "✅ Transaction reverted as expected"
+	echo "$OUTPUT" | tail -1
+else
+	echo "❌ Unexpected failure (no revert reason):"
+	echo "$OUTPUT"
+	exit 1
 fi
