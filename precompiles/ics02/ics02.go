@@ -99,6 +99,11 @@ func (p Precompile) Execute(ctx sdk.Context, stateDB vm.StateDB, contract *vm.Co
 	if err != nil {
 		return nil, err
 	}
+	if !p.IsTransaction(method) {
+		var discardWrites func()
+		ctx, discardWrites = cmn.QueryContext(ctx)
+		defer discardWrites()
+	}
 
 	switch method.Name {
 	case UpdateClientMethod:
