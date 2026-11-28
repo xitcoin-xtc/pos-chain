@@ -38,8 +38,6 @@ tests/systemtests/binaries
 tests/systemtests/testnet
 .testnets
 
-.claude/
-
 # Local configuration: never publish real values.
 .env
 .env.*

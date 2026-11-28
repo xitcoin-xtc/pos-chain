@@ -14,6 +14,5 @@ Their licenses, notices and attribution requirements remain in force. Xitcoin do
 
 Upstream project documentation and source repositories should be consulted for their respective maintenance and security policies.
 
-For PR44 exact fork versions, corresponding sources and per-component licenses,
-see [Go fork provenance](docs/go-fork-provenance.md). Advisory dispositions and
-limits are maintained in [SECURITY-ASSESSMENT.md](SECURITY-ASSESSMENT.md).
+The Cosmos SDK and go-ethereum forks used by the node, their upstream bases,
+patches and licenses are described in [docs/forks.md](docs/forks.md).

@@ -39,17 +39,16 @@ This repository contains the Xitcoin chain implementation. It does not contain p
 
 For upstream attribution, see [UPSTREAMS.md](../UPSTREAMS.md).
 
-## Current security and qualification
+## Security checks
 
-[Current technical review](security-review-2026-11-28.md) records source and
-binary scan evidence, full tests, the six historical advisory identities and the
-known open findings. Root tests alone do not cover evmd. The current
-versioned workflow tests both checkout modules and the exact published PR head,
-checks graph/checksum identity and scans a symbol-bearing versioned binary.
-It does not reuse September results. The strict scanner gate accepts no advisory
-exceptions; source drift, new findings, scanner errors and expiry block CI.
+The automated checks are listed in [SECURITY.md](../SECURITY.md). Run the
+main ones locally before opening a pull request:
 
-The [September assessment](../SECURITY-ASSESSMENT.md) and historical qualification
-scripts remain historical records, not clearance of current code. Neither the
-current automated technical review nor a green CI run is independent approval
-or authorization to deploy a production chain.
+```bash
+make vulncheck                          # govulncheck, root and evmd
+make lint-go                            # golangci-lint (run it in evmd/ too)
+bash scripts/check-forks.sh             # fork replacements and banned packages
+bash scripts/verify-actions-pinned.sh   # GitHub Actions pinned by SHA
+```
+
+The Cosmos SDK and go-ethereum forks are described in [forks.md](forks.md).
