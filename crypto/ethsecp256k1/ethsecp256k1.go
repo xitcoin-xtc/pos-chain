@@ -204,12 +204,64 @@ func (pubKey *PubKey) UnmarshalAminoJSON(bz []byte) error {
 	return pubKey.UnmarshalAmino(bz)
 }
 
+// Signature encodings accepted by VerifySignature. Every signature is the
+// recoverable form R || S || V, where V carries the recovery ID of the signing
+// key, so that the same signed content has exactly one accepted encoding:
+//
+//   - a signature over the sign bytes (SIGN_MODE_DIRECT or
+//     SIGN_MODE_LEGACY_AMINO_JSON, as PrivKey.Sign and the keyring produce it)
+//     has V in {0, 1};
+//   - a signature over the EIP-712 representation of the sign bytes (as
+//     eth_signTypedData_v4 and the Ledger Ethereum app produce it) has V in
+//     {27, 28}.
+//
+// S must be in the lower half of the curve order. A 64-byte R || S
+// signature, a V of the other path, a V that does not recover this key and
+// any other length are rejected: each of them would be a second transaction
+// encoding, with a different hash, of a transaction that the signer signed
+// once.
+const (
+	// SignatureLength is the length of an accepted signature: R || S || V.
+	SignatureLength = crypto.SignatureLength
+	// SignBytesRecoveryOffset is added to the recovery ID in the V byte of a
+	// signature over the sign bytes.
+	SignBytesRecoveryOffset byte = 0
+	// EIP712RecoveryOffset is added to the recovery ID in the V byte of a
+	// signature over the EIP-712 representation of the sign bytes.
+	EIP712RecoveryOffset byte = 27
+)
+
+// ValidateSignatureEncoding reports whether sig has the length and a V byte of
+// an encoding VerifySignature can accept. It does not verify the signature:
+// VerifySignature also requires V to match the path and the recovery ID.
+func ValidateSignatureEncoding(sig []byte) error {
+	if len(sig) != SignatureLength {
+		return fmt.Errorf(
+			"eth_secp256k1 signature must be %d bytes (R || S || V), got %d",
+			SignatureLength, len(sig),
+		)
+	}
+	v := sig[crypto.RecoveryIDOffset]
+	if !isRecoveryV(v, SignBytesRecoveryOffset) && !isRecoveryV(v, EIP712RecoveryOffset) {
+		return fmt.Errorf(
+			"eth_secp256k1 signature V must be 0 or 1 (27 or 28 for EIP-712 signatures), got %d", v,
+		)
+	}
+	return nil
+}
+
+func isRecoveryV(v, offset byte) bool {
+	return v == offset || v == offset+1
+}
+
 // VerifySignature verifies that the ECDSA public key created a given signature over
 // the provided message. It will calculate the Keccak256 hash of the message
 // prior to verification and approve verification if the signature can be verified
 // from either the original message or its EIP-712 representation.
 //
-// CONTRACT: The signature should be in [R || S] format.
+// CONTRACT: The signature must be 65 bytes [R || S || V], with V in {0, 1}
+// over the message and in {27, 28} over its EIP-712 representation, and V
+// must be the recovery ID of this key (see SignatureLength).
 func (pubKey PubKey) VerifySignature(msg, sig []byte) bool {
 	return pubKey.verifySignatureECDSA(msg, sig) || pubKey.verifySignatureAsEIP712(msg, sig)
 }
@@ -218,12 +270,17 @@ func (pubKey PubKey) VerifySignature(msg, sig []byte) bool {
 // to EIP-712 object bytes, then performing ECDSA verification on the hash. This is to support
 // signing a Cosmos payload using EIP-712.
 func (pubKey PubKey) verifySignatureAsEIP712(msg, sig []byte) bool {
+	// Rejected before the (costlier) EIP-712 conversion of the message.
+	if len(sig) != SignatureLength || !isRecoveryV(sig[crypto.RecoveryIDOffset], EIP712RecoveryOffset) {
+		return false
+	}
+
 	eip712Bytes, err := eip712.GetEIP712BytesForMsg(msg)
 	if err != nil {
 		return false
 	}
 
-	if pubKey.verifySignatureECDSA(eip712Bytes, sig) {
+	if pubKey.verifyRecoverable(eip712Bytes, sig, EIP712RecoveryOffset) {
 		return true
 	}
 
@@ -233,16 +290,60 @@ func (pubKey PubKey) verifySignatureAsEIP712(msg, sig []byte) bool {
 		return false
 	}
 
-	return pubKey.verifySignatureECDSA(legacyEIP712Bytes, sig)
+	return pubKey.verifyRecoverable(legacyEIP712Bytes, sig, EIP712RecoveryOffset)
 }
 
 // Perform standard ECDSA signature verification for the given raw bytes and signature.
 func (pubKey PubKey) verifySignatureECDSA(msg, sig []byte) bool {
-	if len(sig) == crypto.SignatureLength {
-		// remove recovery ID (V) if contained in the signature
-		sig = sig[:len(sig)-1]
+	return pubKey.verifyRecoverable(msg, sig, SignBytesRecoveryOffset)
+}
+
+// verifyRecoverable accepts only sig = R || S || V over Keccak256(msg) where
+// (R, S) is a low-S signature by this key and V - offset is its recovery ID.
+func (pubKey PubKey) verifyRecoverable(msg, sig []byte, offset byte) bool {
+	if len(sig) != SignatureLength {
+		return false
+	}
+	v := sig[crypto.RecoveryIDOffset]
+	if !isRecoveryV(v, offset) {
+		return false
 	}
 
-	// the signature needs to be in [R || S] format when provided to VerifySignature
-	return crypto.VerifySignature(pubKey.Key, crypto.Keccak256Hash(msg).Bytes(), sig)
+	hash := crypto.Keccak256(msg)
+	// (R, S) must be a valid low-S signature by this key, as before.
+	if !crypto.VerifySignature(pubKey.Key, hash, sig[:crypto.RecoveryIDOffset]) {
+		return false
+	}
+
+	// V must be the recovery ID: only one of the two values recovers this key.
+	recoverable := make([]byte, SignatureLength)
+	copy(recoverable, sig)
+	recoverable[crypto.RecoveryIDOffset] = v - offset
+	recovered, err := crypto.Ecrecover(hash, recoverable)
+	if err != nil {
+		return false
+	}
+	return bytes.Equal(recovered, pubKey.uncompressed())
+}
+
+// uncompressed returns the 65-byte uncompressed encoding of the key, which
+// crypto.Ecrecover returns, or nil if the key does not parse. Keys are stored
+// compressed; crypto.VerifySignature also parses an uncompressed key, so it
+// is accepted here too.
+func (pubKey PubKey) uncompressed() []byte {
+	switch len(pubKey.Key) {
+	case PubKeySize:
+		key, err := crypto.DecompressPubkey(pubKey.Key)
+		if err != nil {
+			return nil
+		}
+		return crypto.FromECDSAPub(key)
+	case 65:
+		if _, err := crypto.UnmarshalPubkey(pubKey.Key); err != nil {
+			return nil
+		}
+		return pubKey.Key
+	default:
+		return nil
+	}
 }
