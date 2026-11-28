@@ -2,6 +2,7 @@ package suite
 
 import (
 	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"os"
@@ -15,6 +16,8 @@ import (
 	"github.com/creachadair/tomledit/parser"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 
 	"github.com/xitcoin-xtc/pos-chain/crypto/ethsecp256k1"
 	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/clients"
@@ -175,9 +178,9 @@ func (s *BaseTestSuite) SetupTest(t *testing.T, opts ...TestSetupConfigOption) {
 		return
 	}
 
-	if s.ChainStarted {
-		s.ResetChain(t)
-	}
+	// Resets the chain, then restores the validator approvals on the
+	// original genesis.
+	s.ModifyGenesisJSON(t, ApproveGenesisValidators(t))
 
 	s.ModifyCometMempool(t, "app")
 
@@ -271,4 +274,33 @@ func setValue(doc *tomledit.Document, newVal string, xpath ...string) {
 		panic(fmt.Sprintf("not found: %v", xpath))
 	}
 	e.Value = parser.MustValue(fmt.Sprintf("%q", newVal))
+}
+
+// ApproveGenesisValidators approves the validators created by the testnet
+// command in the validator admission genesis: the chain refuses to start
+// with a genesis validator that is not approved. The first funded account
+// becomes the admission authority.
+func ApproveGenesisValidators(t *testing.T) systemtests.GenesisMutator {
+	t.Helper()
+	return func(genesis []byte) []byte {
+		var validators []string
+		var selfDelegation string
+		for _, tx := range gjson.GetBytes(genesis, "app_state.genutil.gen_txs").Array() {
+			msg := tx.Get("body.messages.0")
+			validators = append(validators, msg.Get("validator_address").String())
+			selfDelegation = msg.Get("value.amount").String() + msg.Get("value.denom").String()
+		}
+		require.NotEmpty(t, validators, "no genesis validator")
+
+		state, err := json.Marshal(map[string]any{
+			"authority":               gjson.GetBytes(genesis, "app_state.bank.balances.0.address").String(),
+			"approved_validators":     validators,
+			"max_approved_validators": len(validators),
+			"minimum_self_delegation": selfDelegation,
+		})
+		require.NoError(t, err)
+		genesis, err = sjson.SetRawBytes(genesis, "app_state.validator_admission", state)
+		require.NoError(t, err)
+		return genesis
+	}
 }

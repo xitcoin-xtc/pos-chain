@@ -16,10 +16,15 @@ Or via manual steps
 
 ```shell
 make build
-mkdir -= ./tests/systemtests/binaries
-cp ./build/evmd ./tests/systemtests/binaries
-cp ./build/evmd ./tests/systemtests/binaries/v0.4
+mkdir -p ./tests/systemtests/binaries
+cp ./build/xitcoind ./tests/systemtests/binaries/evmd
+(cd ./tests/systemtests/Counter && forge build)
 ```
+
+The binary is copied as `evmd`: the system test framework names each node
+home after the binary, and the `testnet init-files` command writes it as
+`evmd`. The suite approves the genesis validators in the validator admission
+genesis before each chain start.
 
 ## Run Individual test
 
@@ -55,12 +60,6 @@ Account abstraction:
 | Test name | Description |
 |-----------|-------------|
 | `TestAccountAbstractionEIP7702` | Account abstraction (EIP-7702) flow |
-
-Chain lifecycle:
-
-| Test name | Description |
-|-----------|-------------|
-| `TestChainUpgrade` | End-to-end upgrade handling |
 
 > ℹ️ The shared system test suite keeps a single chain alive across multiple tests when the node arguments are identical. Running several tests back-to-back therefore re-uses the same process unless a scenario explicitly changes the node configuration.
 

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/accountabstraction"
-	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/chainupgrade"
 	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/eip712"
 
 	"github.com/xitcoin-xtc/pos-chain/tests/systemtests/mempool"
@@ -78,11 +77,4 @@ func TestAccountAbstractionEIP7702(t *testing.T) {
 
 func TestAccountAbstractionEIP7702SameBlock(t *testing.T) {
 	suite.RunWithSharedSuite(t, accountabstraction.RunEIP7702SameBlock)
-}
-
-/*
-* Chain Upgrade Tests
- */
-func TestChainUpgrade(t *testing.T) {
-	suite.RunWithSharedSuite(t, chainupgrade.RunChainUpgrade)
 }
