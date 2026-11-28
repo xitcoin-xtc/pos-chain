@@ -6,7 +6,10 @@ set -euo pipefail
 
 # shellcheck source=../.env
 # shellcheck disable=SC1091
-source ../.env
+# The suite runner may export these variables instead (COMPAT_LOCAL_KEYS).
+if [ -f ../.env ]; then
+	source ../.env
+fi
 RPC_URL=${CUSTOM_RPC:-http://127.0.0.1:8545}
 CONTRACT=$1
 ALICE=${ALICE_ADDRESS:-0x0000000000000000000000000000000000000001}

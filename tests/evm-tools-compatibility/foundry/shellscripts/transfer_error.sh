@@ -5,7 +5,10 @@ set -euo pipefail
 # Requires in .env: CUSTOM_RPC, PRIVATE_KEY, ACCOUNT_2 (recipient), CONTRACT
 # shellcheck source=../.env
 # shellcheck disable=SC1091
-source ../.env
+# The suite runner may export these variables instead (COMPAT_LOCAL_KEYS).
+if [ -f ../.env ]; then
+	source ../.env
+fi
 export FOUNDRY_DISABLE_NIGHTLY_WARNING=1
 
 RPC_URL=${CUSTOM_RPC:-http://127.0.0.1:8545}
