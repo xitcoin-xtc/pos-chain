@@ -1,1 +1,13 @@
-** @cosmos/stack-team
+# Changes to these paths need a review from the code owner.
+
+go.mod @Thomas-Cabrit
+go.sum @Thomas-Cabrit
+/.github/ @Thomas-Cabrit
+/x/bridge/ @Thomas-Cabrit
+/x/validatoradmission/ @Thomas-Cabrit
+/x/validatorincentives/ @Thomas-Cabrit
+/ante/ @Thomas-Cabrit
+/precompiles/ @Thomas-Cabrit
+/evmd/app.go @Thomas-Cabrit
+/evmd/upgrades.go @Thomas-Cabrit
+/scripts/check-forks.sh @Thomas-Cabrit

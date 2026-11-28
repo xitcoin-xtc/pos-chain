@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       actions-minor-and-patch:
         update-types:
@@ -14,6 +16,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       go-minor-and-patch:
         update-types:
@@ -24,8 +28,26 @@ updates:
     directory: /evmd
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       evmd-go-minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Test-only Go modules.
+  - package-ecosystem: gomod
+    directories:
+      - /tests/speedtest
+      - /tests/systemtests
+      - /tests/jsonrpc/simulator
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      test-go-minor-and-patch:
         update-types:
           - minor
           - patch
@@ -34,6 +56,8 @@ updates:
     directory: /contracts
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       contracts-minor-and-patch:
         update-types:
@@ -44,3 +68,15 @@ updates:
       # test contracts and pulls @openzeppelin/contracts 3.4.2-solc-0.7 (critical
       # and high advisories) through @uniswap/v3-periphery. Move it by hand.
       - dependency-name: "@account-abstraction/contracts"
+
+  - package-ecosystem: npm
+    directory: /tests/solidity
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      solidity-tests-minor-and-patch:
+        update-types:
+          - minor
+          - patch

@@ -205,7 +205,7 @@ benchmark:
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v2.12.2
+golangci_version=v2.15.0
 
 lint: lint-go lint-python lint-contracts
 
