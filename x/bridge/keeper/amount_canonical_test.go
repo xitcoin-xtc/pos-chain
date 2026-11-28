@@ -22,8 +22,9 @@ var nonCanonicalAmounts = []string{
 	"0x10", "0o10", "0b10", "1e1", "10.0", "", "08", "+0",
 }
 
-// The relayer accepts only this form in bridge_outbound_burned and stops
-// decoding the whole block on anything else (bridge-relayer src/network.js).
+// The relayer accepts only this form in bridge_outbound_burned; it skips any
+// other event with an xitcoin_outbound_event_skipped alert and never releases
+// it (bridge-relayer src/network.js).
 var relayerAmount = regexp.MustCompile(`^[1-9][0-9]*$`)
 
 func TestNonCanonicalOutboundAmountIsRejectedBeforeBurn(t *testing.T) {
