@@ -141,6 +141,7 @@ formatters:
         - blank
         - dot
         - prefix(github.com/cometbft/cometbft)
+        - prefix(github.com/xitcoin-xtc/pos-chain)
         - prefix(github.com/cosmos)
         - prefix(cosmossdk.io)
         - prefix(github.com/cosmos/cosmos-sdk)
