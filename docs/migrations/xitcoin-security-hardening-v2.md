@@ -80,7 +80,9 @@ writes belong to the transaction and roll back with it.
 - Nothing is backfilled. A source deposit processed before the upgrade (or
   imported from `processed_source_deposits` without a record) is reported as
   `ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD`, never as absent. An outbound
-  burn made before the upgrade has no record and its query returns 404.
+  burn made before the upgrade has no record and its query returns 404, which
+  does not mean that it was not burned: verify such a burn from its
+  `bridge_outbound_burned` event.
 - Genesis gains `signer_set_version`, `daily_usage` (the most recent
   daily-limit bucket, `{"utc_day", "amount"}`), `attestation_records` and
   `outbound_transfers`; all are optional on import. An export no longer
@@ -89,9 +91,24 @@ writes belong to the transaction and roll back with it.
   it). Validation requires every attestation record to match its replay key
   and digests and to be listed in `processed_source_deposits`, and every
   outbound record to match its request ID and not exceed `outbound_nonce`.
-- `MsgSubmitAttestation` and `MsgInitiateOutboundTransfer` write one more
-  value of a few hundred bytes, so they use more gas; relayer gas limits must
-  leave room for it.
+  It also requires `signer_set_version` to be at most 2^64-2 (a rotation
+  from that version is rejected, so the version never wraps), every record
+  to come from the route's source chain with a signer set version no later
+  than the genesis one, and the approvers of a record of the current signer
+  set version to be configured bridge signers (a record of an earlier version
+  was verified against signers that a rotation may have removed). At
+  `InitGenesis` every record must have been processed on the importing chain
+  (`destination_chain_id`), so records cannot be carried to a chain with
+  another chain ID, and `daily_usage.utc_day` must not be later than the UTC
+  day of the genesis time. The daily usage may exceed `daily_limit`: a signed
+  update can lower the limit below the usage of the day, and the export keeps
+  the exact usage.
+- The records cost gas. Measured on the bridge store with the default KV gas
+  costs, `MsgSubmitAttestation` uses about 22,000 more gas (a 568-byte
+  record: 22,033 gas) and `MsgInitiateOutboundTransfer` about 11,000 more
+  (10,970 gas). Set relayer and wallet gas limits with headroom above these,
+  for example by simulating each transaction and applying the usual
+  adjustment factor rather than reusing a limit measured before the upgrade.
 - The existing `AttestationStatus` query keeps its path and two-field
   response, so clients pinned to it are unaffected.
 
