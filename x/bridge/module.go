@@ -84,6 +84,10 @@ func (am AppModule) InitGenesis(ctx sdk.Context, _ codec.JSONCodec, data json.Ra
 	if err := state.Validate(); err != nil {
 		panic(fmt.Sprintf("invalid %s genesis: %s", types.ModuleName, err))
 	}
+	// InitChain carries the chain ID and the genesis time.
+	if err := state.ValidateForChain(ctx.ChainID(), ctx.BlockTime()); err != nil {
+		panic(fmt.Sprintf("invalid %s genesis: %s", types.ModuleName, err))
+	}
 	am.keeper.InitGenesis(ctx, state)
 	return []abci.ValidatorUpdate{}
 }

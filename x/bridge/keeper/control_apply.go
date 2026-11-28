@@ -24,7 +24,8 @@ var (
 // outstanding <= cap is a state invariant (genesis validation requires it),
 // and a cap equal to the outstanding amount already stops every new mint.
 // A change of the set of bridge signers increases the signer set version by
-// one. It has no bank, minting, reserve, relayer, or transfer authority.
+// one, and is rejected once the version reached types.MaxSignerSetVersion.
+// It has no bank, minting, reserve, relayer, or transfer authority.
 func (k Keeper) ApplyRouteConfigUpdate(
 	ctx sdk.Context,
 	current types.RouteConfig,
@@ -69,12 +70,19 @@ func (k Keeper) ApplyRouteConfigUpdate(
 	if _, err := types.VerifyControlApprovals(action, ctx.ChainID(), current.BridgeSigners, signatures); err != nil {
 		return err
 	}
+	rotation := !types.SameSignerSet(current.BridgeSigners, next.BridgeSigners)
 	version := k.SignerSetVersion(ctx)
+	if rotation {
+		var err error
+		if version, err = types.NextSignerSetVersion(version); err != nil {
+			return err
+		}
+	}
 	if err := k.SetRouteConfig(ctx, next); err != nil {
 		return err
 	}
-	if !types.SameSignerSet(current.BridgeSigners, next.BridgeSigners) {
-		k.setSignerSetVersion(ctx, version+1)
+	if rotation {
+		k.setSignerSetVersion(ctx, version)
 	}
 	k.setControlNonce(ctx, action.Nonce)
 	return nil
