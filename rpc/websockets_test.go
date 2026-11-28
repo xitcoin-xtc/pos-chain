@@ -108,8 +108,9 @@ func TestSubscribeNewHeadsReturnsCanonicalBlockHash(t *testing.T) {
 	require.NoError(t, conn.WriteJSON(map[string]interface{}{
 		"jsonrpc": "2.0", "id": 1, "method": "eth_subscribe", "params": []interface{}{"newHeads"},
 	}))
-	// Reading the subscription ack also gives the subscriber goroutine time to
-	// reach its blocking read before we push the header event below.
+	// The subscription takes its start position before the ack is sent, so the
+	// header pushed below must be delivered however the subscriber goroutine is
+	// scheduled.
 	var ack SubscriptionResponseJSON
 	require.NoError(t, conn.ReadJSON(&ack))
 	require.NotEmpty(t, ack.Result)

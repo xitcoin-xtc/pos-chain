@@ -67,12 +67,13 @@ func (s *Stream[V]) Add(vs ...V) int {
 
 // Subscribe subscribes the stream in a loop, pass the chunks of items to the callback,
 // it only stops if the context is canceled.
+// offset is the id of the last item the subscriber has already seen. A caller
+// that runs Subscribe in a new goroutine takes it with ReadNonBlocking(-1)
+// first, so that items added before the goroutine reads the stream are not
+// skipped. A negative offset starts at the end of the stream as of that read.
 // it returns the last id of the items.
-func (s *Stream[V]) Subscribe(ctx context.Context, callback func([]V, int) error) error {
-	var (
-		items  []V
-		offset = -1
-	)
+func (s *Stream[V]) Subscribe(ctx context.Context, offset int, callback func([]V, int) error) error {
+	var items []V
 	for {
 		items, offset = s.ReadBlocking(ctx, offset)
 		if len(items) == 0 {
@@ -130,11 +131,9 @@ func (s *Stream[V]) ReadBlocking(ctx context.Context, offset int) ([]V, int) {
 			return items, offset
 		}
 
-		s.mutex.RUnlock()
-		r := s.cond.Wait(ctx)
-		s.mutex.RLock()
-
-		if !r {
+		// Wait releases the read lock only after it has taken the channel that
+		// the next Add closes, so an item added after doRead wakes this reader.
+		if !s.cond.Wait(ctx, s.mutex.RLocker()) {
 			// context canceled
 			return nil, 0
 		}
