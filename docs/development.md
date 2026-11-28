@@ -41,7 +41,7 @@ For upstream attribution, see [UPSTREAMS.md](../UPSTREAMS.md).
 
 ## Current security and qualification
 
-[Current technical review](security-review-2026-11-27.md) records source and
+[Current technical review](security-review-2026-11-28.md) records source and
 binary scan evidence, full tests, the six historical advisory identities and the
 known open findings. Root tests alone do not cover evmd. The current
 versioned workflow tests both checkout modules and the exact published PR head,
