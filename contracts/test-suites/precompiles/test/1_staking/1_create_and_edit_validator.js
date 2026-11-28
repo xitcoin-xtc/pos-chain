@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { expect } from 'chai';
 import { createTestRuntime } from '../../../../scripts/solidity-suite-runtime.mjs';
 const hre = await createTestRuntime();
@@ -36,10 +37,13 @@ describe('StakingI – createValidator', function() {
             maxChangeRate: hre.ethers.parseUnits('0.01', 18), // 1%
         }
 
-        // Configure the remaining createValidator arguments
-        const minSelfDelegation = 1
-        const pubkey = 'nfJ0axJC9dhta1MAE1EBFaVdxxkYzxYrBaHuJVjG//M='
+        // Configure the remaining createValidator arguments. Validator
+        // admission requires an approved operator (local_node.sh approves
+        // dev0) and, after genesis, a min_self_delegation of at least the
+        // admission minimum (1 XTC on the local node).
         const deposit = hre.ethers.parseEther('1') // self-delegate 1 native token
+        const minSelfDelegation = deposit
+        const pubkey = 'nfJ0axJC9dhta1MAE1EBFaVdxxkYzxYrBaHuJVjG//M='
 
         // Submit the createValidator transaction
         const tx = await staking.connect(signer).createValidator(
@@ -137,5 +141,41 @@ describe('StakingI – createValidator', function() {
         expect(validators.length).to.be.gte(2)
         const createdValidator = validators.find(v => v.operatorAddress.toLowerCase() === signer.address.toLowerCase())
         expect(createdValidator, 'Created validator must be present regardless of list ordering').to.exist
+    })
+
+    it('should reject a validator that validator admission has not approved', async function() {
+        // dev1 is not in the approved list of the local node.
+        const [, unapproved] = await hre.ethers.getSigners()
+        const description = {
+            moniker: 'UnapprovedValidator',
+            identity: '',
+            website: '',
+            securityContact: '',
+            details: 'must be rejected by validator admission',
+        }
+        const commissionRates = {
+            rate: hre.ethers.parseUnits('0.05', 18),
+            maxRate: hre.ethers.parseUnits('0.20', 18),
+            maxChangeRate: hre.ethers.parseUnits('0.01', 18),
+        }
+        const deposit = hre.ethers.parseEther('1')
+        const pubkey = 'Qh0rLObqJ5RLRZnYZWB3D7gaTBkdbAxeU3Ex3jBvj2I='
+        await assert.rejects((async () => {
+            const tx = await staking.connect(unapproved).createValidator(
+                description,
+                commissionRates,
+                deposit,
+                unapproved.address,
+                pubkey,
+                deposit,
+                { gasLimit: GAS_LIMIT }
+            )
+            await tx.wait()
+        })())
+
+        const pageReq = { key: '0x', offset: 0, limit: 100, countTotal: false, reverse: false }
+        const out = await staking.validators('', pageReq)
+        const validators = out.validators.map(parseValidator)
+        expect(validators.find(v => v.operatorAddress.toLowerCase() === unapproved.address.toLowerCase())).to.not.exist
     })
 })

@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import { bech32 } from 'bech32';
+import { getAddress } from 'ethers';
 
 import { createTestRuntime } from '../../../../scripts/solidity-suite-runtime.mjs';
 const hre = await createTestRuntime();
@@ -6,7 +8,11 @@ const hre = await createTestRuntime();
 
 describe('Slashing – query methods', function () {
     const SLASHING_ADDRESS = '0x0000000000000000000000000000000000000806';
-    const CONS_ADDR = '0x020a0f48a2f4ce0f0cA6debF71DB83474dD717D0' // address derived from ed25519 pubkey which is placed in ~/.evmd/config/priv_validator_key.json
+    // Consensus address of the genesis validator of the local node
+    // (`evmd comet show-address`), exported by load_test_validator_cons_address.
+    const consBech32 = process.env.TEST_VALIDATOR_CONS_ADDRESS
+    if (!consBech32) throw new Error('TEST_VALIDATOR_CONS_ADDRESS is not set')
+    const CONS_ADDR = getAddress('0x' + Buffer.from(bech32.fromWords(bech32.decode(consBech32).words)).toString('hex'))
     let slashing;
 
     before(async function () {
@@ -19,8 +25,9 @@ describe('Slashing – query methods', function () {
         console.log('Signing infos:', infos, 'Page:', pageResponse);
         expect(infos.length).to.be.greaterThan(0);
         expect(pageResponse.total).to.be.a('bigint').and.to.be.greaterThan(0n);
-        const info = infos[0];
-        expect(info.validatorAddress).to.equal(CONS_ADDR);
+        // Another validator may be listed first (the staking tests create one).
+        const info = infos.find((i) => i.validatorAddress === CONS_ADDR);
+        expect(info, 'signing info of the genesis validator').to.exist;
         expect(info.startHeight).to.be.a('bigint');
         expect(info.indexOffset).to.be.a('bigint');
         expect(info.tombstoned).to.be.a('boolean');

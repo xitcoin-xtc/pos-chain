@@ -333,14 +333,18 @@ if [[ $overwrite == "y" || $overwrite == "Y" ]]; then
   # --------- Finalize genesis ---------
   evmd genesis gentx "$VAL_KEY" 1000000000000000000000atest --gas-prices ${BASEFEE}atest --keyring-backend "$KEYRING" --chain-id "$CHAINID" --home "$CHAINDIR"
   evmd genesis collect-gentxs --home "$CHAINDIR"
+  # Validator admission: the genesis validator, plus dev0 so that the staking
+  # precompile tests can create a second validator. Post-genesis validators
+  # need a self delegation and a min_self_delegation of at least 1 XTC.
   admission_authority="$(evmd keys show "$VAL_KEY" -a --keyring-backend "$KEYRING" --home "$CHAINDIR")"
   admission_validator="$(evmd keys show "$VAL_KEY" -a --bech val --keyring-backend "$KEYRING" --home "$CHAINDIR")"
-  jq --arg authority "$admission_authority" --arg validator "$admission_validator" \
+  admission_dev0="$(evmd keys show dev0 -a --bech val --keyring-backend "$KEYRING" --home "$CHAINDIR")"
+  jq --arg authority "$admission_authority" --arg validator "$admission_validator" --arg dev0 "$admission_dev0" \
     '.app_state.validator_admission = {
       authority: $authority,
-      approved_validators: [$validator],
-      max_approved_validators: 1,
-      minimum_self_delegation: "1000000000000000000000atest"
+      approved_validators: [$validator, $dev0],
+      max_approved_validators: 2,
+      minimum_self_delegation: "1000000000000000000atest"
     }' "$GENESIS" >"$TMP_GENESIS" && mv "$TMP_GENESIS" "$GENESIS"
   evmd genesis validate-genesis --home "$CHAINDIR"
 

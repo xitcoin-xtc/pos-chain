@@ -4,7 +4,12 @@ const { ethers } = await createTestRuntime();
 describe('Transaction', function () {
   it('should send a transaction with EIP-1559 flag', async function () {
     const [sender, receiver] = await ethers.getSigners();
-    const tx = await sender.sendTransaction({ to: receiver.address, value: 10000000n, gasLimit: 21000n, type: 2 });
+    // Explicit EIP-1559 fees: otherwise the fixed gasPrice of the network
+    // configuration turns the transaction into a legacy one.
+    const tx = await sender.sendTransaction({
+      to: receiver.address, value: 10000000n, gasLimit: 21000n, type: 2,
+      maxFeePerGas: 2000000000n, maxPriorityFeePerGas: 1000000000n,
+    });
     const receipt = await tx.wait();
     expect(receipt.status).to.equal(1);
     expect(receipt.type).to.equal(2);

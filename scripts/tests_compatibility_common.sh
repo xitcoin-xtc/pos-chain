@@ -88,6 +88,18 @@ load_test_validator_address() {
 	export TEST_VALIDATOR_ADDRESS
 }
 
+# Consensus address of the validator created by local_node.sh.
+load_test_validator_cons_address() {
+	local address
+	address="$(evmd comet show-address --home "${1:-$HOME/.evmd}")" || return 1
+	if [[ ! "$address" =~ ^[a-z0-9]+valcons1[a-z0-9]+$ ]]; then
+		echo "Invalid disposable test validator consensus address" >&2
+		return 1
+	fi
+	TEST_VALIDATOR_CONS_ADDRESS="$address"
+	export TEST_VALIDATOR_CONS_ADDRESS
+}
+
 # Keys of the disposable node created by start_node (local_node.sh): the
 # validator key as deployer and dev1 as recipient. Used when a suite has no
 # .env file; never point this at a live keyring.
