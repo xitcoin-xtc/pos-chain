@@ -1,6 +1,7 @@
 package evmd
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -115,6 +116,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -477,7 +479,17 @@ func NewExampleApp(
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
-		// register the governance hooks
+			// Validator admission checks the messages of every new
+			// proposal inside x/gov as well (the governance precompile
+			// does not pass the ante handler), and rejects every proposal
+			// while executable governance is disabled.
+			validatoradmission.NewGovHooks(
+				app.ValidatorAdmissionKeeper,
+				func(ctx context.Context, proposalID uint64) (govv1.Proposal, error) {
+					return app.GovKeeper.Proposals.Get(ctx, proposalID)
+				},
+				governanceProposalSubmissionEnabled(),
+			),
 		),
 	)
 

@@ -21,12 +21,16 @@ const maxNestedMessages = 7
 
 // NewAdmissionAnteHandler enforces the Xitcoin validator admission, fixed
 // monetary policy and governance safeguards for every message of a
-// transaction, including messages wrapped in authz MsgExec at any depth.
+// transaction, including messages wrapped in authz MsgExec or carried by a
+// governance proposal, at any depth.
 //
 // Validator creation and unjailing, mint parameter changes and governance
 // proposals are never accepted inside MsgExec: they must be signed directly
 // by the validator operator or proposer, where the full checks apply. Granting
-// an authorization for those message types is rejected as well.
+// an authorization for those message types is rejected as well. When
+// executable proposals are enabled, the messages of a proposal are checked
+// like the messages of a MsgExec: x/gov executes them later without this
+// handler. GovHooks applies the same check inside x/gov.
 func NewAdmissionAnteHandler(
 	admissionKeeper keeper.Keeper,
 	next sdk.AnteHandler,
@@ -65,7 +69,7 @@ func (c admissionChecker) checkMessages(ctx sdk.Context, messages []sdk.Msg, dep
 		if nested && c.isRestricted(message) {
 			return errorsmod.Wrapf(
 				sdkerrors.ErrUnauthorized,
-				"Validator Admission: %s cannot be executed through authz",
+				"Validator Admission: %s cannot be executed through authz or a governance proposal",
 				sdk.MsgTypeURL(message),
 			)
 		}
@@ -109,17 +113,40 @@ func (c admissionChecker) checkMessages(ctx sdk.Context, messages []sdk.Msg, dep
 				"Fixed monetary policy: Mint parameters cannot be changed",
 			)
 
-		case *govtypes.MsgSubmitProposal, *govv1beta1.MsgSubmitProposal:
+		case *govtypes.MsgSubmitProposal:
+			if err := c.checkProposalMessages(ctx, msg, depth); err != nil {
+				return err
+			}
+
+		case *govv1beta1.MsgSubmitProposal:
+			// A legacy proposal carries a content, not messages.
 			if !c.allowGovernance {
-				return errorsmod.Wrap(
-					sdkerrors.ErrUnauthorized,
-					"Governance safeguards: executable on-chain proposals are disabled",
-				)
+				return errGovernanceDisabled()
 			}
 		}
 	}
 
 	return nil
+}
+
+// checkProposalMessages rejects a proposal while executable governance is
+// disabled, and otherwise checks its messages as nested messages.
+func (c admissionChecker) checkProposalMessages(ctx sdk.Context, proposal *govtypes.MsgSubmitProposal, depth int) error {
+	if !c.allowGovernance {
+		return errGovernanceDisabled()
+	}
+	inner, err := proposal.GetMsgs()
+	if err != nil {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
+	return c.checkMessages(ctx, inner, depth+1)
+}
+
+func errGovernanceDisabled() error {
+	return errorsmod.Wrap(
+		sdkerrors.ErrUnauthorized,
+		"Governance safeguards: executable on-chain proposals are disabled",
+	)
 }
 
 func (c admissionChecker) isRestricted(message sdk.Msg) bool {
