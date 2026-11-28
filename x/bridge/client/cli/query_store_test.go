@@ -10,7 +10,10 @@ import (
 
 func TestQueryCmdIncludesStoreQueries(t *testing.T) {
 	cmd := GetQueryCmd()
-	for _, name := range []string{"attestation-status", "route", "source-deposit-key"} {
+	for _, name := range []string{
+		"attestation-status", "route", "source-deposit-key",
+		"params", "route-config", "outstanding", "daily-usage", "attestation", "source-deposit", "outbound-transfer",
+	} {
 		child, _, err := cmd.Find([]string{name})
 		if err != nil || child == cmd || child.Name() != name {
 			t.Fatalf("missing %s query command: %v", name, err)

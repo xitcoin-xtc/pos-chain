@@ -28,6 +28,50 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// AttestationState distinguishes an attestation ID that no transaction has
+// consumed from one that was processed.
+type AttestationState int32
+
+const (
+	// ATTESTATION_STATE_UNSPECIFIED is never returned.
+	AttestationState_ATTESTATION_STATE_UNSPECIFIED AttestationState = 0
+	// ATTESTATION_STATE_ABSENT: no committed transaction has consumed the
+	// replay key at the queried height. It does not mean that no submission is
+	// pending in a mempool or in a later block.
+	AttestationState_ATTESTATION_STATE_ABSENT AttestationState = 1
+	// ATTESTATION_STATE_PROCESSED: the deposit was minted; record holds the
+	// approved fields and the processing block and transaction.
+	AttestationState_ATTESTATION_STATE_PROCESSED AttestationState = 2
+	// ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD: the replay key was consumed
+	// before processing records were kept (before the
+	// xitcoin-security-hardening-v2 upgrade, or imported from a genesis
+	// processed_source_deposits entry without a record). The deposit must be
+	// treated as minted.
+	AttestationState_ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD AttestationState = 3
+)
+
+var AttestationState_name = map[int32]string{
+	0: "ATTESTATION_STATE_UNSPECIFIED",
+	1: "ATTESTATION_STATE_ABSENT",
+	2: "ATTESTATION_STATE_PROCESSED",
+	3: "ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD",
+}
+
+var AttestationState_value = map[string]int32{
+	"ATTESTATION_STATE_UNSPECIFIED":              0,
+	"ATTESTATION_STATE_ABSENT":                   1,
+	"ATTESTATION_STATE_PROCESSED":                2,
+	"ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD": 3,
+}
+
+func (x AttestationState) String() string {
+	return proto.EnumName(AttestationState_name, int32(x))
+}
+
+func (AttestationState) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{0}
+}
+
 type QueryAttestationStatusRequest struct {
 	AttestationId string `protobuf:"bytes,1,opt,name=attestation_id,json=attestationId,proto3" json:"attestation_id,omitempty"`
 }
@@ -124,35 +168,1099 @@ func (m *QueryAttestationStatusResponse) GetProcessed() bool {
 	return false
 }
 
+type QueryParamsRequest struct {
+}
+
+func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
+func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsRequest) ProtoMessage()    {}
+func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{2}
+}
+func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
+}
+func (m *QueryParamsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
+
+type QueryParamsResponse struct {
+	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+}
+
+func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
+func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsResponse) ProtoMessage()    {}
+func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{3}
+}
+func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
+}
+func (m *QueryParamsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
+
+func (m *QueryParamsResponse) GetParams() *Params {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
+// Params are fixed by the application wiring and the chain ID; no
+// transaction changes them.
+type Params struct {
+	// authority is the only account allowed to initialize the first route.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// native_denom is the denomination minted and burned by the bridge.
+	NativeDenom string `protobuf:"bytes,2,opt,name=native_denom,json=nativeDenom,proto3" json:"native_denom,omitempty"`
+	// max_supply caps the native supply on every mint, in atomic units.
+	MaxSupply string `protobuf:"bytes,3,opt,name=max_supply,json=maxSupply,proto3" json:"max_supply,omitempty"`
+	// required_approvals is the number of distinct bridge signer approvals an
+	// attestation or a control action needs.
+	RequiredApprovals uint32 `protobuf:"varint,4,opt,name=required_approvals,json=requiredApprovals,proto3" json:"required_approvals,omitempty"`
+	// signer_set_size is the number of configured bridge signers.
+	SignerSetSize uint32 `protobuf:"varint,5,opt,name=signer_set_size,json=signerSetSize,proto3" json:"signer_set_size,omitempty"`
+	// chain_id is the Xitcoin chain ID bound into every signing domain.
+	ChainId             string `protobuf:"bytes,6,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	AttestationDomain   string `protobuf:"bytes,7,opt,name=attestation_domain,json=attestationDomain,proto3" json:"attestation_domain,omitempty"`
+	ControlDomain       string `protobuf:"bytes,8,opt,name=control_domain,json=controlDomain,proto3" json:"control_domain,omitempty"`
+	GuardianPauseDomain string `protobuf:"bytes,9,opt,name=guardian_pause_domain,json=guardianPauseDomain,proto3" json:"guardian_pause_domain,omitempty"`
+	// source_deposit_domain separates replay keys from every other hash.
+	SourceDepositDomain string `protobuf:"bytes,10,opt,name=source_deposit_domain,json=sourceDepositDomain,proto3" json:"source_deposit_domain,omitempty"`
+}
+
+func (m *Params) Reset()         { *m = Params{} }
+func (m *Params) String() string { return proto.CompactTextString(m) }
+func (*Params) ProtoMessage()    {}
+func (*Params) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{4}
+}
+func (m *Params) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Params) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Params.Merge(m, src)
+}
+func (m *Params) XXX_Size() int {
+	return m.Size()
+}
+func (m *Params) XXX_DiscardUnknown() {
+	xxx_messageInfo_Params.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Params proto.InternalMessageInfo
+
+func (m *Params) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *Params) GetNativeDenom() string {
+	if m != nil {
+		return m.NativeDenom
+	}
+	return ""
+}
+
+func (m *Params) GetMaxSupply() string {
+	if m != nil {
+		return m.MaxSupply
+	}
+	return ""
+}
+
+func (m *Params) GetRequiredApprovals() uint32 {
+	if m != nil {
+		return m.RequiredApprovals
+	}
+	return 0
+}
+
+func (m *Params) GetSignerSetSize() uint32 {
+	if m != nil {
+		return m.SignerSetSize
+	}
+	return 0
+}
+
+func (m *Params) GetChainId() string {
+	if m != nil {
+		return m.ChainId
+	}
+	return ""
+}
+
+func (m *Params) GetAttestationDomain() string {
+	if m != nil {
+		return m.AttestationDomain
+	}
+	return ""
+}
+
+func (m *Params) GetControlDomain() string {
+	if m != nil {
+		return m.ControlDomain
+	}
+	return ""
+}
+
+func (m *Params) GetGuardianPauseDomain() string {
+	if m != nil {
+		return m.GuardianPauseDomain
+	}
+	return ""
+}
+
+func (m *Params) GetSourceDepositDomain() string {
+	if m != nil {
+		return m.SourceDepositDomain
+	}
+	return ""
+}
+
+type QueryRouteRequest struct {
+	// route_id is the stored route ID, for example the Cronos bytes32 route
+	// identifier in 0x-prefixed lowercase hex.
+	RouteId string `protobuf:"bytes,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+}
+
+func (m *QueryRouteRequest) Reset()         { *m = QueryRouteRequest{} }
+func (m *QueryRouteRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryRouteRequest) ProtoMessage()    {}
+func (*QueryRouteRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{5}
+}
+func (m *QueryRouteRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryRouteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryRouteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryRouteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRouteRequest.Merge(m, src)
+}
+func (m *QueryRouteRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryRouteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRouteRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryRouteRequest proto.InternalMessageInfo
+
+func (m *QueryRouteRequest) GetRouteId() string {
+	if m != nil {
+		return m.RouteId
+	}
+	return ""
+}
+
+type QueryRouteResponse struct {
+	Route *Route `protobuf:"bytes,1,opt,name=route,proto3" json:"route,omitempty"`
+	// height is the block height of the state that answered the query.
+	Height int64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryRouteResponse) Reset()         { *m = QueryRouteResponse{} }
+func (m *QueryRouteResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryRouteResponse) ProtoMessage()    {}
+func (*QueryRouteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{6}
+}
+func (m *QueryRouteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryRouteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryRouteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryRouteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryRouteResponse.Merge(m, src)
+}
+func (m *QueryRouteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryRouteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryRouteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryRouteResponse proto.InternalMessageInfo
+
+func (m *QueryRouteResponse) GetRoute() *Route {
+	if m != nil {
+		return m.Route
+	}
+	return nil
+}
+
+func (m *QueryRouteResponse) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+// Route is a route configuration with its current state.
+type Route struct {
+	RouteId              string   `protobuf:"bytes,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	SourceChainId        string   `protobuf:"bytes,2,opt,name=source_chain_id,json=sourceChainId,proto3" json:"source_chain_id,omitempty"`
+	BridgeSigners        []string `protobuf:"bytes,3,rep,name=bridge_signers,json=bridgeSigners,proto3" json:"bridge_signers,omitempty"`
+	Guardian             string   `protobuf:"bytes,4,opt,name=guardian,proto3" json:"guardian,omitempty"`
+	MaxTransferAmount    string   `protobuf:"bytes,5,opt,name=max_transfer_amount,json=maxTransferAmount,proto3" json:"max_transfer_amount,omitempty"`
+	DailyLimit           string   `protobuf:"bytes,6,opt,name=daily_limit,json=dailyLimit,proto3" json:"daily_limit,omitempty"`
+	MaxOutstandingAmount string   `protobuf:"bytes,7,opt,name=max_outstanding_amount,json=maxOutstandingAmount,proto3" json:"max_outstanding_amount,omitempty"`
+	Enabled              bool     `protobuf:"varint,8,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	Paused               bool     `protobuf:"varint,9,opt,name=paused,proto3" json:"paused,omitempty"`
+	// signer_set_version starts at 1 and increases by one each time a control
+	// action replaces the set of bridge signers.
+	SignerSetVersion uint64 `protobuf:"varint,10,opt,name=signer_set_version,json=signerSetVersion,proto3" json:"signer_set_version,omitempty"`
+	// control_nonce is the nonce of the last applied control action.
+	ControlNonce uint64 `protobuf:"varint,11,opt,name=control_nonce,json=controlNonce,proto3" json:"control_nonce,omitempty"`
+	// outbound_nonce is the nonce of the last outbound transfer.
+	OutboundNonce uint64 `protobuf:"varint,12,opt,name=outbound_nonce,json=outboundNonce,proto3" json:"outbound_nonce,omitempty"`
+}
+
+func (m *Route) Reset()         { *m = Route{} }
+func (m *Route) String() string { return proto.CompactTextString(m) }
+func (*Route) ProtoMessage()    {}
+func (*Route) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{7}
+}
+func (m *Route) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Route) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Route.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Route) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Route.Merge(m, src)
+}
+func (m *Route) XXX_Size() int {
+	return m.Size()
+}
+func (m *Route) XXX_DiscardUnknown() {
+	xxx_messageInfo_Route.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Route proto.InternalMessageInfo
+
+func (m *Route) GetRouteId() string {
+	if m != nil {
+		return m.RouteId
+	}
+	return ""
+}
+
+func (m *Route) GetSourceChainId() string {
+	if m != nil {
+		return m.SourceChainId
+	}
+	return ""
+}
+
+func (m *Route) GetBridgeSigners() []string {
+	if m != nil {
+		return m.BridgeSigners
+	}
+	return nil
+}
+
+func (m *Route) GetGuardian() string {
+	if m != nil {
+		return m.Guardian
+	}
+	return ""
+}
+
+func (m *Route) GetMaxTransferAmount() string {
+	if m != nil {
+		return m.MaxTransferAmount
+	}
+	return ""
+}
+
+func (m *Route) GetDailyLimit() string {
+	if m != nil {
+		return m.DailyLimit
+	}
+	return ""
+}
+
+func (m *Route) GetMaxOutstandingAmount() string {
+	if m != nil {
+		return m.MaxOutstandingAmount
+	}
+	return ""
+}
+
+func (m *Route) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+func (m *Route) GetPaused() bool {
+	if m != nil {
+		return m.Paused
+	}
+	return false
+}
+
+func (m *Route) GetSignerSetVersion() uint64 {
+	if m != nil {
+		return m.SignerSetVersion
+	}
+	return 0
+}
+
+func (m *Route) GetControlNonce() uint64 {
+	if m != nil {
+		return m.ControlNonce
+	}
+	return 0
+}
+
+func (m *Route) GetOutboundNonce() uint64 {
+	if m != nil {
+		return m.OutboundNonce
+	}
+	return 0
+}
+
+type QueryOutstandingRequest struct {
+}
+
+func (m *QueryOutstandingRequest) Reset()         { *m = QueryOutstandingRequest{} }
+func (m *QueryOutstandingRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOutstandingRequest) ProtoMessage()    {}
+func (*QueryOutstandingRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{8}
+}
+func (m *QueryOutstandingRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOutstandingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOutstandingRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOutstandingRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOutstandingRequest.Merge(m, src)
+}
+func (m *QueryOutstandingRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOutstandingRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOutstandingRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOutstandingRequest proto.InternalMessageInfo
+
+type QueryOutstandingResponse struct {
+	RouteId string `protobuf:"bytes,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// outstanding_amount is the bridged supply that outbound burns may still
+	// release, in atomic units.
+	OutstandingAmount    string `protobuf:"bytes,2,opt,name=outstanding_amount,json=outstandingAmount,proto3" json:"outstanding_amount,omitempty"`
+	MaxOutstandingAmount string `protobuf:"bytes,3,opt,name=max_outstanding_amount,json=maxOutstandingAmount,proto3" json:"max_outstanding_amount,omitempty"`
+	// remaining_amount is max_outstanding_amount - outstanding_amount.
+	RemainingAmount string `protobuf:"bytes,4,opt,name=remaining_amount,json=remainingAmount,proto3" json:"remaining_amount,omitempty"`
+	Height          int64  `protobuf:"varint,5,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryOutstandingResponse) Reset()         { *m = QueryOutstandingResponse{} }
+func (m *QueryOutstandingResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOutstandingResponse) ProtoMessage()    {}
+func (*QueryOutstandingResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{9}
+}
+func (m *QueryOutstandingResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOutstandingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOutstandingResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOutstandingResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOutstandingResponse.Merge(m, src)
+}
+func (m *QueryOutstandingResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOutstandingResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOutstandingResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOutstandingResponse proto.InternalMessageInfo
+
+func (m *QueryOutstandingResponse) GetRouteId() string {
+	if m != nil {
+		return m.RouteId
+	}
+	return ""
+}
+
+func (m *QueryOutstandingResponse) GetOutstandingAmount() string {
+	if m != nil {
+		return m.OutstandingAmount
+	}
+	return ""
+}
+
+func (m *QueryOutstandingResponse) GetMaxOutstandingAmount() string {
+	if m != nil {
+		return m.MaxOutstandingAmount
+	}
+	return ""
+}
+
+func (m *QueryOutstandingResponse) GetRemainingAmount() string {
+	if m != nil {
+		return m.RemainingAmount
+	}
+	return ""
+}
+
+func (m *QueryOutstandingResponse) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+type QueryDailyUsageRequest struct {
+}
+
+func (m *QueryDailyUsageRequest) Reset()         { *m = QueryDailyUsageRequest{} }
+func (m *QueryDailyUsageRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryDailyUsageRequest) ProtoMessage()    {}
+func (*QueryDailyUsageRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{10}
+}
+func (m *QueryDailyUsageRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDailyUsageRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDailyUsageRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDailyUsageRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDailyUsageRequest.Merge(m, src)
+}
+func (m *QueryDailyUsageRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDailyUsageRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDailyUsageRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDailyUsageRequest proto.InternalMessageInfo
+
+type QueryDailyUsageResponse struct {
+	RouteId string `protobuf:"bytes,1,opt,name=route_id,json=routeId,proto3" json:"route_id,omitempty"`
+	// utc_day is the number of whole days between 1970-01-01T00:00:00Z and the
+	// block time of the queried block (the key of the usage bucket).
+	UtcDay uint64 `protobuf:"varint,2,opt,name=utc_day,json=utcDay,proto3" json:"utc_day,omitempty"`
+	// utc_date is utc_day as YYYY-MM-DD.
+	UtcDate string `protobuf:"bytes,3,opt,name=utc_date,json=utcDate,proto3" json:"utc_date,omitempty"`
+	// used_amount is the sum of inbound mints and outbound burns of that UTC
+	// day, in atomic units.
+	UsedAmount string `protobuf:"bytes,4,opt,name=used_amount,json=usedAmount,proto3" json:"used_amount,omitempty"`
+	DailyLimit string `protobuf:"bytes,5,opt,name=daily_limit,json=dailyLimit,proto3" json:"daily_limit,omitempty"`
+	// remaining_amount is daily_limit - used_amount, or 0 when the limit was
+	// lowered below the usage.
+	RemainingAmount string `protobuf:"bytes,6,opt,name=remaining_amount,json=remainingAmount,proto3" json:"remaining_amount,omitempty"`
+	BlockTimeUnix   int64  `protobuf:"varint,7,opt,name=block_time_unix,json=blockTimeUnix,proto3" json:"block_time_unix,omitempty"`
+	Height          int64  `protobuf:"varint,8,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryDailyUsageResponse) Reset()         { *m = QueryDailyUsageResponse{} }
+func (m *QueryDailyUsageResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryDailyUsageResponse) ProtoMessage()    {}
+func (*QueryDailyUsageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{11}
+}
+func (m *QueryDailyUsageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDailyUsageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDailyUsageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDailyUsageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDailyUsageResponse.Merge(m, src)
+}
+func (m *QueryDailyUsageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDailyUsageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDailyUsageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDailyUsageResponse proto.InternalMessageInfo
+
+func (m *QueryDailyUsageResponse) GetRouteId() string {
+	if m != nil {
+		return m.RouteId
+	}
+	return ""
+}
+
+func (m *QueryDailyUsageResponse) GetUtcDay() uint64 {
+	if m != nil {
+		return m.UtcDay
+	}
+	return 0
+}
+
+func (m *QueryDailyUsageResponse) GetUtcDate() string {
+	if m != nil {
+		return m.UtcDate
+	}
+	return ""
+}
+
+func (m *QueryDailyUsageResponse) GetUsedAmount() string {
+	if m != nil {
+		return m.UsedAmount
+	}
+	return ""
+}
+
+func (m *QueryDailyUsageResponse) GetDailyLimit() string {
+	if m != nil {
+		return m.DailyLimit
+	}
+	return ""
+}
+
+func (m *QueryDailyUsageResponse) GetRemainingAmount() string {
+	if m != nil {
+		return m.RemainingAmount
+	}
+	return ""
+}
+
+func (m *QueryDailyUsageResponse) GetBlockTimeUnix() int64 {
+	if m != nil {
+		return m.BlockTimeUnix
+	}
+	return 0
+}
+
+func (m *QueryDailyUsageResponse) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+type QueryAttestationRequest struct {
+	// attestation_id is 32 bytes of hexadecimal, with or without 0x.
+	AttestationId string `protobuf:"bytes,1,opt,name=attestation_id,json=attestationId,proto3" json:"attestation_id,omitempty"`
+}
+
+func (m *QueryAttestationRequest) Reset()         { *m = QueryAttestationRequest{} }
+func (m *QueryAttestationRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAttestationRequest) ProtoMessage()    {}
+func (*QueryAttestationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{12}
+}
+func (m *QueryAttestationRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAttestationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAttestationRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAttestationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAttestationRequest.Merge(m, src)
+}
+func (m *QueryAttestationRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAttestationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAttestationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAttestationRequest proto.InternalMessageInfo
+
+func (m *QueryAttestationRequest) GetAttestationId() string {
+	if m != nil {
+		return m.AttestationId
+	}
+	return ""
+}
+
+type QueryAttestationResponse struct {
+	// attestation_id is the canonical 0x-prefixed lowercase form.
+	AttestationId string           `protobuf:"bytes,1,opt,name=attestation_id,json=attestationId,proto3" json:"attestation_id,omitempty"`
+	Status        AttestationState `protobuf:"varint,2,opt,name=status,proto3,enum=cosmos.evm.bridge.v1.AttestationState" json:"status,omitempty"`
+	// processed is true for both processed states.
+	Processed bool `protobuf:"varint,3,opt,name=processed,proto3" json:"processed,omitempty"`
+	// record is set only for ATTESTATION_STATE_PROCESSED.
+	Record *AttestationRecord `protobuf:"bytes,4,opt,name=record,proto3" json:"record,omitempty"`
+	// height is the block height of the state that answered the query.
+	Height int64 `protobuf:"varint,5,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryAttestationResponse) Reset()         { *m = QueryAttestationResponse{} }
+func (m *QueryAttestationResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAttestationResponse) ProtoMessage()    {}
+func (*QueryAttestationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{13}
+}
+func (m *QueryAttestationResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAttestationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAttestationResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAttestationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAttestationResponse.Merge(m, src)
+}
+func (m *QueryAttestationResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAttestationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAttestationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAttestationResponse proto.InternalMessageInfo
+
+func (m *QueryAttestationResponse) GetAttestationId() string {
+	if m != nil {
+		return m.AttestationId
+	}
+	return ""
+}
+
+func (m *QueryAttestationResponse) GetStatus() AttestationState {
+	if m != nil {
+		return m.Status
+	}
+	return AttestationState_ATTESTATION_STATE_UNSPECIFIED
+}
+
+func (m *QueryAttestationResponse) GetProcessed() bool {
+	if m != nil {
+		return m.Processed
+	}
+	return false
+}
+
+func (m *QueryAttestationResponse) GetRecord() *AttestationRecord {
+	if m != nil {
+		return m.Record
+	}
+	return nil
+}
+
+func (m *QueryAttestationResponse) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+type QuerySourceDepositRequest struct {
+	// source_chain_id is the canonical decimal EVM chain ID, for example 338.
+	SourceChainId string `protobuf:"bytes,1,opt,name=source_chain_id,json=sourceChainId,proto3" json:"source_chain_id,omitempty"`
+	// source_ref is the 32-byte deposit reference, with or without 0x.
+	SourceRef string `protobuf:"bytes,2,opt,name=source_ref,json=sourceRef,proto3" json:"source_ref,omitempty"`
+}
+
+func (m *QuerySourceDepositRequest) Reset()         { *m = QuerySourceDepositRequest{} }
+func (m *QuerySourceDepositRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySourceDepositRequest) ProtoMessage()    {}
+func (*QuerySourceDepositRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{14}
+}
+func (m *QuerySourceDepositRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySourceDepositRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySourceDepositRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySourceDepositRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySourceDepositRequest.Merge(m, src)
+}
+func (m *QuerySourceDepositRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySourceDepositRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySourceDepositRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySourceDepositRequest proto.InternalMessageInfo
+
+func (m *QuerySourceDepositRequest) GetSourceChainId() string {
+	if m != nil {
+		return m.SourceChainId
+	}
+	return ""
+}
+
+func (m *QuerySourceDepositRequest) GetSourceRef() string {
+	if m != nil {
+		return m.SourceRef
+	}
+	return ""
+}
+
+type QueryOutboundTransferRequest struct {
+	// request_id is 32 bytes of hexadecimal, with or without 0x.
+	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+}
+
+func (m *QueryOutboundTransferRequest) Reset()         { *m = QueryOutboundTransferRequest{} }
+func (m *QueryOutboundTransferRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOutboundTransferRequest) ProtoMessage()    {}
+func (*QueryOutboundTransferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{15}
+}
+func (m *QueryOutboundTransferRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOutboundTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOutboundTransferRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOutboundTransferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOutboundTransferRequest.Merge(m, src)
+}
+func (m *QueryOutboundTransferRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOutboundTransferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOutboundTransferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOutboundTransferRequest proto.InternalMessageInfo
+
+func (m *QueryOutboundTransferRequest) GetRequestId() string {
+	if m != nil {
+		return m.RequestId
+	}
+	return ""
+}
+
+type QueryOutboundTransferResponse struct {
+	Transfer *OutboundTransferRecord `protobuf:"bytes,1,opt,name=transfer,proto3" json:"transfer,omitempty"`
+	Height   int64                   `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryOutboundTransferResponse) Reset()         { *m = QueryOutboundTransferResponse{} }
+func (m *QueryOutboundTransferResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOutboundTransferResponse) ProtoMessage()    {}
+func (*QueryOutboundTransferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1c51747409f17890, []int{16}
+}
+func (m *QueryOutboundTransferResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOutboundTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOutboundTransferResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOutboundTransferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOutboundTransferResponse.Merge(m, src)
+}
+func (m *QueryOutboundTransferResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOutboundTransferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOutboundTransferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOutboundTransferResponse proto.InternalMessageInfo
+
+func (m *QueryOutboundTransferResponse) GetTransfer() *OutboundTransferRecord {
+	if m != nil {
+		return m.Transfer
+	}
+	return nil
+}
+
+func (m *QueryOutboundTransferResponse) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
 func init() {
+	proto.RegisterEnum("cosmos.evm.bridge.v1.AttestationState", AttestationState_name, AttestationState_value)
 	proto.RegisterType((*QueryAttestationStatusRequest)(nil), "cosmos.evm.bridge.v1.QueryAttestationStatusRequest")
 	proto.RegisterType((*QueryAttestationStatusResponse)(nil), "cosmos.evm.bridge.v1.QueryAttestationStatusResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "cosmos.evm.bridge.v1.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "cosmos.evm.bridge.v1.QueryParamsResponse")
+	proto.RegisterType((*Params)(nil), "cosmos.evm.bridge.v1.Params")
+	proto.RegisterType((*QueryRouteRequest)(nil), "cosmos.evm.bridge.v1.QueryRouteRequest")
+	proto.RegisterType((*QueryRouteResponse)(nil), "cosmos.evm.bridge.v1.QueryRouteResponse")
+	proto.RegisterType((*Route)(nil), "cosmos.evm.bridge.v1.Route")
+	proto.RegisterType((*QueryOutstandingRequest)(nil), "cosmos.evm.bridge.v1.QueryOutstandingRequest")
+	proto.RegisterType((*QueryOutstandingResponse)(nil), "cosmos.evm.bridge.v1.QueryOutstandingResponse")
+	proto.RegisterType((*QueryDailyUsageRequest)(nil), "cosmos.evm.bridge.v1.QueryDailyUsageRequest")
+	proto.RegisterType((*QueryDailyUsageResponse)(nil), "cosmos.evm.bridge.v1.QueryDailyUsageResponse")
+	proto.RegisterType((*QueryAttestationRequest)(nil), "cosmos.evm.bridge.v1.QueryAttestationRequest")
+	proto.RegisterType((*QueryAttestationResponse)(nil), "cosmos.evm.bridge.v1.QueryAttestationResponse")
+	proto.RegisterType((*QuerySourceDepositRequest)(nil), "cosmos.evm.bridge.v1.QuerySourceDepositRequest")
+	proto.RegisterType((*QueryOutboundTransferRequest)(nil), "cosmos.evm.bridge.v1.QueryOutboundTransferRequest")
+	proto.RegisterType((*QueryOutboundTransferResponse)(nil), "cosmos.evm.bridge.v1.QueryOutboundTransferResponse")
 }
 
 func init() { proto.RegisterFile("cosmos/evm/bridge/v1/query.proto", fileDescriptor_1c51747409f17890) }
 
 var fileDescriptor_1c51747409f17890 = []byte{
-	// 311 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0x31, 0x4b, 0x03, 0x41,
-	0x10, 0x85, 0xb3, 0x01, 0xc5, 0x2c, 0x28, 0x78, 0x58, 0x84, 0x10, 0x97, 0x10, 0x10, 0xd2, 0x64,
-	0x87, 0x18, 0xad, 0xac, 0xb4, 0x10, 0x52, 0x1a, 0x3b, 0x1b, 0xb9, 0xdc, 0x0d, 0x97, 0x05, 0xef,
-	0xe6, 0x72, 0xb3, 0x77, 0x24, 0x88, 0x8d, 0xbf, 0x40, 0xf0, 0xe7, 0x58, 0x0b, 0x96, 0x01, 0x1b,
-	0x4b, 0xc9, 0xf9, 0x43, 0xc4, 0x1c, 0x92, 0x88, 0x51, 0xb4, 0x9d, 0x99, 0xf7, 0x1e, 0xdf, 0x3c,
-	0xd9, 0xf0, 0x88, 0x43, 0x62, 0xc0, 0x2c, 0x84, 0x41, 0x62, 0xfc, 0x00, 0x21, 0xeb, 0xc0, 0x28,
-	0xc5, 0x64, 0xa2, 0xe3, 0x84, 0x2c, 0x39, 0x3b, 0xc5, 0x85, 0xc6, 0x2c, 0xd4, 0xc5, 0x85, 0xce,
-	0x3a, 0xb5, 0x7a, 0x40, 0x14, 0x5c, 0x21, 0xb8, 0xb1, 0x01, 0x37, 0x8a, 0xc8, 0xba, 0xd6, 0x50,
-	0xc4, 0x85, 0xa6, 0x79, 0x2a, 0x77, 0xcf, 0x3e, 0x2c, 0x8e, 0xad, 0x45, 0x2e, 0x56, 0xe7, 0xd6,
-	0xb5, 0x29, 0xf7, 0x71, 0x94, 0x22, 0x5b, 0x67, 0x4f, 0x6e, 0xb9, 0x8b, 0xdd, 0xa5, 0xf1, 0xab,
-	0xa2, 0x21, 0x5a, 0x95, 0xfe, 0xe6, 0xd2, 0xb4, 0xe7, 0x37, 0x51, 0xaa, 0x9f, 0x7c, 0x38, 0xa6,
-	0x88, 0xf1, 0x8f, 0x46, 0x4e, 0x5d, 0x56, 0xe2, 0x84, 0x3c, 0x64, 0x46, 0xbf, 0x5a, 0x6e, 0x88,
-	0xd6, 0x46, 0x7f, 0x31, 0xd8, 0x7f, 0x14, 0x72, 0x6d, 0x9e, 0xe3, 0x3c, 0x08, 0xb9, 0xfd, 0x2d,
-	0xcc, 0xe9, 0xea, 0x55, 0x3f, 0xd0, 0xbf, 0x22, 0xd6, 0x0e, 0xfe, 0x27, 0x2a, 0x78, 0x9a, 0x47,
-	0xb7, 0xcf, 0x6f, 0xf7, 0xe5, 0x43, 0xa7, 0x0b, 0x2b, 0x8b, 0x59, 0xa2, 0x62, 0xb8, 0xfe, 0x4a,
-	0x7e, 0x73, 0xd2, 0x7b, 0x9a, 0x29, 0x31, 0x9d, 0x29, 0xf1, 0x3a, 0x53, 0xe2, 0x2e, 0x57, 0xa5,
-	0x69, 0xae, 0x4a, 0x2f, 0xb9, 0x2a, 0x5d, 0x40, 0x60, 0xec, 0x30, 0x1d, 0x68, 0x8f, 0x42, 0x18,
-	0x1b, 0xeb, 0x91, 0x89, 0xda, 0x94, 0x04, 0x10, 0x13, 0xb7, 0xbd, 0xa1, 0x6b, 0x22, 0x18, 0x7f,
-	0xa6, 0xd8, 0x49, 0x8c, 0x3c, 0x58, 0x9f, 0x17, 0xd9, 0x7d, 0x0f, 0x00, 0x00, 0xff, 0xff, 0x67,
-	0xbb, 0xd9, 0x50, 0x20, 0x02, 0x00, 0x00,
+	// 1465 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0xcf, 0x6f, 0x1b, 0xc5,
+	0x17, 0xcf, 0xc6, 0x8d, 0x63, 0xbf, 0x34, 0xad, 0x33, 0xed, 0xb7, 0x75, 0xdc, 0xc4, 0x4d, 0xfc,
+	0xfd, 0x36, 0x4d, 0xab, 0xc4, 0xfb, 0xad, 0x13, 0x24, 0x04, 0xe2, 0x47, 0x1a, 0xbb, 0xaa, 0x05,
+	0x4a, 0xc2, 0xda, 0x01, 0x89, 0xcb, 0x6a, 0xe2, 0x9d, 0x38, 0x2b, 0xbc, 0x3b, 0xee, 0xce, 0x6c,
+	0x64, 0xb7, 0x8a, 0x04, 0x9c, 0x38, 0x82, 0x00, 0x89, 0x1b, 0x17, 0xc4, 0xbf, 0xc0, 0xa1, 0x17,
+	0x8e, 0x1c, 0x2b, 0x71, 0xe1, 0x82, 0x84, 0x5a, 0xfe, 0x08, 0x8e, 0x68, 0x67, 0x66, 0xed, 0x75,
+	0xbc, 0xd9, 0x26, 0xa7, 0x64, 0xdf, 0xfb, 0xbc, 0x1f, 0xf3, 0xde, 0x67, 0xde, 0x1b, 0xc3, 0x52,
+	0x8b, 0x32, 0x87, 0x32, 0x9d, 0x1c, 0x3b, 0xfa, 0x81, 0x67, 0x5b, 0x6d, 0xa2, 0x1f, 0x3f, 0xd0,
+	0x9f, 0xf8, 0xc4, 0xeb, 0x97, 0xbb, 0x1e, 0xe5, 0x14, 0x5d, 0x97, 0x88, 0x32, 0x39, 0x76, 0xca,
+	0x12, 0x51, 0x3e, 0x7e, 0x50, 0x58, 0x68, 0x53, 0xda, 0xee, 0x10, 0x1d, 0x77, 0x6d, 0x1d, 0xbb,
+	0x2e, 0xe5, 0x98, 0xdb, 0xd4, 0x65, 0xd2, 0xa6, 0xb0, 0x1c, 0xeb, 0x55, 0x59, 0x0b, 0x48, 0xe9,
+	0x11, 0x2c, 0x7e, 0x14, 0x44, 0xd9, 0xe2, 0x9c, 0x30, 0x69, 0xdd, 0xe0, 0x98, 0xfb, 0xcc, 0x20,
+	0x4f, 0x7c, 0xc2, 0x38, 0xba, 0x03, 0x57, 0xf0, 0x50, 0x67, 0xda, 0x56, 0x5e, 0x5b, 0xd2, 0x56,
+	0xb3, 0xc6, 0x6c, 0x44, 0x5a, 0xb7, 0x4a, 0x04, 0x8a, 0x67, 0xf9, 0x61, 0x5d, 0xea, 0x32, 0x72,
+	0x4e, 0x47, 0x68, 0x01, 0xb2, 0x5d, 0x8f, 0xb6, 0x08, 0x63, 0xc4, 0xca, 0x4f, 0x2e, 0x69, 0xab,
+	0x19, 0x63, 0x28, 0x28, 0x5d, 0x07, 0x24, 0xc2, 0xec, 0x61, 0x0f, 0x3b, 0x61, 0x8e, 0xa5, 0x0f,
+	0xe0, 0xda, 0x88, 0x54, 0x45, 0xdc, 0x84, 0x74, 0x57, 0x48, 0x44, 0xa4, 0x99, 0xca, 0x42, 0x39,
+	0xae, 0x86, 0x65, 0x65, 0xa5, 0xb0, 0xa5, 0x1f, 0x52, 0x90, 0x96, 0xa2, 0x20, 0x17, 0xec, 0xf3,
+	0x23, 0xea, 0xd9, 0xbc, 0xaf, 0xb2, 0x1d, 0x0a, 0xd0, 0x32, 0x5c, 0x76, 0x31, 0xb7, 0x8f, 0x89,
+	0x69, 0x11, 0x97, 0x3a, 0x22, 0xd9, 0xac, 0x31, 0x23, 0x65, 0xd5, 0x40, 0x84, 0x16, 0x01, 0x1c,
+	0xdc, 0x33, 0x99, 0xdf, 0xed, 0x76, 0xfa, 0xf9, 0x94, 0xf4, 0xe0, 0xe0, 0x5e, 0x43, 0x08, 0xd0,
+	0x3a, 0x20, 0x8f, 0x3c, 0xf1, 0x6d, 0x8f, 0x58, 0x26, 0xee, 0x76, 0x3d, 0x7a, 0x8c, 0x3b, 0x2c,
+	0x7f, 0x69, 0x49, 0x5b, 0x9d, 0x35, 0xe6, 0x42, 0xcd, 0x56, 0xa8, 0x40, 0x2b, 0x70, 0x95, 0xd9,
+	0x6d, 0x97, 0x78, 0x26, 0x23, 0xdc, 0x64, 0xf6, 0x53, 0x92, 0x9f, 0x12, 0xd8, 0x59, 0x29, 0x6e,
+	0x10, 0xde, 0xb0, 0x9f, 0x12, 0x34, 0x0f, 0x99, 0xd6, 0x11, 0xb6, 0x45, 0x8d, 0xd3, 0x22, 0xe6,
+	0xb4, 0xf8, 0xae, 0x5b, 0x41, 0xc4, 0x68, 0x13, 0x2c, 0xea, 0x60, 0xdb, 0xcd, 0x4f, 0x0b, 0xd0,
+	0x5c, 0x44, 0x53, 0x15, 0x8a, 0xa0, 0x67, 0x2d, 0xea, 0x72, 0x8f, 0x76, 0x42, 0x68, 0x46, 0xf6,
+	0x4c, 0x49, 0x15, 0xac, 0x02, 0xff, 0x69, 0xfb, 0xd8, 0xb3, 0x6c, 0xec, 0x9a, 0x5d, 0xec, 0x33,
+	0x12, 0xa2, 0xb3, 0x02, 0x7d, 0x2d, 0x54, 0xee, 0x05, 0xba, 0xa1, 0x0d, 0xa3, 0xbe, 0xd7, 0x0a,
+	0xaa, 0xd7, 0xa5, 0xcc, 0xe6, 0xa1, 0x0d, 0x48, 0x1b, 0xa9, 0xac, 0x4a, 0x9d, 0xb4, 0x29, 0x95,
+	0x61, 0x4e, 0xf4, 0xd9, 0xa0, 0x3e, 0x27, 0x21, 0x41, 0xe7, 0x21, 0xe3, 0x05, 0xdf, 0x43, 0x46,
+	0x4d, 0x8b, 0xef, 0xba, 0x55, 0x32, 0x15, 0x5b, 0x14, 0x5e, 0xd1, 0xe2, 0x01, 0x4c, 0x09, 0x80,
+	0x62, 0xc5, 0xad, 0x78, 0x56, 0x48, 0x1b, 0x89, 0x44, 0x37, 0x20, 0x7d, 0x44, 0xec, 0xf6, 0x11,
+	0x17, 0x4d, 0x4e, 0x19, 0xea, 0xab, 0xf4, 0x6b, 0x0a, 0xa6, 0x04, 0x30, 0x21, 0x0b, 0xd1, 0x36,
+	0x79, 0xd2, 0x41, 0x57, 0x24, 0x55, 0x66, 0xa5, 0x78, 0x5b, 0xf5, 0xe6, 0x0e, 0x5c, 0x91, 0xe1,
+	0x4d, 0xd9, 0x4e, 0x96, 0x4f, 0x2d, 0xa5, 0x02, 0x98, 0x94, 0x36, 0xa4, 0x10, 0x15, 0x20, 0x13,
+	0xd6, 0x53, 0x50, 0x25, 0x6b, 0x0c, 0xbe, 0x51, 0x19, 0xae, 0x05, 0x7c, 0xe3, 0x1e, 0x76, 0xd9,
+	0x21, 0xf1, 0x4c, 0xec, 0x50, 0xdf, 0xe5, 0x82, 0x25, 0x59, 0x63, 0xce, 0xc1, 0xbd, 0xa6, 0xd2,
+	0x6c, 0x09, 0x05, 0xba, 0x0d, 0x33, 0x16, 0xb6, 0x3b, 0x7d, 0xb3, 0x63, 0x3b, 0x36, 0x57, 0x64,
+	0x01, 0x21, 0xfa, 0x30, 0x90, 0xa0, 0x4d, 0xb8, 0x11, 0x38, 0xa4, 0x3e, 0x67, 0x1c, 0xbb, 0x96,
+	0xed, 0xb6, 0x43, 0x9f, 0x92, 0x33, 0xd7, 0x1d, 0xdc, 0xdb, 0x1d, 0x2a, 0x95, 0xdb, 0x3c, 0x4c,
+	0x13, 0x17, 0x1f, 0x74, 0x88, 0x25, 0xf8, 0x92, 0x31, 0xc2, 0xcf, 0xa0, 0x90, 0x82, 0x20, 0x96,
+	0xa0, 0x46, 0xc6, 0x50, 0x5f, 0x68, 0x0d, 0x50, 0x84, 0xda, 0xc7, 0xc4, 0x63, 0x36, 0x95, 0x54,
+	0xb8, 0x64, 0xe4, 0x06, 0xec, 0xfe, 0x58, 0xca, 0xd1, 0x7f, 0x21, 0x24, 0xa0, 0xe9, 0x52, 0xb7,
+	0x45, 0xf2, 0x33, 0x02, 0x78, 0x59, 0x09, 0x77, 0x02, 0x59, 0x50, 0x4e, 0xea, 0xf3, 0x03, 0xea,
+	0xbb, 0x96, 0x42, 0x5d, 0x16, 0xa8, 0xd9, 0x50, 0x2a, 0x60, 0xa5, 0x79, 0xb8, 0x29, 0x38, 0x12,
+	0x39, 0x45, 0x38, 0x56, 0xfe, 0xd4, 0x20, 0x3f, 0xae, 0x53, 0x2c, 0x4a, 0x68, 0xf8, 0x3a, 0xa0,
+	0x98, 0x82, 0xc9, 0x9e, 0xcf, 0xd1, 0xb1, 0x6a, 0x9d, 0x5d, 0xe3, 0x54, 0x42, 0x8d, 0xef, 0x41,
+	0xce, 0x23, 0xc1, 0xad, 0x88, 0xe0, 0x25, 0x1d, 0xae, 0x0e, 0xe4, 0x0a, 0x3a, 0x64, 0xef, 0xd4,
+	0x08, 0x7b, 0xf3, 0x70, 0x43, 0x1c, 0xaf, 0x1a, 0xf4, 0x7b, 0x9f, 0xe1, 0x76, 0x78, 0xa7, 0x4a,
+	0xdf, 0x4f, 0xaa, 0xaa, 0x44, 0x55, 0xaf, 0x3f, 0xf8, 0x4d, 0x98, 0xf6, 0x79, 0xcb, 0xb4, 0x70,
+	0x5f, 0x9c, 0xf6, 0x92, 0x91, 0xf6, 0x79, 0xab, 0x8a, 0xfb, 0x81, 0x8d, 0x54, 0x70, 0xa2, 0x0e,
+	0x35, 0x2d, 0x34, 0x9c, 0x04, 0x14, 0x0c, 0x18, 0x30, 0x7a, 0x04, 0x08, 0x44, 0xf1, 0x1c, 0x9d,
+	0x1a, 0xe3, 0x68, 0x5c, 0x25, 0xd2, 0xf1, 0x95, 0x58, 0x81, 0xab, 0x07, 0x1d, 0xda, 0xfa, 0xcc,
+	0xe4, 0xb6, 0x43, 0x4c, 0xdf, 0xb5, 0x7b, 0x82, 0xc7, 0x29, 0x63, 0x56, 0x88, 0x9b, 0xb6, 0x43,
+	0xf6, 0x5d, 0xbb, 0x17, 0xa9, 0x58, 0x66, 0xa4, 0x62, 0xef, 0xab, 0xb2, 0x44, 0xb6, 0xdc, 0x05,
+	0xf7, 0xe4, 0x3f, 0x21, 0xa7, 0x46, 0x5c, 0x5c, 0x6c, 0x45, 0xbe, 0x0b, 0x69, 0x26, 0x76, 0xab,
+	0xa8, 0xf2, 0x95, 0xca, 0x4a, 0xfc, 0x04, 0x3b, 0xb5, 0x8a, 0x89, 0xa1, 0xac, 0x46, 0x57, 0x6c,
+	0xea, 0xd4, 0x8a, 0x45, 0xef, 0x41, 0xda, 0x23, 0x2d, 0xea, 0x59, 0xa2, 0x17, 0x33, 0x95, 0xbb,
+	0xaf, 0xf5, 0x6e, 0x08, 0xb8, 0xa1, 0xcc, 0xce, 0xa4, 0xdb, 0x01, 0xcc, 0x8b, 0x93, 0x37, 0xa2,
+	0x93, 0x3d, 0x2c, 0x5f, 0xcc, 0x90, 0xd4, 0xe2, 0x86, 0xe4, 0x22, 0x80, 0xc2, 0x79, 0xe4, 0x50,
+	0xdd, 0xa9, 0xac, 0x94, 0x18, 0xe4, 0xb0, 0xf4, 0x0e, 0x2c, 0x84, 0x37, 0x56, 0xdc, 0xf1, 0x70,
+	0xde, 0x85, 0x61, 0x16, 0x01, 0x3c, 0xf9, 0xef, 0x30, 0x42, 0x56, 0x49, 0xea, 0x56, 0xe9, 0x0b,
+	0x4d, 0x3d, 0x87, 0xc6, 0xed, 0x55, 0x8b, 0x1e, 0x43, 0x26, 0x9c, 0xae, 0x6a, 0x7f, 0xac, 0xc5,
+	0xd7, 0x67, 0xdc, 0x83, 0x28, 0xd2, 0xc0, 0xfa, 0xac, 0x9d, 0x72, 0xff, 0x27, 0x0d, 0x72, 0xa7,
+	0x5b, 0x87, 0x96, 0x61, 0x71, 0xab, 0xd9, 0xac, 0x35, 0x9a, 0x5b, 0xcd, 0xfa, 0xee, 0x8e, 0x19,
+	0xfc, 0xad, 0x99, 0xfb, 0x3b, 0x8d, 0xbd, 0xda, 0x76, 0xfd, 0x51, 0xbd, 0x56, 0xcd, 0x4d, 0xa0,
+	0x05, 0xc8, 0x8f, 0x43, 0xb6, 0x1e, 0x36, 0x6a, 0x3b, 0xcd, 0x9c, 0x86, 0x6e, 0xc3, 0xad, 0x71,
+	0xed, 0x9e, 0xb1, 0xbb, 0x5d, 0x6b, 0x34, 0x6a, 0xd5, 0xdc, 0x24, 0x2a, 0xc3, 0xfd, 0x04, 0x80,
+	0xf9, 0x49, 0xbd, 0xf9, 0x78, 0x77, 0xbf, 0x69, 0x1a, 0xb5, 0xed, 0x5d, 0xa3, 0x9a, 0x4b, 0x55,
+	0x7e, 0x04, 0x98, 0x12, 0xa5, 0x42, 0xcf, 0x35, 0x98, 0x1b, 0x7b, 0xf6, 0xa1, 0x8d, 0xf8, 0xb2,
+	0x24, 0x3e, 0x36, 0x0b, 0x9b, 0x17, 0x33, 0x92, 0x3d, 0x29, 0xbd, 0xfd, 0xe5, 0xef, 0x7f, 0x7f,
+	0x3b, 0xf9, 0x06, 0xda, 0xd0, 0x63, 0xdf, 0xbb, 0x91, 0xcb, 0xc3, 0xf4, 0x67, 0xa3, 0x17, 0xec,
+	0x04, 0x7d, 0xae, 0x0d, 0x9e, 0x7b, 0xab, 0x09, 0xd1, 0x47, 0x1e, 0x9c, 0x85, 0x7b, 0xe7, 0x40,
+	0xaa, 0xe4, 0x96, 0x45, 0x72, 0xb7, 0xd0, 0xbc, 0xde, 0xb3, 0x79, 0x8b, 0xda, 0x6e, 0x24, 0x33,
+	0xf9, 0xe2, 0x44, 0x5f, 0x69, 0xe1, 0x2b, 0xe2, 0x6e, 0x82, 0xdf, 0xe8, 0xa3, 0xa7, 0xb0, 0xfa,
+	0x7a, 0xa0, 0x8a, 0xbf, 0x26, 0xe2, 0xaf, 0xa0, 0xff, 0xc5, 0xc4, 0x17, 0x73, 0x9b, 0xe9, 0xcf,
+	0xc2, 0x79, 0x7e, 0x82, 0xbe, 0xd3, 0x60, 0x26, 0xb2, 0x6b, 0xd0, 0x7a, 0x42, 0x9c, 0xf1, 0x8d,
+	0x59, 0x28, 0x9f, 0x17, 0xae, 0x92, 0x5b, 0x11, 0xc9, 0x2d, 0xa1, 0x62, 0x4c, 0x72, 0x91, 0x7d,
+	0x88, 0xbe, 0xd1, 0x00, 0x86, 0xab, 0x08, 0xad, 0x25, 0x84, 0x19, 0x5b, 0x66, 0x85, 0xf5, 0x73,
+	0xa2, 0xcf, 0x91, 0x93, 0x5c, 0x44, 0xbe, 0x48, 0xe2, 0x67, 0x0d, 0x66, 0x22, 0x9c, 0x4c, 0x2c,
+	0xd5, 0xf8, 0xbe, 0x48, 0x2c, 0x55, 0xcc, 0x6e, 0x28, 0xbd, 0x29, 0xd2, 0xaa, 0xa0, 0xff, 0xc7,
+	0xa4, 0x95, 0xcc, 0xf0, 0xe7, 0x1a, 0xcc, 0x8e, 0xcc, 0x5c, 0xa4, 0x27, 0xc4, 0x8e, 0x9b, 0xce,
+	0x17, 0x4e, 0xb6, 0x2e, 0x92, 0xdd, 0x46, 0x5b, 0x31, 0xc9, 0x8e, 0xbe, 0xfa, 0x99, 0xfe, 0xec,
+	0xd4, 0xdc, 0x3f, 0x19, 0x48, 0x3c, 0x72, 0x78, 0x82, 0x7e, 0xd1, 0x20, 0x77, 0x7a, 0x96, 0xa2,
+	0x4a, 0x32, 0xcf, 0xe2, 0x46, 0x7f, 0x61, 0xe3, 0x42, 0x36, 0xea, 0x20, 0x6f, 0x89, 0x83, 0x6c,
+	0xa2, 0x4a, 0x3c, 0x41, 0xe5, 0xeb, 0x32, 0x1c, 0xe9, 0xc1, 0x4d, 0x1a, 0x2c, 0x97, 0x93, 0x87,
+	0xf5, 0xdf, 0x5e, 0x16, 0xb5, 0x17, 0x2f, 0x8b, 0xda, 0x5f, 0x2f, 0x8b, 0xda, 0xd7, 0xaf, 0x8a,
+	0x13, 0x2f, 0x5e, 0x15, 0x27, 0xfe, 0x78, 0x55, 0x9c, 0xf8, 0x54, 0x6f, 0xdb, 0xfc, 0xc8, 0x3f,
+	0x28, 0xb7, 0xa8, 0x13, 0xfa, 0x5d, 0xef, 0xf1, 0x96, 0xde, 0xa5, 0x6c, 0x5d, 0x94, 0x41, 0xef,
+	0x85, 0x71, 0x78, 0xbf, 0x4b, 0xd8, 0x41, 0x5a, 0xfc, 0x58, 0xdf, 0xf8, 0x37, 0x00, 0x00, 0xff,
+	0xff, 0x47, 0x85, 0x02, 0x96, 0x27, 0x10, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -168,7 +1276,29 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
 	// AttestationStatus reports whether an attestation replay key was consumed.
+	// Its two-field response is kept unchanged for clients pinned to it; the
+	// Attestation query returns the same flag with the processing evidence.
 	AttestationStatus(ctx context.Context, in *QueryAttestationStatusRequest, opts ...grpc.CallOption) (*QueryAttestationStatusResponse, error)
+	// Params returns the settlement parameters fixed when the application is
+	// wired and the signing domains derived from the chain ID.
+	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Route returns the configuration and state of the route with this route
+	// ID, exactly as stored.
+	Route(ctx context.Context, in *QueryRouteRequest, opts ...grpc.CallOption) (*QueryRouteResponse, error)
+	// Outstanding returns the outstanding amount and the route's cap on it.
+	Outstanding(ctx context.Context, in *QueryOutstandingRequest, opts ...grpc.CallOption) (*QueryOutstandingResponse, error)
+	// DailyUsage returns the route's usage of the daily limit for the UTC day
+	// of the queried block.
+	DailyUsage(ctx context.Context, in *QueryDailyUsageRequest, opts ...grpc.CallOption) (*QueryDailyUsageResponse, error)
+	// Attestation returns whether an attestation ID (source-deposit replay key)
+	// is absent or processed and, when processed, the approved fields and the
+	// block height and transaction hash that processed it.
+	Attestation(ctx context.Context, in *QueryAttestationRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error)
+	// SourceDeposit answers the Attestation query for the replay key of a
+	// source chain ID and source reference (Cronos depositId).
+	SourceDeposit(ctx context.Context, in *QuerySourceDepositRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error)
+	// OutboundTransfer returns the burn recorded for an outbound request ID.
+	OutboundTransfer(ctx context.Context, in *QueryOutboundTransferRequest, opts ...grpc.CallOption) (*QueryOutboundTransferResponse, error)
 }
 
 type queryClient struct {
@@ -188,10 +1318,95 @@ func (c *queryClient) AttestationStatus(ctx context.Context, in *QueryAttestatio
 	return out, nil
 }
 
+func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+	out := new(QueryParamsResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/Params", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Route(ctx context.Context, in *QueryRouteRequest, opts ...grpc.CallOption) (*QueryRouteResponse, error) {
+	out := new(QueryRouteResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/Route", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Outstanding(ctx context.Context, in *QueryOutstandingRequest, opts ...grpc.CallOption) (*QueryOutstandingResponse, error) {
+	out := new(QueryOutstandingResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/Outstanding", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) DailyUsage(ctx context.Context, in *QueryDailyUsageRequest, opts ...grpc.CallOption) (*QueryDailyUsageResponse, error) {
+	out := new(QueryDailyUsageResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/DailyUsage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Attestation(ctx context.Context, in *QueryAttestationRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error) {
+	out := new(QueryAttestationResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/Attestation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SourceDeposit(ctx context.Context, in *QuerySourceDepositRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error) {
+	out := new(QueryAttestationResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/SourceDeposit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) OutboundTransfer(ctx context.Context, in *QueryOutboundTransferRequest, opts ...grpc.CallOption) (*QueryOutboundTransferResponse, error) {
+	out := new(QueryOutboundTransferResponse)
+	err := c.cc.Invoke(ctx, "/cosmos.evm.bridge.v1.Query/OutboundTransfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// AttestationStatus reports whether an attestation replay key was consumed.
+	// Its two-field response is kept unchanged for clients pinned to it; the
+	// Attestation query returns the same flag with the processing evidence.
 	AttestationStatus(context.Context, *QueryAttestationStatusRequest) (*QueryAttestationStatusResponse, error)
+	// Params returns the settlement parameters fixed when the application is
+	// wired and the signing domains derived from the chain ID.
+	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Route returns the configuration and state of the route with this route
+	// ID, exactly as stored.
+	Route(context.Context, *QueryRouteRequest) (*QueryRouteResponse, error)
+	// Outstanding returns the outstanding amount and the route's cap on it.
+	Outstanding(context.Context, *QueryOutstandingRequest) (*QueryOutstandingResponse, error)
+	// DailyUsage returns the route's usage of the daily limit for the UTC day
+	// of the queried block.
+	DailyUsage(context.Context, *QueryDailyUsageRequest) (*QueryDailyUsageResponse, error)
+	// Attestation returns whether an attestation ID (source-deposit replay key)
+	// is absent or processed and, when processed, the approved fields and the
+	// block height and transaction hash that processed it.
+	Attestation(context.Context, *QueryAttestationRequest) (*QueryAttestationResponse, error)
+	// SourceDeposit answers the Attestation query for the replay key of a
+	// source chain ID and source reference (Cronos depositId).
+	SourceDeposit(context.Context, *QuerySourceDepositRequest) (*QueryAttestationResponse, error)
+	// OutboundTransfer returns the burn recorded for an outbound request ID.
+	OutboundTransfer(context.Context, *QueryOutboundTransferRequest) (*QueryOutboundTransferResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -200,6 +1415,27 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) AttestationStatus(ctx context.Context, req *QueryAttestationStatusRequest) (*QueryAttestationStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttestationStatus not implemented")
+}
+func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Route(ctx context.Context, req *QueryRouteRequest) (*QueryRouteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Route not implemented")
+}
+func (*UnimplementedQueryServer) Outstanding(ctx context.Context, req *QueryOutstandingRequest) (*QueryOutstandingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Outstanding not implemented")
+}
+func (*UnimplementedQueryServer) DailyUsage(ctx context.Context, req *QueryDailyUsageRequest) (*QueryDailyUsageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DailyUsage not implemented")
+}
+func (*UnimplementedQueryServer) Attestation(ctx context.Context, req *QueryAttestationRequest) (*QueryAttestationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Attestation not implemented")
+}
+func (*UnimplementedQueryServer) SourceDeposit(ctx context.Context, req *QuerySourceDepositRequest) (*QueryAttestationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SourceDeposit not implemented")
+}
+func (*UnimplementedQueryServer) OutboundTransfer(ctx context.Context, req *QueryOutboundTransferRequest) (*QueryOutboundTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OutboundTransfer not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -224,6 +1460,132 @@ func _Query_AttestationStatus_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/Params",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Route_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRouteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Route(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/Route",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Route(ctx, req.(*QueryRouteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Outstanding_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOutstandingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Outstanding(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/Outstanding",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Outstanding(ctx, req.(*QueryOutstandingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_DailyUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDailyUsageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).DailyUsage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/DailyUsage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).DailyUsage(ctx, req.(*QueryDailyUsageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Attestation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAttestationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Attestation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/Attestation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Attestation(ctx, req.(*QueryAttestationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SourceDeposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySourceDepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SourceDeposit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/SourceDeposit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SourceDeposit(ctx, req.(*QuerySourceDepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_OutboundTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOutboundTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).OutboundTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cosmos.evm.bridge.v1.Query/OutboundTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).OutboundTransfer(ctx, req.(*QueryOutboundTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var Query_serviceDesc = _Query_serviceDesc
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cosmos.evm.bridge.v1.Query",
@@ -232,6 +1594,34 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AttestationStatus",
 			Handler:    _Query_AttestationStatus_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Route",
+			Handler:    _Query_Route_Handler,
+		},
+		{
+			MethodName: "Outstanding",
+			Handler:    _Query_Outstanding_Handler,
+		},
+		{
+			MethodName: "DailyUsage",
+			Handler:    _Query_DailyUsage_Handler,
+		},
+		{
+			MethodName: "Attestation",
+			Handler:    _Query_Attestation_Handler,
+		},
+		{
+			MethodName: "SourceDeposit",
+			Handler:    _Query_SourceDeposit_Handler,
+		},
+		{
+			MethodName: "OutboundTransfer",
+			Handler:    _Query_OutboundTransfer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -308,6 +1698,706 @@ func (m *QueryAttestationStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Params != nil {
+		{
+			size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Params) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Params) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SourceDepositDomain) > 0 {
+		i -= len(m.SourceDepositDomain)
+		copy(dAtA[i:], m.SourceDepositDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SourceDepositDomain)))
+		i--
+		dAtA[i] = 0x52
+	}
+	if len(m.GuardianPauseDomain) > 0 {
+		i -= len(m.GuardianPauseDomain)
+		copy(dAtA[i:], m.GuardianPauseDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.GuardianPauseDomain)))
+		i--
+		dAtA[i] = 0x4a
+	}
+	if len(m.ControlDomain) > 0 {
+		i -= len(m.ControlDomain)
+		copy(dAtA[i:], m.ControlDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ControlDomain)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if len(m.AttestationDomain) > 0 {
+		i -= len(m.AttestationDomain)
+		copy(dAtA[i:], m.AttestationDomain)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AttestationDomain)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.ChainId) > 0 {
+		i -= len(m.ChainId)
+		copy(dAtA[i:], m.ChainId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ChainId)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if m.SignerSetSize != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SignerSetSize))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.RequiredApprovals != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.RequiredApprovals))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.MaxSupply) > 0 {
+		i -= len(m.MaxSupply)
+		copy(dAtA[i:], m.MaxSupply)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.MaxSupply)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.NativeDenom) > 0 {
+		i -= len(m.NativeDenom)
+		copy(dAtA[i:], m.NativeDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.NativeDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryRouteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryRouteRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryRouteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RouteId) > 0 {
+		i -= len(m.RouteId)
+		copy(dAtA[i:], m.RouteId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RouteId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryRouteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryRouteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryRouteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Route != nil {
+		{
+			size, err := m.Route.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Route) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Route) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Route) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.OutboundNonce != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.OutboundNonce))
+		i--
+		dAtA[i] = 0x60
+	}
+	if m.ControlNonce != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.ControlNonce))
+		i--
+		dAtA[i] = 0x58
+	}
+	if m.SignerSetVersion != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SignerSetVersion))
+		i--
+		dAtA[i] = 0x50
+	}
+	if m.Paused {
+		i--
+		if m.Paused {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x48
+	}
+	if m.Enabled {
+		i--
+		if m.Enabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x40
+	}
+	if len(m.MaxOutstandingAmount) > 0 {
+		i -= len(m.MaxOutstandingAmount)
+		copy(dAtA[i:], m.MaxOutstandingAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.MaxOutstandingAmount)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.DailyLimit) > 0 {
+		i -= len(m.DailyLimit)
+		copy(dAtA[i:], m.DailyLimit)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DailyLimit)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.MaxTransferAmount) > 0 {
+		i -= len(m.MaxTransferAmount)
+		copy(dAtA[i:], m.MaxTransferAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.MaxTransferAmount)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Guardian) > 0 {
+		i -= len(m.Guardian)
+		copy(dAtA[i:], m.Guardian)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Guardian)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.BridgeSigners) > 0 {
+		for iNdEx := len(m.BridgeSigners) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.BridgeSigners[iNdEx])
+			copy(dAtA[i:], m.BridgeSigners[iNdEx])
+			i = encodeVarintQuery(dAtA, i, uint64(len(m.BridgeSigners[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.SourceChainId) > 0 {
+		i -= len(m.SourceChainId)
+		copy(dAtA[i:], m.SourceChainId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SourceChainId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.RouteId) > 0 {
+		i -= len(m.RouteId)
+		copy(dAtA[i:], m.RouteId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RouteId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOutstandingRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOutstandingRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOutstandingRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOutstandingResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOutstandingResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOutstandingResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x28
+	}
+	if len(m.RemainingAmount) > 0 {
+		i -= len(m.RemainingAmount)
+		copy(dAtA[i:], m.RemainingAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RemainingAmount)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.MaxOutstandingAmount) > 0 {
+		i -= len(m.MaxOutstandingAmount)
+		copy(dAtA[i:], m.MaxOutstandingAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.MaxOutstandingAmount)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.OutstandingAmount) > 0 {
+		i -= len(m.OutstandingAmount)
+		copy(dAtA[i:], m.OutstandingAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.OutstandingAmount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.RouteId) > 0 {
+		i -= len(m.RouteId)
+		copy(dAtA[i:], m.RouteId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RouteId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDailyUsageRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDailyUsageRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDailyUsageRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDailyUsageResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDailyUsageResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDailyUsageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.BlockTimeUnix != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.BlockTimeUnix))
+		i--
+		dAtA[i] = 0x38
+	}
+	if len(m.RemainingAmount) > 0 {
+		i -= len(m.RemainingAmount)
+		copy(dAtA[i:], m.RemainingAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RemainingAmount)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.DailyLimit) > 0 {
+		i -= len(m.DailyLimit)
+		copy(dAtA[i:], m.DailyLimit)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DailyLimit)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.UsedAmount) > 0 {
+		i -= len(m.UsedAmount)
+		copy(dAtA[i:], m.UsedAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.UsedAmount)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.UtcDate) > 0 {
+		i -= len(m.UtcDate)
+		copy(dAtA[i:], m.UtcDate)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.UtcDate)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.UtcDay != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.UtcDay))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.RouteId) > 0 {
+		i -= len(m.RouteId)
+		copy(dAtA[i:], m.RouteId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RouteId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAttestationRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAttestationRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAttestationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AttestationId) > 0 {
+		i -= len(m.AttestationId)
+		copy(dAtA[i:], m.AttestationId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AttestationId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAttestationResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAttestationResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAttestationResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.Record != nil {
+		{
+			size, err := m.Record.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.Processed {
+		i--
+		if m.Processed {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Status != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Status))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.AttestationId) > 0 {
+		i -= len(m.AttestationId)
+		copy(dAtA[i:], m.AttestationId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AttestationId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySourceDepositRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySourceDepositRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySourceDepositRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SourceRef) > 0 {
+		i -= len(m.SourceRef)
+		copy(dAtA[i:], m.SourceRef)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SourceRef)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SourceChainId) > 0 {
+		i -= len(m.SourceChainId)
+		copy(dAtA[i:], m.SourceChainId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.SourceChainId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOutboundTransferRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOutboundTransferRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOutboundTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RequestId) > 0 {
+		i -= len(m.RequestId)
+		copy(dAtA[i:], m.RequestId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RequestId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryOutboundTransferResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryOutboundTransferResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryOutboundTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Transfer != nil {
+		{
+			size, err := m.Transfer.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -344,6 +2434,327 @@ func (m *QueryAttestationStatusResponse) Size() (n int) {
 	}
 	if m.Processed {
 		n += 2
+	}
+	return n
+}
+
+func (m *QueryParamsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Params != nil {
+		l = m.Params.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *Params) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.NativeDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.MaxSupply)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.RequiredApprovals != 0 {
+		n += 1 + sovQuery(uint64(m.RequiredApprovals))
+	}
+	if m.SignerSetSize != 0 {
+		n += 1 + sovQuery(uint64(m.SignerSetSize))
+	}
+	l = len(m.ChainId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.AttestationDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.ControlDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.GuardianPauseDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.SourceDepositDomain)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryRouteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RouteId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryRouteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Route != nil {
+		l = m.Route.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
+	}
+	return n
+}
+
+func (m *Route) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RouteId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.SourceChainId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if len(m.BridgeSigners) > 0 {
+		for _, s := range m.BridgeSigners {
+			l = len(s)
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	l = len(m.Guardian)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.MaxTransferAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.DailyLimit)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.MaxOutstandingAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Enabled {
+		n += 2
+	}
+	if m.Paused {
+		n += 2
+	}
+	if m.SignerSetVersion != 0 {
+		n += 1 + sovQuery(uint64(m.SignerSetVersion))
+	}
+	if m.ControlNonce != 0 {
+		n += 1 + sovQuery(uint64(m.ControlNonce))
+	}
+	if m.OutboundNonce != 0 {
+		n += 1 + sovQuery(uint64(m.OutboundNonce))
+	}
+	return n
+}
+
+func (m *QueryOutstandingRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryOutstandingResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RouteId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.OutstandingAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.MaxOutstandingAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.RemainingAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
+	}
+	return n
+}
+
+func (m *QueryDailyUsageRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryDailyUsageResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RouteId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.UtcDay != 0 {
+		n += 1 + sovQuery(uint64(m.UtcDay))
+	}
+	l = len(m.UtcDate)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.UsedAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.DailyLimit)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.RemainingAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.BlockTimeUnix != 0 {
+		n += 1 + sovQuery(uint64(m.BlockTimeUnix))
+	}
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
+	}
+	return n
+}
+
+func (m *QueryAttestationRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.AttestationId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAttestationResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.AttestationId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Status != 0 {
+		n += 1 + sovQuery(uint64(m.Status))
+	}
+	if m.Processed {
+		n += 2
+	}
+	if m.Record != nil {
+		l = m.Record.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
+	}
+	return n
+}
+
+func (m *QuerySourceDepositRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SourceChainId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.SourceRef)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryOutboundTransferRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RequestId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryOutboundTransferResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Transfer != nil {
+		l = m.Transfer.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
 	}
 	return n
 }
@@ -517,6 +2928,2167 @@ func (m *QueryAttestationStatusResponse) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Processed = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Params == nil {
+				m.Params = &Params{}
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Params) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Params: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NativeDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NativeDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxSupply", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MaxSupply = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequiredApprovals", wireType)
+			}
+			m.RequiredApprovals = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RequiredApprovals |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SignerSetSize", wireType)
+			}
+			m.SignerSetSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SignerSetSize |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttestationDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AttestationDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ControlDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ControlDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuardianPauseDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuardianPauseDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceDepositDomain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceDepositDomain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryRouteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryRouteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryRouteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RouteId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryRouteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryRouteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryRouteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Route", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Route == nil {
+				m.Route = &Route{}
+			}
+			if err := m.Route.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Route) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Route: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Route: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RouteId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceChainId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceChainId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BridgeSigners", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BridgeSigners = append(m.BridgeSigners, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Guardian", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Guardian = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxTransferAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MaxTransferAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DailyLimit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DailyLimit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxOutstandingAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MaxOutstandingAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Enabled = bool(v != 0)
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Paused", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Paused = bool(v != 0)
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SignerSetVersion", wireType)
+			}
+			m.SignerSetVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SignerSetVersion |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ControlNonce", wireType)
+			}
+			m.ControlNonce = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ControlNonce |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OutboundNonce", wireType)
+			}
+			m.OutboundNonce = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OutboundNonce |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOutstandingRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOutstandingRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOutstandingRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOutstandingResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOutstandingResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOutstandingResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RouteId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OutstandingAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.OutstandingAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxOutstandingAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MaxOutstandingAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainingAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemainingAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDailyUsageRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDailyUsageRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDailyUsageRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDailyUsageResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDailyUsageResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDailyUsageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RouteId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RouteId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UtcDay", wireType)
+			}
+			m.UtcDay = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UtcDay |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UtcDate", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UtcDate = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UsedAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UsedAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DailyLimit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DailyLimit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemainingAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemainingAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockTimeUnix", wireType)
+			}
+			m.BlockTimeUnix = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockTimeUnix |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAttestationRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAttestationRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAttestationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttestationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AttestationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAttestationResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAttestationResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAttestationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttestationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AttestationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Status |= AttestationState(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Processed", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Processed = bool(v != 0)
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Record", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Record == nil {
+				m.Record = &AttestationRecord{}
+			}
+			if err := m.Record.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySourceDepositRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySourceDepositRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySourceDepositRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceChainId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceChainId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceRef", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourceRef = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOutboundTransferRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOutboundTransferRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOutboundTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequestId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RequestId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryOutboundTransferResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryOutboundTransferResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryOutboundTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Transfer", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Transfer == nil {
+				m.Transfer = &OutboundTransferRecord{}
+			}
+			if err := m.Transfer.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

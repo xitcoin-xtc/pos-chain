@@ -64,10 +64,26 @@ func (k Keeper) DailyUsage(ctx sdk.Context, routeID string) *big.Int {
 }
 
 func dailyUsageKey(routeID string, unixTime int64) []byte {
+	return dailyUsageKeyForDay(routeID, UTCDay(unixTime))
+}
+
+// UTCDay returns the number of whole days between 1970-01-01T00:00:00Z and a
+// Unix time: the day of the daily-limit bucket. Block times are later than
+// 1970; an earlier time maps to day 0.
+func UTCDay(unixTime int64) uint64 {
+	day := unixTime / 86400
+	if day < 0 {
+		return 0
+	}
+	return uint64(day)
+}
+
+// dailyUsageKeyForDay is 0x03 || sha256(route ID) || big-endian UTC day.
+func dailyUsageKeyForDay(routeID string, day uint64) []byte {
 	routeHash := sha256.Sum256([]byte(routeID))
 	key := make([]byte, len(dailyUsagePrefix)+len(routeHash)+8)
 	copy(key, dailyUsagePrefix)
 	copy(key[len(dailyUsagePrefix):], routeHash[:])
-	binary.BigEndian.PutUint64(key[len(dailyUsagePrefix)+len(routeHash):], uint64(unixTime/86400))
+	binary.BigEndian.PutUint64(key[len(dailyUsagePrefix)+len(routeHash):], day)
 	return key
 }

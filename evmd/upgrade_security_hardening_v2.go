@@ -50,7 +50,22 @@ func (app EVMD) securityHardeningV2Handler(ctx context.Context, _ upgradetypes.P
 	// Reported through an event and the log, never fatal: see
 	// CheckBridgeRouteConfig.
 	_ = CheckBridgeRouteConfig(sdkCtx, app.BridgeKeeper)
+	MigrateBridgeSignerSetVersion(sdkCtx, app.BridgeKeeper)
 	return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+}
+
+// MigrateBridgeSignerSetVersion stores signer set version 1 for a configured
+// bridge route, which identifies the signer set in force at the upgrade. From
+// this upgrade every processed attestation records the version of the signer
+// set that verified it, and every update_route_config that replaces the set
+// of bridge signers increases it by one. Attestation and outbound transfer
+// records need no migration: they are written by the transactions that
+// process them, and a source deposit processed before the upgrade is reported
+// as processed without a record. The migration is idempotent.
+func MigrateBridgeSignerSetVersion(ctx sdk.Context, bridge bridgekeeper.Keeper) {
+	if bridge.StoreSignerSetVersion(ctx) {
+		ctx.Logger().With("upgrade", SecurityHardeningV2UpgradeName).Info("stored bridge signer set version", "version", 1)
+	}
 }
 
 // MigrateValidatorMinSelfDelegation raises the min_self_delegation of every

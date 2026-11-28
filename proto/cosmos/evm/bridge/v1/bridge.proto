@@ -1,0 +1,70 @@
+syntax = "proto3";
+package cosmos.evm.bridge.v1;
+
+option go_package = "github.com/xitcoin-xtc/pos-chain/x/bridge/types";
+
+// AttestationRecord is written in the transaction that processes an inbound
+// attestation, under bridge store key 0x0a || attestation ID, in this
+// protobuf encoding. It binds the attestation ID (the source-deposit replay
+// key) to every approved field, to the approvals that were verified and to
+// the block and transaction that minted the deposit.
+message AttestationRecord {
+  // attestation_id is the source-deposit replay key, 0x-prefixed lowercase
+  // hex.
+  string attestation_id = 1;
+  string route_id = 2;
+  string direction = 3;
+  // source_chain_id is the canonical decimal EVM chain ID of the source.
+  string source_chain_id = 4;
+  // source_ref is the Cronos depositId, lowercase hex without 0x (the form
+  // hashed into the replay key and the payload).
+  string source_ref = 5;
+  uint64 nonce = 6;
+  // recipient is the Xitcoin account that received the minted amount.
+  string recipient = 7;
+  // amount is the minted amount in atomic units, canonical decimal.
+  string amount = 8;
+  int64 deadline_unix = 9;
+  // signer_set_version is the version of the bridge signer set that verified
+  // the approvals.
+  uint64 signer_set_version = 10;
+  // approvers are the EIP-55 addresses recovered from the approvals, in
+  // submission order.
+  repeated string approvers = 11;
+  // destination_chain_id is the Xitcoin chain ID bound into the payload.
+  string destination_chain_id = 12;
+  // payload_hash is the SHA-256 payload hash of the attestation, 0x-prefixed
+  // lowercase hex.
+  string payload_hash = 13;
+  // signing_digest is the digest the approvals signed,
+  // keccak256(domain || payload_hash), 0x-prefixed lowercase hex.
+  string signing_digest = 14;
+  // height is the block height of the processing transaction.
+  int64 height = 15;
+  // tx_hash is the SHA-256 hash of the processing transaction bytes,
+  // uppercase hex without 0x (the CometBFT and Cosmos SDK transaction hash).
+  string tx_hash = 16;
+}
+
+// OutboundTransferRecord is written in the transaction that burns XTC for an
+// outbound transfer, under bridge store key 0x0b || request ID, in this
+// protobuf encoding.
+message OutboundTransferRecord {
+  // request_id is the outbound request ID (the Cronos sourceBurnId),
+  // 0x-prefixed lowercase hex.
+  string request_id = 1;
+  string route_id = 2;
+  // sender is the Xitcoin account whose XTC was burned.
+  string sender = 3;
+  // destination is the Cronos recipient in its EIP-55 form.
+  string destination = 4;
+  // amount is the burned amount in atomic units, canonical decimal.
+  string amount = 5;
+  // nonce is the outbound nonce hashed into the request ID.
+  uint64 nonce = 6;
+  // height is the block height of the burning transaction.
+  int64 height = 7;
+  // tx_hash is the SHA-256 hash of the burning transaction bytes, uppercase
+  // hex without 0x.
+  string tx_hash = 8;
+}

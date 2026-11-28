@@ -23,7 +23,8 @@ var (
 // The new max outstanding amount must cover the current outstanding amount:
 // outstanding <= cap is a state invariant (genesis validation requires it),
 // and a cap equal to the outstanding amount already stops every new mint.
-// It has no bank, minting, reserve, relayer, or transfer authority.
+// A change of the set of bridge signers increases the signer set version by
+// one. It has no bank, minting, reserve, relayer, or transfer authority.
 func (k Keeper) ApplyRouteConfigUpdate(
 	ctx sdk.Context,
 	current types.RouteConfig,
@@ -68,8 +69,12 @@ func (k Keeper) ApplyRouteConfigUpdate(
 	if _, err := types.VerifyControlApprovals(action, ctx.ChainID(), current.BridgeSigners, signatures); err != nil {
 		return err
 	}
+	version := k.SignerSetVersion(ctx)
 	if err := k.SetRouteConfig(ctx, next); err != nil {
 		return err
+	}
+	if !types.SameSignerSet(current.BridgeSigners, next.BridgeSigners) {
+		k.setSignerSetVersion(ctx, version+1)
 	}
 	k.setControlNonce(ctx, action.Nonce)
 	return nil

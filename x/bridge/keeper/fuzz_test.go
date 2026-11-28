@@ -414,6 +414,12 @@ func (h *bridgeHarness) inbound(step int, deposit, amountByte, choice byte) {
 	if got := new(big.Int).Sub(h.balance(destination), received); got.Cmp(value) != 0 {
 		h.t.Fatalf("step %d: recipient received %s for an attestation of %s", step, got, amount)
 	}
+	// The Attestation query's record binds the replay key to what was minted.
+	record, found, err := h.keeper.GetAttestationRecord(h.ctx, key)
+	if err != nil || !found || record.Amount != amount || record.Recipient != destination.String() ||
+		record.Height != h.ctx.BlockHeight() || record.Validate() != nil {
+		h.t.Fatalf("step %d: minted deposit %d has no matching record: %+v (found %v, err %v)", step, deposit%6, record, found, err)
+	}
 	h.minted.Add(h.minted, value)
 	h.mints[key]++
 	h.recordTransfer(value)
@@ -530,7 +536,11 @@ func (h *bridgeHarness) outbound(step int, userByte, amountByte, variant byte) {
 	}
 	balance := h.balance(user)
 	ctx := h.ctx
-	err := h.deliver("outbound", func(ctx sdk.Context) error { _, err := h.server.InitiateOutboundTransfer(ctx, msg); return err })
+	var response *types.MsgInitiateOutboundTransferResponse
+	err := h.deliver("outbound", func(ctx sdk.Context) (err error) {
+		response, err = h.server.InitiateOutboundTransfer(ctx, msg)
+		return err
+	})
 	if (err == nil) != want {
 		h.t.Fatalf("step %d: outbound %q accepted=%v, model %v (err %v, before %+v)", step, amount, err == nil, want, err, before)
 	}
@@ -550,6 +560,16 @@ func (h *bridgeHarness) outbound(step int, userByte, amountByte, variant byte) {
 	if event.Type != "bridge_outbound_burned" || attributes["amount"] != value.String() ||
 		attributes["destination"] != common.HexToAddress(strings.TrimSpace(destination)).Hex() {
 		h.t.Fatalf("step %d: outbound event %v does not carry the canonical burned values", step, attributes)
+	}
+	// The OutboundTransfer query's record carries the same burned values.
+	id, _, err := types.ParseRequestID(response.RequestId)
+	if err != nil {
+		h.t.Fatal(err)
+	}
+	record, found, err := h.keeper.GetOutboundTransfer(h.ctx, id)
+	if err != nil || !found || record.Amount != value.String() || record.Destination != attributes["destination"] ||
+		record.Nonce != response.Nonce || record.Validate() != nil {
+		h.t.Fatalf("step %d: burn %s has no matching record: %+v (found %v, err %v)", step, response.RequestId, record, found, err)
 	}
 	h.burned.Add(h.burned, value)
 	h.recordTransfer(value)

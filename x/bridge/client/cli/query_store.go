@@ -16,8 +16,9 @@ import (
 
 // The commands below read the bridge store directly through an ABCI store
 // query (path /store/bridge/key). They need no gRPC service and return the
-// exact consensus values that the keeper reads. Typed gRPC queries for the
-// same values require a change to proto/cosmos/evm/bridge/v1/query.proto.
+// exact consensus values that the keeper reads. The typed queries in query.go
+// (params, route-config, outstanding, daily-usage, attestation,
+// source-deposit, outbound-transfer) return the same values through gRPC.
 
 // RouteStoreView is the decoded route state returned by `query bridge route`.
 type RouteStoreView struct {

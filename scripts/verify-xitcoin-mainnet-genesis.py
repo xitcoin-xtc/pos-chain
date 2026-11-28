@@ -107,6 +107,10 @@ def validate_bridge(bridge, expected_bootstrap):
         fail("bridge must not start with processed source deposits")
     if bridge.get("control_nonce", 0) != 0 or bridge.get("outbound_nonce", 0) != 0:
         fail("bridge control and outbound nonces must start at zero")
+    if bridge.get("attestation_records") or bridge.get("outbound_transfers") or bridge.get("daily_usage"):
+        fail("bridge must not start with transfer records or daily usage")
+    if bridge.get("signer_set_version", 1) != 1:
+        fail("bridge signer set version must start at 1")
 
 
 def validate(candidate, testnet, expected_bootstrap):

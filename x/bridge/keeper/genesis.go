@@ -47,6 +47,36 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 			}
 			k.MarkProcessed(ctx, id)
 		}
+		version := state.SignerSetVersion
+		if version == 0 {
+			version = 1
+		}
+		k.setSignerSetVersion(ctx, version)
+		if state.DailyUsage != nil {
+			used, err := types.ParseAmount(state.DailyUsage.Amount)
+			if err != nil {
+				panic("invalid bridge daily usage amount")
+			}
+			k.setDailyUsage(ctx, config.RouteID, state.DailyUsage.UTCDay, used.BigInt())
+		}
+		for _, record := range state.AttestationRecords {
+			id, err := record.ID()
+			if err != nil {
+				panic(err)
+			}
+			if err := k.setAttestationRecord(ctx, id, record); err != nil {
+				panic(err)
+			}
+		}
+		for _, record := range state.OutboundTransfers {
+			id, err := record.ID()
+			if err != nil {
+				panic(err)
+			}
+			if err := k.setOutboundTransfer(ctx, id, record); err != nil {
+				panic(err)
+			}
+		}
 	}
 }
 
@@ -74,6 +104,19 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) types.GenesisState {
 	genesis.ControlNonce = k.ControlNonce(ctx)
 	for _, id := range k.ProcessedSourceDeposits(ctx) {
 		genesis.ProcessedSourceDeposits = append(genesis.ProcessedSourceDeposits, "0x"+hex.EncodeToString(id[:]))
+	}
+	genesis.SignerSetVersion = k.SignerSetVersion(ctx)
+	// The export context carries no block time, so the most recent bucket is
+	// exported: imported on the same UTC day it keeps counting against the
+	// daily limit; on a later day its key is never read.
+	if day, used, found := k.LatestDailyUsage(ctx, config.RouteID); found {
+		genesis.DailyUsage = &types.DailyUsage{UTCDay: day, Amount: used.String()}
+	}
+	if genesis.AttestationRecords, err = k.AttestationRecords(ctx); err != nil {
+		panic(err)
+	}
+	if genesis.OutboundTransfers, err = k.OutboundTransfers(ctx); err != nil {
+		panic(err)
 	}
 	return genesis
 }
