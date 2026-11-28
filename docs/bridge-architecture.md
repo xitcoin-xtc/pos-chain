@@ -51,7 +51,7 @@ The Cronos `depositId` itself commits to the Cronos chain ID, vault, route, depo
 
 ## Replay protection
 
-- Inbound: the replay key is the source deposit, `sha256("xitcoin-bridge-source-deposit-v1" || 0x00 || source_chain_id || 0x00 || source_ref)` (`Attestation.ID`). It excludes the deadline and every other signed field, so any number of approvals for one deposit (for example a re-issued approval with a later deadline) can mint at most once. Keys are stored under prefix `0x01`, exported in genesis as `processed_source_deposits` and queried with `attestation-status`.
+- Inbound: the replay key is the source deposit, `sha256("xitcoin-bridge-source-deposit-v1" || 0x00 || source_chain_id || 0x00 || source_ref)` (`Attestation.ID`). It excludes the deadline and every other signed field, so any number of approvals for one deposit (for example a re-issued approval with a later deadline) can mint at most once. Keys are stored under prefix `0x01`, exported in genesis as `processed_source_deposits` and queried with `attestation` (or `attestation-status`).
 - Outbound: the vault records each `sourceBurnId` once.
 - Control actions: the control nonce is strictly sequential (`control_nonce`, store key `0x09`). An action is accepted only with nonce `control_nonce + 1`; `update_route_config` and `resume_route` share the sequence. An older signed action that is still inside its validity window can therefore never be applied after a newer one.
 - Guardian pauses: each pause action ID is recorded once and expires; a pause can only set `paused = true`.
@@ -93,7 +93,7 @@ vault balance      = outstanding_amount + deposits not yet minted
                      + burns not yet released + direct transfers to the vault
 ```
 
-Genesis XTC is backed by the Cronos bootstrap reserve that `CronosBootstrapEscrow` moves into the vault on activation. The mainnet genesis must therefore set `bridge.outstanding_amount` exactly to the bootstrap amount; with `0`, genesis holders could never bridge out because every outbound burn is capped by `outstanding_amount`. `scripts/verify-xitcoin-mainnet-genesis.py` enforces this, together with a paused, disabled route whose `source_chain_id` is `25`, `max_outstanding_amount >= bootstrap`, no pre-processed deposits and zero nonces.
+Genesis XTC is backed by the Cronos bootstrap reserve that `CronosBootstrapEscrow` moves into the vault on activation. The mainnet genesis must therefore set `bridge.outstanding_amount` exactly to the bootstrap amount; with `0`, genesis holders could never bridge out because every outbound burn is capped by `outstanding_amount`. `scripts/verify-xitcoin-mainnet-genesis.py` enforces this, together with a paused, disabled route whose `source_chain_id` is `25`, `max_outstanding_amount >= bootstrap`, no pre-processed deposits, transfer records or daily usage, signer set version 1 and zero nonces.
 
 The escrow's rule that the network stays private until activation is an operational procedure. Neither the chain nor any contract enforces it. The escrow has a permissionless refund after a long timeout in the version prepared for future deployment (see the `contracts` repository).
 
@@ -103,11 +103,164 @@ The escrow's rule that the network stays private until activation is an operatio
 
 ## Queries
 
-- `xitcoind query bridge attestation-status <ATTESTATION_ID>` (gRPC `AttestationStatus`): whether a source deposit has been minted. The ID is the replay key above.
-- `xitcoind query bridge source-deposit-key <SOURCE_CHAIN_ID> <DEPOSIT_ID>`: computes that key offline.
-- `xitcoind query bridge route`: route configuration, `paused`, `outstanding_amount`, control and outbound nonces, read from the module store through an ABCI store query at one height.
+Typed gRPC queries (`proto/cosmos/evm/bridge/v1/query.proto`), each with a gRPC-gateway REST route on the node's API server and an `xitcoind query bridge` command. Responses are protobuf JSON: 64-bit integers are strings and default values are always present (`"processed": false`, `"record": null`). Every response except `params` carries `height`, the committed block height whose state answered (also in the `x-cosmos-block-height` header).
 
-Typed gRPC queries for the route configuration, outstanding amount and paused state are not yet available; adding them requires a change to `proto/cosmos/evm/bridge/v1/query.proto` and regenerated code.
+| gRPC | REST (GET) | CLI | Returns |
+| --- | --- | --- | --- |
+| `Params` | `/xitcoin/bridge/v1/params` | `params` | authority, native denom, maximum supply, 2-of-3 policy, chain ID and the three signing domains |
+| `Route` | `/xitcoin/bridge/v1/routes/{route_id}` | `route-config ROUTE_ID` | configuration, `paused`, `signer_set_version`, control and outbound nonces; `route_id` is the stored ID (on `xitcoin-testnet-v2-1` the Cronos bytes32 `0x21121c16…5cd9`), anything else is 404 |
+| `Outstanding` | `/xitcoin/bridge/v1/outstanding` | `outstanding` | `outstanding_amount`, `max_outstanding_amount`, `remaining_amount` |
+| `DailyUsage` | `/xitcoin/bridge/v1/daily_usage` | `daily-usage` | usage of the daily limit on the UTC day of the queried block (`utc_day`, `utc_date`, `used_amount`, `remaining_amount`) |
+| `Attestation` | `/xitcoin/bridge/v1/attestations/{attestation_id}` | `attestation ATTESTATION_ID` | `status` and, when processed, the record described below |
+| `SourceDeposit` | `/xitcoin/bridge/v1/source_deposits/{source_chain_id}/{source_ref}` | `source-deposit SOURCE_CHAIN_ID SOURCE_REF` | the `Attestation` answer for the replay key of a Cronos `depositId` |
+| `OutboundTransfer` | `/xitcoin/bridge/v1/outbound_transfers/{request_id}` | `outbound-transfer REQUEST_ID` | the burn: sender, EIP-55 destination, amount, nonce, `height`, `tx_hash`; 404 if none is recorded |
+| `AttestationStatus` | `/cosmos/evm/bridge/v1/attestations/{attestation_id}` | `attestation-status ATTESTATION_ID` | unchanged two-field response (`attestation_id`, `processed`) for clients pinned to it |
+
+IDs are accepted as 32 hexadecimal bytes with or without `0x`, in any case, and returned as `0x`-prefixed lowercase. A malformed ID or chain ID is HTTP 400, an unknown route or request ID 404, an unknown path 501 (`"Not Implemented"`).
+
+`status` is one of:
+
+- `ATTESTATION_STATE_ABSENT`: no committed transaction has consumed the replay key at `height`. It does not prove that no submission is pending; never retry an uncertain send on this alone.
+- `ATTESTATION_STATE_PROCESSED`: minted. `record` binds the attestation ID to every approved field (route ID, direction, source chain ID, source reference, nonce, recipient, amount, deadline), the destination chain ID, the SHA-256 `payload_hash` and the `signing_digest` the approvals signed, the recovered `approvers` and their `signer_set_version`, and the `height` and `tx_hash` of the processing transaction.
+- `ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD`: the replay key was consumed before records were kept (before `xitcoin-security-hardening-v2`, or imported from `processed_source_deposits` without a record). Treat it as minted.
+
+`tx_hash` is the CometBFT transaction hash (SHA-256 of the transaction bytes, uppercase hex), so CometBFT `/tx?hash=0x<tx_hash>` returns the transaction and its result at `height`. The record is consensus state at bridge store key `0x0a || attestation_id` (protobuf `AttestationRecord`; outbound transfers at `0x0b || request_id`). An independent client can verify it without trusting the API node: request `/store/bridge/key` with `prove=true` through CometBFT `abci_query` at height `H`, decode the value, check the ICS-23 proof against the `app_hash` in the header of block `H+1`, and verify that header with a light client. CometBFT finality is immediate: a record visible in committed state is final.
+
+`GET /xitcoin/bridge/v1/attestations/0x7ea0d462430dd3540723abd5c38f4caa56f63770795a13af82610b91f8b99abb`:
+
+```json
+{
+  "attestation_id": "0x7ea0d462430dd3540723abd5c38f4caa56f63770795a13af82610b91f8b99abb",
+  "status": "ATTESTATION_STATE_PROCESSED",
+  "processed": true,
+  "record": {
+    "attestation_id": "0x7ea0d462430dd3540723abd5c38f4caa56f63770795a13af82610b91f8b99abb",
+    "route_id": "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+    "direction": "cronos_to_xitcoin",
+    "source_chain_id": "338",
+    "source_ref": "9f3c1d2e4b5a69788796a5b4c3d2e1f00112233445566778899aabbccddeeff0",
+    "nonce": "12",
+    "recipient": "xtc1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3z97g2qj",
+    "amount": "250000000000000000000",
+    "deadline_unix": "1795869000",
+    "signer_set_version": "1",
+    "approvers": [
+      "0x5B0aD6a4D5b5D3b2E1d6E5c3e0F9a8B7c6D5E4f3",
+      "0x7d2cf8c6F7d7f5d4A3F8a7e5A2b1C0D9e8F7a6B5"
+    ],
+    "destination_chain_id": "xitcoin-testnet-v2-1",
+    "payload_hash": "0xe049144b14143969935ece70073c7144a1133388e41cedfacd9173848f9288bb",
+    "signing_digest": "0x01b4003f5242bad7eec397cdc90cc3cd1c25d65f0554673975ccb4d0877b390a",
+    "height": "1290412",
+    "tx_hash": "EF094712C5B31715AA31A3809336262231B809A701664797BA7537A7DD568E8F"
+  },
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/source_deposits/338/0xeeee…eeee` for a deposit that was not minted:
+
+```json
+{
+  "attestation_id": "0xc703fc5dd0d02552c19d90342894281784d9db42b0849c04877e8fb6991da5cb",
+  "status": "ATTESTATION_STATE_ABSENT",
+  "processed": false,
+  "record": null,
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/routes/0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`:
+
+```json
+{
+  "route": {
+    "route_id": "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+    "source_chain_id": "338",
+    "bridge_signers": [
+      "0x5B0aD6a4D5b5D3b2E1d6E5c3e0F9a8B7c6D5E4f3",
+      "0x6c1Be7b5E6C6e4C3F2E7F6D4F1a0B9C8D7e6f5a4",
+      "0x7d2cf8c6F7d7f5d4A3F8a7e5A2b1C0D9e8F7a6B5"
+    ],
+    "guardian": "0x8e3dA9D7A8E8A6e5b4A9b8f6B3c2D1e0f9A8B7C6",
+    "max_transfer_amount": "1000000000000000000000",
+    "daily_limit": "10000000000000000000000",
+    "max_outstanding_amount": "100000000000000000000000",
+    "enabled": true,
+    "paused": false,
+    "signer_set_version": "1",
+    "control_nonce": "3",
+    "outbound_nonce": "1"
+  },
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/outstanding`:
+
+```json
+{
+  "route_id": "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+  "outstanding_amount": "150000000000000000000",
+  "max_outstanding_amount": "100000000000000000000000",
+  "remaining_amount": "99850000000000000000000",
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/daily_usage` (the bucket of the next block can be a later UTC day):
+
+```json
+{
+  "route_id": "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+  "utc_day": "20785",
+  "utc_date": "2026-11-28",
+  "used_amount": "350000000000000000000",
+  "daily_limit": "10000000000000000000000",
+  "remaining_amount": "9650000000000000000000",
+  "block_time_unix": "1795868400",
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/outbound_transfers/0xe1494d61d7465b2abfb4f3e067ee95256570205831f01c746616bd94cfa5bb33`:
+
+```json
+{
+  "transfer": {
+    "request_id": "0xe1494d61d7465b2abfb4f3e067ee95256570205831f01c746616bd94cfa5bb33",
+    "route_id": "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+    "sender": "xtc1yg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3z97g2qj",
+    "destination": "0x3333333333333333333333333333333333333333",
+    "amount": "100000000000000000000",
+    "nonce": "1",
+    "height": "1290433",
+    "tx_hash": "B4D32FCAF1C74A971647A319AFEAE0E8B8B1F5F048004CEC742A801A1338A5BE"
+  },
+  "height": "1290450"
+}
+```
+
+`GET /xitcoin/bridge/v1/params` on `xitcoin-testnet-v2-1`:
+
+```json
+{
+  "params": {
+    "authority": "xtc1vza8zsgvrfwmve084ytd8xqdkkm7u9e5csctc2",
+    "native_denom": "axtc",
+    "max_supply": "5250000000000000000000000000",
+    "required_approvals": 2,
+    "signer_set_size": 3,
+    "chain_id": "xitcoin-testnet-v2-1",
+    "attestation_domain": "xitcoin-bridge-attestation-v2/xitcoin-testnet-v2-1",
+    "control_domain": "xitcoin-bridge-control-v2/xitcoin-testnet-v2-1",
+    "guardian_pause_domain": "xitcoin-bridge-guardian-pause-v2/xitcoin-testnet-v2-1",
+    "source_deposit_domain": "xitcoin-bridge-source-deposit-v1"
+  }
+}
+```
+
+The example values are illustrative. Other commands: `xitcoind query bridge source-deposit-key <SOURCE_CHAIN_ID> <DEPOSIT_ID>` computes a replay key offline, and `xitcoind query bridge route` reads the raw route keys through an ABCI store query at one height.
 
 ## Attack simulations
 

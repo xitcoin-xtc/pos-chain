@@ -3,10 +3,12 @@
 Upgrade name: `xitcoin-security-hardening-v2`
 
 This coordinated binary upgrade changes which `x/bridge` transactions are
-valid, so every validator must switch binaries at the same height. Its handler
-also raises the `min_self_delegation` of existing validators to the
-`x/validatoradmission` minimum. It adds or removes no store and the bridge
-consensus version is unchanged.
+valid and what they write, so every validator must switch binaries at the same
+height. Its handler also raises the `min_self_delegation` of existing
+validators to the `x/validatoradmission` minimum and stores the bridge signer
+set version. It adds three keys to the existing bridge store (see
+[Bridge processing records](#bridge-processing-records)), adds or removes no
+store, and the bridge consensus version is unchanged.
 
 ## Bridge validity changes
 
@@ -52,6 +54,46 @@ From this upgrade:
 
 The relayer already produces exactly these forms, so no relayer or signer
 change is required.
+
+## Bridge processing records
+
+The typed bridge queries (`/xitcoin/bridge/v1/...`, see
+[bridge-architecture.md](../bridge-architecture.md#queries)) need state that
+earlier binaries did not keep. From the upgrade height:
+
+| Store key | Value | Written by |
+| --- | --- | --- |
+| `0x0a` followed by the attestation ID | protobuf `AttestationRecord`: every approved field, destination chain ID, payload hash, signing digest, recovered approvers, signer set version, block height, transaction hash | the transaction that processes the attestation (`MsgSubmitAttestation`), with the replay key |
+| `0x0b` followed by the request ID | protobuf `OutboundTransferRecord`: route, sender, EIP-55 destination, amount, nonce, block height, transaction hash | the transaction that burns (`MsgInitiateOutboundTransfer`) |
+| `0x0c` | signer set version, 8 bytes big-endian | the upgrade handler, `MsgInitializeRouteConfig`, genesis import, and every `update_route_config` that replaces the set of bridge signers (+1) |
+
+Every value is deterministic: the height is the block height, the
+transaction hash is SHA-256 of the transaction bytes that every validator
+executes, and the approvers are recovered from the submitted signatures. The
+writes belong to the transaction and roll back with it.
+
+- The handler stores signer set version `1` if a route is configured and no
+  version is stored (`MigrateBridgeSignerSetVersion`); version 1 identifies
+  the signer set in force at the upgrade. Changing only the order or the
+  spelling of the signer addresses keeps the version. A route with no stored
+  version reads as version 1.
+- Nothing is backfilled. A source deposit processed before the upgrade (or
+  imported from `processed_source_deposits` without a record) is reported as
+  `ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD`, never as absent. An outbound
+  burn made before the upgrade has no record and its query returns 404.
+- Genesis gains `signer_set_version`, `daily_usage` (the most recent
+  daily-limit bucket, `{"utc_day", "amount"}`), `attestation_records` and
+  `outbound_transfers`; all are optional on import. An export no longer
+  drops the daily usage: imported on the same UTC day, the bucket keeps
+  counting against `daily_limit` (before, an export and import mid-day reset
+  it). Validation requires every attestation record to match its replay key
+  and digests and to be listed in `processed_source_deposits`, and every
+  outbound record to match its request ID and not exceed `outbound_nonce`.
+- `MsgSubmitAttestation` and `MsgInitiateOutboundTransfer` write one more
+  value of a few hundred bytes, so they use more gas; relayer gas limits must
+  leave room for it.
+- The existing `AttestationStatus` query keeps its path and two-field
+  response, so clients pinned to it are unaffected.
 
 ## Validator `min_self_delegation` migration
 
@@ -115,6 +157,10 @@ changes.)
 4. After the upgrade, check the upgrade block events and confirm that every
    validator reports `min_self_delegation = 5000000000000000000000000` and a
    self-delegation above it.
+5. After the upgrade, confirm that the bridge queries answer, for example
+   `curl <api>/xitcoin/bridge/v1/routes/0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`
+   or `xitcoind query bridge route-config 0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`,
+   and report `signer_set_version` `1`.
 
 ## Known issue outside this upgrade: relayer route ID
 
