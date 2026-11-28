@@ -1,6 +1,6 @@
 # Solidity regression suites
 
-The generic suites use the audited Hardhat 3 toolchain in `contracts/`.
+The generic suites use the Hardhat 3 toolchain in `contracts/`.
 Their Solidity fixtures and tests live in `contracts/test-suites/`; the manifests
 in `suites/` retain the existing suite names and command entry points. The helper
 uses each manifest's `testDirectory` for discovery.
