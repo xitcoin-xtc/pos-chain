@@ -3,13 +3,16 @@
 Upgrade name: `xitcoin-security-hardening-v2`
 
 This coordinated binary upgrade changes which `x/bridge` transactions are
-valid and what they write, so every validator must switch binaries at the same
-height. Its handler also raises the `min_self_delegation` of existing
-validators to the `x/validatoradmission` minimum, removes validator approvals
-stored under a non-canonical operator spelling and stores the bridge signer
-set version. It adds three keys to the existing bridge store (see
-[Bridge processing records](#bridge-processing-records)), adds or removes no
-store, and the bridge consensus version is unchanged.
+valid and what they write, which Cosmos transaction signatures are valid (see
+[Transaction signature encoding](#transaction-signature-encoding)) and the
+result codes of failed bridge transactions (see
+[Bridge error codes](#bridge-error-codes)), so every validator must switch
+binaries at the same height. Its handler also raises the `min_self_delegation`
+of existing validators to the `x/validatoradmission` minimum, removes
+validator approvals stored under a non-canonical operator spelling and stores
+the bridge signer set version. It adds three keys to the existing bridge store
+(see [Bridge processing records](#bridge-processing-records)), adds or removes
+no store, and the bridge consensus version is unchanged.
 
 ## Bridge validity changes
 
@@ -136,6 +139,101 @@ every static precompile. Details: `docs/precompile-attack-simulations.md`.
   call value: with empty calldata it reverts, and ERC-20 precompile methods
   run read-only.
 
+## Transaction signature encoding
+
+Before this release the `eth_secp256k1` key verified a Cosmos transaction
+signature after dropping its 65th byte (`V`) unchecked, and it also accepted
+a 64-byte `R || S` signature. The ante handler had no length check. Anyone who
+saw a broadcast transaction could re-wrap the same signed content with another
+`V` (257 encodings per signature) and broadcast it: a different `TxRaw` and
+transaction hash, valid at the same sequence, paid by the signer. On a local
+chain every such copy passed `CheckTx` on a node that had not seen the
+original, and the copy a proposer included first executed while the original
+failed with code 32 (account sequence mismatch). A client that tracks its
+transactions by hash (the faucet, the bridge relayer, exchanges, explorers)
+saw a transaction fail whose transfer had in fact happened. The same held for
+each member signature of a multisig and for EIP-712 signatures.
+
+From this upgrade an `eth_secp256k1` signature, alone or as a multisig member,
+must be exactly the recoverable form `R || S || V`, with `S` in the lower half
+of the curve order and `V` the recovery ID of the key:
+
+| Signing path | Signed message | Accepted `V` | Produced by |
+| --- | --- | --- | --- |
+| `SIGN_MODE_DIRECT`, `SIGN_MODE_LEGACY_AMINO_JSON` | Keccak-256 of the sign bytes | `0` or `1` | `xitcoind` keyring (every `tx` command, `tx sign`, `tx multisign`), Cosmos SDK keyring clients, the bridge relayer |
+| EIP-712 (current or legacy typed data) | the EIP-712 representation of the sign bytes | `27` or `28` | `eth_signTypedData_v4` (MetaMask), the Ledger Ethereum app (`xitcoind --ledger`) |
+
+Each path accepts the form its signers already produce, and only one `V`
+recovers the key, so a signed transaction has exactly one valid encoding: a
+copy without `V`, with the other `V`, with `V + 27` on a sign-bytes signature
+or `V - 27` on an EIP-712 signature is rejected. A 64-byte signature or a `V`
+outside 0, 1, 27 and 28 is rejected by the ante handler with code 4
+(`ErrUnauthorized`) and a log naming the problem (`signature 0:
+eth_secp256k1 signature must be 65 bytes (R || S || V), got 64`); any other
+mismatch fails signature verification, also code 4. `secp256k1` keys keep
+the Cosmos SDK rule. Ethereum transactions (`MsgEthereumTx`) and precompile
+calls do not use this verification.
+
+Wallet and client impact:
+
+- `xitcoind` (keyring and Ledger), the faucet, the bridge relayer's Xitcoin
+  submitter (which already requires this form), the administrative multisig
+  members signing with `xitcoind` and MetaMask EIP-712 clients need no
+  change. Offline or partially signed multisig transactions made with
+  `xitcoind` before the upgrade stay valid.
+- Keplr returns a 64-byte signature from `signDirect` and `signAmino`. A
+  client that broadcasts such a signature (for example a block explorer's
+  send or delegate dialog) must append the recovery ID before the upgrade
+  height, or its transactions are rejected after it.
+  [transaction-signatures.md](../transaction-signatures.md) gives the code.
+- Hermes signs `eth_secp256k1` keys with 64 bytes; an IBC relayer must use
+  another client or a `secp256k1` key.
+- `SIGN_MODE_LEGACY_AMINO_JSON` transactions still have the Cosmos SDK
+  encoding malleability of that sign mode (the body and auth info bytes are
+  not signed, see SDK ADR-076). Track them by signer and sequence, not by
+  hash alone.
+
+There is no state change and no migration. A transaction signed before the
+upgrade in a rejected encoding is rejected when it is broadcast after it.
+
+## Bridge error codes
+
+Before this release every failed bridge transaction reported code `1`,
+codespace `undefined`, so a client could only parse the log. From this
+upgrade the errors are registered in codespace `bridge` with the stable codes
+below. Result codes are part of the consensus results of a block, which is why
+this change rides this upgrade. The logs keep the error text (a wrapped error
+reads `<detail>: <description>`, for example `duplicate signer approval:
+invalid bridge approvals`). An invalid account address reports `sdk`/`7` and a
+wrong authority `sdk`/`4`. Code `1` now only means an internal error. Queries
+keep their gRPC status codes. [bridge-architecture.md](../bridge-architecture.md#error-codes)
+lists the client action for each code.
+
+| Code | Error | Code | Error |
+| --- | --- | --- | --- |
+| 2 | `ErrEmptyRequest` | 21 | `ErrAttestationSourceChainMismatch` |
+| 3 | `ErrInvalidRouteID` | 22 | `ErrAttestationAlreadyProcessed` |
+| 4 | `ErrNonCanonicalAmount` | 23 | `ErrAttestationExpired` |
+| 5 | `ErrAmountOutOfRange` | 24 | `ErrSettlementUnavailable` |
+| 6 | `ErrInvalidAttestation` | 25 | `ErrSettlementDirection` |
+| 7 | `ErrInvalidCronosDestination` | 26 | `ErrBlockedDestination` |
+| 8 | `ErrInvalidXitcoinDestination` | 27 | `ErrTransferLimitExceeded` |
+| 9 | `ErrInvalidChainID` | 28 | `ErrDailyLimitExceeded` |
+| 10 | `ErrInvalidRouteConfig` | 29 | `ErrOutstandingLimitExceeded` |
+| 11 | `ErrInvalidControlAction` | 30 | `ErrInsufficientOutstanding` |
+| 12 | `ErrInvalidGuardianPause` | 31 | `ErrMaximumSupplyExceeded` |
+| 13 | `ErrInvalidSignature` | 32 | `ErrCapBelowOutstanding` |
+| 14 | `ErrInvalidApprovals` | 33 | `ErrControlActionNotActive` |
+| 15 | `ErrRouteDisabled` | 34 | `ErrControlActionProcessed` |
+| 16 | `ErrRoutePaused` | 35 | `ErrControlPayloadMismatch` |
+| 17 | `ErrRouteAlreadyPaused` | 36 | `ErrControlNonceGap` |
+| 18 | `ErrRouteNotPaused` | 37 | `ErrGuardianPauseRouteMismatch` |
+| 19 | `ErrRouteAlreadyInitialized` | 38 | `ErrGuardianPauseExpired` |
+| 20 | `ErrAttestationRouteMismatch` | 39 | `ErrSignerSetVersionExhausted` |
+
+The bridge relayer treats every non-zero code as a failure and does not parse
+logs, so it needs no change; it can now classify failures by code.
+
 ## Validator `min_self_delegation` migration
 
 Genesis transactions are exempt from the admission minimum, so the four
@@ -227,15 +325,19 @@ Found by the validator admission attack simulations
    (`xitcoind query staking validator`) and its operator self-delegation and
    confirm that it is above 5,000,000 XTC. A validator whose self-delegation
    is below the minimum at the upgrade height is not migrated.
-3. Upgrade every validator binary at the agreed height.
-4. After the upgrade, check the upgrade block events and confirm that every
+3. Before the upgrade height, make sure every client that broadcasts
+   Cosmos transactions with 64-byte `eth_secp256k1` signatures (the Keplr
+   path of the block explorer, any dApp built on CosmJS) appends the recovery
+   ID (see [Transaction signature encoding](#transaction-signature-encoding)).
+4. Upgrade every validator binary at the agreed height.
+5. After the upgrade, check the upgrade block events and confirm that every
    validator reports `min_self_delegation = 5000000000000000000000000` and a
    self-delegation above it.
-5. After the upgrade, confirm that the bridge queries answer, for example
+6. After the upgrade, confirm that the bridge queries answer, for example
    `curl <api>/xitcoin/bridge/v1/routes/0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`
    or `xitcoind query bridge route-config 0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`,
    and report `signer_set_version` `1`.
-6. After the upgrade, look for `xitcoin_validator_approval_removed` events in
+7. After the upgrade, look for `xitcoin_validator_approval_removed` events in
    the upgrade block. The admission authority approves again any operator it
    meant to approve (the testnet approvals are expected to be canonical, in
    which case there is none).

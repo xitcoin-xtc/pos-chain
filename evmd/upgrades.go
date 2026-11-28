@@ -54,7 +54,12 @@ const SecurityHardeningUpgradeName = "xitcoin-security-hardening-v1"
 // route configuration that the new validation rejects and stores the bridge
 // signer set version (see MigrateBridgeSignerSetVersion). From this upgrade
 // x/bridge also records the block height and transaction hash of every
-// processed attestation and outbound transfer for its queries. It adds or
+// processed attestation and outbound transfer for its queries, a Cosmos
+// transaction signature of an eth_secp256k1 key must be the
+// single recoverable encoding R || S || V (V 0 or 1 over the sign bytes, 27 or
+// 28 over their EIP-712 representation, matching the key), so a signed
+// transaction has one valid encoding and one hash, and x/bridge failures
+// report registered codes in codespace "bridge" instead of code 1. It adds or
 // removes no store.
 const SecurityHardeningV2UpgradeName = "xitcoin-security-hardening-v2"
 
