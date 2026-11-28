@@ -63,6 +63,8 @@ var genesisSetupFunctions = map[string]genSetupFn{
 	banktypes.ModuleName:      setBankGenesisState,
 	authtypes.ModuleName:      setAuthGenesisState,
 	bridgetypes.ModuleName:    setBridgeGenesisState,
+	// Replaces the default set by setDefaultValidatorAdmissionGenesisState.
+	validatoradmissiontypes.ModuleName: setValidatorAdmissionGenesisState,
 	consensustypes.ModuleName: func(_ evm.EvmApp, genesisState testutil.GenesisState, _ interface{}) (testutil.GenesisState, error) {
 		// no-op. Consensus does not have a genesis state on the application
 		// but the params are used on it
@@ -348,6 +350,24 @@ func setBridgeGenesisState(_ evm.EvmApp, genesisState testutil.GenesisState, cus
 		return nil, err
 	}
 	genesisState[bridgetypes.ModuleName] = encoded
+	return genesisState, nil
+}
+
+// setValidatorAdmissionGenesisState replaces the validator admission genesis
+// state (a JSON-encoded module state, not a protobuf message).
+func setValidatorAdmissionGenesisState(_ evm.EvmApp, genesisState testutil.GenesisState, customGenesis interface{}) (testutil.GenesisState, error) {
+	customGen, ok := customGenesis.(validatoradmissiontypes.GenesisState)
+	if !ok {
+		return nil, fmt.Errorf("invalid type %T for validator admission genesis state", customGenesis)
+	}
+	if err := customGen.Validate(); err != nil {
+		return nil, err
+	}
+	encoded, err := json.Marshal(customGen)
+	if err != nil {
+		return nil, err
+	}
+	genesisState[validatoradmissiontypes.ModuleName] = encoded
 	return genesisState, nil
 }
 
