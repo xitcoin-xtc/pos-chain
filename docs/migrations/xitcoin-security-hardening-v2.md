@@ -18,10 +18,14 @@ burning, the outstanding cap and genesis import used
 `sdkmath.NewIntFromString`, which is `SetString(s, 0)` and reads `"010"` as
 octal 8 (and rejects `"08"`). An outbound transfer of `"010"` therefore
 counted 10 against the daily limit, burned 8, and emitted
-`bridge_outbound_burned` with `amount="010"`, which the relayer refuses with
-an error for the whole block, stalling every later release. The route limits
-were parsed with their errors ignored, so a limit that only one parser
-accepted could leave a nil integer behind.
+`bridge_outbound_burned` with `amount="010"`. Since `bridge-relayer` commit
+`5c47605` the relayer skips such an event with an
+`xitcoin_outbound_event_skipped` alert instead of stopping on the block, so
+the loss was silent: the holder's 8 XTC were burned and never released. (A
+raw destination that ethers cannot parse, such as a bad-checksum mixed-case
+address, a leading space or a `0X` prefix, was skipped the same way.) The
+route limits were parsed with their errors ignored, so a limit that only one
+parser accepted could leave a nil integer behind.
 
 From this upgrade:
 
@@ -75,10 +79,14 @@ changed and a `xitcoin_min_self_delegation_migration_skipped` event is
 emitted. Running the migration again changes nothing.
 
 After the upgrade the staking module enforces the minimum for these
-validators: a validator self-bonded with exactly 5,000,000 XTC that is slashed
-for downtime (1% on the testnet) is jailed and can unjail only after it has
-self-delegated the slashed amount again. Operators should keep a small
-self-delegation margin above the minimum.
+validators. The four `xitcoin-testnet-v2-1` validators self-delegate exactly
+5,000,000 XTC, so without a top-up the handler sets `min_self_delegation`
+exactly equal to their self-delegation: any downtime slash (1% of the
+validator's stake on the testnet, 50,000 XTC of a 5,000,000 XTC
+self-delegation) would jail the validator and leave it unable to unjail until
+it self-delegates the slashed amount again. Checklist step 2 is therefore
+required. (A double-sign slash tombstones the validator, which no margin
+changes.)
 
 ## Operator checklist
 
@@ -89,9 +97,32 @@ self-delegation margin above the minimum.
    handler never rewrites a stored route: if it fails the new validation it
    emits `xitcoin_bridge_route_config_invalid` and the route stays unusable
    (no mint, burn or update) until a later upgrade repairs it.
-2. Query each validator (`xitcoind query staking validator`) and its operator
-   self-delegation. A validator whose self-delegation is below 5,000,000 XTC
-   will not be migrated; its operator can top up before the upgrade.
+2. Required, before the upgrade height: each validator operator tops up its
+   self-delegation with a margin above the 5,000,000 XTC minimum, by
+   delegating from the operator account to its own validator, for example
+   `xitcoind tx staking delegate <xtcvaloper…> 110000000000000000000000axtc --from <operator key>`.
+   The suggested margin is 110,000 XTC: it keeps the self-delegation above
+   the minimum after two consecutive 1% downtime slashes
+   (5,110,000 × 0.99² ≈ 5,008,000 XTC), and each validator account held
+   250,000 liquid XTC after genesis, which leaves about 140,000 XTC for fees
+   and a later top-up. Check the current liquid balance with
+   `xitcoind query bank balances <operator address>` first; the margin must be
+   more than 50,505 XTC to survive even one slash. Then query each validator
+   (`xitcoind query staking validator`) and its operator self-delegation and
+   confirm that it is above 5,000,000 XTC. A validator whose self-delegation
+   is below the minimum at the upgrade height is not migrated.
 3. Upgrade every validator binary at the agreed height.
 4. After the upgrade, check the upgrade block events and confirm that every
-   validator reports `min_self_delegation = 5000000000000000000000000`.
+   validator reports `min_self_delegation = 5000000000000000000000000` and a
+   self-delegation above it.
+
+## Known issue outside this upgrade: relayer route ID
+
+The live route was initialized with `route_id` set to the Cronos `bytes32`
+route identifier `0x21121c16…5cd9` (it satisfies the new route-ID rule). The
+`bridge-relayer` Xitcoin destination still hard-codes the label
+`cronos-testnet-xitcoin-testnet` as the `route_id` it signs and submits
+(`src/xitcoin-destination.js`, `docs/PROTOCOL.md`). Until the relayer uses the
+`bytes32` route ID, every inbound `MsgSubmitAttestation` is rejected with
+`ErrAttestationRouteMismatch`. This needs a relayer change and is not part of
+this upgrade.

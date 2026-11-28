@@ -211,9 +211,9 @@ func (s msgServer) InitiateOutboundTransfer(goCtx context.Context, req *types.Ms
 		return nil, err
 	}
 	// The event carries the values the keeper burned and hashed into the
-	// request ID, never the raw request strings: the relayer refuses a
-	// non-canonical amount or an address ethers cannot parse for the whole
-	// block, which would stall every later release.
+	// request ID, never the raw request strings: the relayer skips an event
+	// whose amount or destination is not canonical (xitcoin_outbound_event_skipped
+	// alert), so a raw value would leave the burned XTC unreleased.
 	amount, err := types.ParseAmount(req.Amount)
 	if err != nil {
 		return nil, err
