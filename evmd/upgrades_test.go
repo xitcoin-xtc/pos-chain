@@ -224,3 +224,30 @@ func TestSecurityHardeningV2ReportsAnInvalidStoredBridgeRoute(t *testing.T) {
 	require.NotEmpty(t, eventsOfType(ctx, EventTypeBridgeRouteConfigInvalid))
 	require.Equal(t, stored, ctx.KVStore(app.GetKey(bridgetypes.StoreKey)).Get(bridgetypes.KeyRouteConfig), "the stored route must not be rewritten")
 }
+
+func TestSecurityHardeningV2StoresTheBridgeSignerSetVersion(t *testing.T) {
+	app, ctx, _ := upgradeTestApp(t)
+	store := ctx.KVStore(app.GetKey(bridgetypes.StoreKey))
+	plan := upgradetypes.Plan{Name: SecurityHardeningV2UpgradeName, Height: ctx.BlockHeight()}
+
+	// Without a route nothing is written.
+	_, err := app.securityHardeningV2Handler(ctx, plan, app.ModuleManager.GetVersionMap())
+	require.NoError(t, err)
+	require.False(t, store.Has(bridgetypes.KeySignerSetVersion))
+
+	// A route stored by an earlier binary has no version: the upgrade stores
+	// version 1 once, and running it again changes nothing.
+	require.NoError(t, app.BridgeKeeper.SetRouteConfig(ctx, bridgetypes.RouteConfig{
+		RouteID: "0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9",
+		BridgeSigners: []string{
+			"0x00000000000000000000000000000000000000A1", "0x00000000000000000000000000000000000000a2", "0x00000000000000000000000000000000000000A3",
+		},
+		Guardian: "0x00000000000000000000000000000000000000B4", MaxTransferAmount: "10", DailyLimit: "100", MaxOutstandingAmount: "1000",
+	}))
+	require.False(t, store.Has(bridgetypes.KeySignerSetVersion))
+	_, err = app.securityHardeningV2Handler(ctx, plan, app.ModuleManager.GetVersionMap())
+	require.NoError(t, err)
+	require.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1}, store.Get(bridgetypes.KeySignerSetVersion))
+	MigrateBridgeSignerSetVersion(ctx, app.BridgeKeeper)
+	require.Equal(t, uint64(1), app.BridgeKeeper.SignerSetVersion(ctx))
+}

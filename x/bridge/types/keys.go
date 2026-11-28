@@ -23,4 +23,24 @@ var (
 	KeyOutboundNonce     = []byte{0x08}
 	// KeyControlNonce holds the last applied control nonce (8 bytes, big-endian).
 	KeyControlNonce = []byte{0x09}
+	// KeyAttestationRecordPrefix || attestation ID holds the protobuf-encoded
+	// AttestationRecord written by the transaction that processed it.
+	KeyAttestationRecordPrefix = []byte{0x0a}
+	// KeyOutboundTransferPrefix || request ID holds the protobuf-encoded
+	// OutboundTransferRecord written by the burning transaction.
+	KeyOutboundTransferPrefix = []byte{0x0b}
+	// KeySignerSetVersion holds the version of the configured bridge signer
+	// set (8 bytes, big-endian).
+	KeySignerSetVersion = []byte{0x0c}
 )
+
+// AttestationRecordKey returns the store key of the record of an attestation.
+func AttestationRecordKey(id [32]byte) []byte {
+	return append(append([]byte{}, KeyAttestationRecordPrefix...), id[:]...)
+}
+
+// OutboundTransferKey returns the store key of the record of an outbound
+// request.
+func OutboundTransferKey(id [32]byte) []byte {
+	return append(append([]byte{}, KeyOutboundTransferPrefix...), id[:]...)
+}

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"crypto/sha256"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -111,9 +110,22 @@ func (k Keeper) InitiateOutboundTransfer(ctx sdk.Context, config types.RouteConf
 		return [32]byte{}, 0, err
 	}
 	nonce := k.nextOutboundNonce(ctx)
-	payload := strings.Join([]string{config.RouteID, sender.String(), strings.ToLower(cronosDestination.Hex()), amount.String(), fmt.Sprintf("%d", nonce)}, "\x00")
-	id := sha256.Sum256([]byte(payload))
+	id := types.OutboundRequestID(config.RouteID, sender.String(), cronosDestination, amount, nonce)
 	k.setOutstandingAmount(ctx, outstanding.Sub(amount))
+	// The record returned by the OutboundTransfer query: the burned values,
+	// and the block height and hash of this transaction.
+	if err := k.setOutboundTransfer(ctx, id, types.OutboundTransferRecord{
+		RequestId:   types.HexID(id),
+		RouteId:     config.RouteID,
+		Sender:      sender.String(),
+		Destination: cronosDestination.Hex(),
+		Amount:      amount.String(),
+		Nonce:       nonce,
+		Height:      ctx.BlockHeight(),
+		TxHash:      types.TxHash(ctx.TxBytes()),
+	}); err != nil {
+		return [32]byte{}, 0, err
+	}
 	return id, nonce, nil
 }
 

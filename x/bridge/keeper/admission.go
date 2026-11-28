@@ -17,6 +17,12 @@ var (
 // availability, deadline, source chain, 2-of-3 signatures over the
 // network-specific digest, source-deposit replay protection and limits. It has
 // no bank, minting, reserve or custody capability (see SettleInbound).
+//
+// With the replay key it stores the AttestationRecord returned by the
+// Attestation query: every approved field, the recovered approvers, the
+// signer set version, and the block height and hash of the transaction
+// (ctx.TxBytes) that processes it. All of these are identical on every
+// validator, and the writes roll back with the transaction.
 func (k Keeper) AdmitAttestation(
 	ctx sdk.Context,
 	config types.RouteConfig,
@@ -38,7 +44,8 @@ func (k Keeper) AdmitAttestation(
 	if attestation.SourceChainID != config.EffectiveSourceChainID(ctx.ChainID()) {
 		return [32]byte{}, ErrAttestationSourceChainMismatch
 	}
-	if _, err := types.VerifyApprovals(attestation, ctx.ChainID(), config.BridgeSigners, signatures); err != nil {
+	approvers, err := types.VerifyApprovals(attestation, ctx.ChainID(), config.BridgeSigners, signatures)
+	if err != nil {
 		return [32]byte{}, err
 	}
 	id, err := attestation.ID()
@@ -49,6 +56,13 @@ func (k Keeper) AdmitAttestation(
 		return [32]byte{}, ErrAttestationAlreadyProcessed
 	}
 	if err := k.CheckAndRecordLimits(ctx, config, attestation.Amount); err != nil {
+		return [32]byte{}, err
+	}
+	record, err := types.NewAttestationRecord(attestation, ctx.ChainID(), k.SignerSetVersion(ctx), approvers, ctx.BlockHeight(), types.TxHash(ctx.TxBytes()))
+	if err != nil {
+		return [32]byte{}, err
+	}
+	if err := k.setAttestationRecord(ctx, id, record); err != nil {
 		return [32]byte{}, err
 	}
 	k.MarkProcessed(ctx, id)

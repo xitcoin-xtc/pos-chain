@@ -53,6 +53,7 @@ func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgIn
 		return nil, err
 	}
 	ctx.KVStore(s.keeper.storeKey).Set(routeStateKey, encoded)
+	s.keeper.setSignerSetVersion(ctx, 1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent("bridge_route_initialized", sdk.NewAttribute("route_id", config.RouteID), sdk.NewAttribute("source_chain_id", config.SourceChainID), sdk.NewAttribute("enabled", "false"), sdk.NewAttribute("paused", "true")))
 	return &types.MsgInitializeRouteConfigResponse{}, nil
 }

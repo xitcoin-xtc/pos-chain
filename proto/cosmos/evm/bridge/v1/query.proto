@@ -2,16 +2,65 @@ syntax = "proto3";
 package cosmos.evm.bridge.v1;
 
 import "google/api/annotations.proto";
+import "cosmos/evm/bridge/v1/bridge.proto";
 
 option go_package = "github.com/xitcoin-xtc/pos-chain/x/bridge/types";
 
 // Query exposes canonical, read-only bridge settlement state.
 service Query {
   // AttestationStatus reports whether an attestation replay key was consumed.
+  // Its two-field response is kept unchanged for clients pinned to it; the
+  // Attestation query returns the same flag with the processing evidence.
   rpc AttestationStatus(QueryAttestationStatusRequest)
       returns (QueryAttestationStatusResponse) {
     option (google.api.http).get =
         "/cosmos/evm/bridge/v1/attestations/{attestation_id}";
+  }
+
+  // Params returns the settlement parameters fixed when the application is
+  // wired and the signing domains derived from the chain ID.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/xitcoin/bridge/v1/params";
+  }
+
+  // Route returns the configuration and state of the route with this route
+  // ID, exactly as stored.
+  rpc Route(QueryRouteRequest) returns (QueryRouteResponse) {
+    option (google.api.http).get = "/xitcoin/bridge/v1/routes/{route_id}";
+  }
+
+  // Outstanding returns the outstanding amount and the route's cap on it.
+  rpc Outstanding(QueryOutstandingRequest) returns (QueryOutstandingResponse) {
+    option (google.api.http).get = "/xitcoin/bridge/v1/outstanding";
+  }
+
+  // DailyUsage returns the route's usage of the daily limit for the UTC day
+  // of the queried block.
+  rpc DailyUsage(QueryDailyUsageRequest) returns (QueryDailyUsageResponse) {
+    option (google.api.http).get = "/xitcoin/bridge/v1/daily_usage";
+  }
+
+  // Attestation returns whether an attestation ID (source-deposit replay key)
+  // is absent or processed and, when processed, the approved fields and the
+  // block height and transaction hash that processed it.
+  rpc Attestation(QueryAttestationRequest) returns (QueryAttestationResponse) {
+    option (google.api.http).get =
+        "/xitcoin/bridge/v1/attestations/{attestation_id}";
+  }
+
+  // SourceDeposit answers the Attestation query for the replay key of a
+  // source chain ID and source reference (Cronos depositId).
+  rpc SourceDeposit(QuerySourceDepositRequest)
+      returns (QueryAttestationResponse) {
+    option (google.api.http).get =
+        "/xitcoin/bridge/v1/source_deposits/{source_chain_id}/{source_ref}";
+  }
+
+  // OutboundTransfer returns the burn recorded for an outbound request ID.
+  rpc OutboundTransfer(QueryOutboundTransferRequest)
+      returns (QueryOutboundTransferResponse) {
+    option (google.api.http).get =
+        "/xitcoin/bridge/v1/outbound_transfers/{request_id}";
   }
 }
 
@@ -22,4 +71,152 @@ message QueryAttestationStatusRequest {
 message QueryAttestationStatusResponse {
   string attestation_id = 1;
   bool processed = 2;
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1;
+}
+
+// Params are fixed by the application wiring and the chain ID; no
+// transaction changes them.
+message Params {
+  // authority is the only account allowed to initialize the first route.
+  string authority = 1;
+  // native_denom is the denomination minted and burned by the bridge.
+  string native_denom = 2;
+  // max_supply caps the native supply on every mint, in atomic units.
+  string max_supply = 3;
+  // required_approvals is the number of distinct bridge signer approvals an
+  // attestation or a control action needs.
+  uint32 required_approvals = 4;
+  // signer_set_size is the number of configured bridge signers.
+  uint32 signer_set_size = 5;
+  // chain_id is the Xitcoin chain ID bound into every signing domain.
+  string chain_id = 6;
+  string attestation_domain = 7;
+  string control_domain = 8;
+  string guardian_pause_domain = 9;
+  // source_deposit_domain separates replay keys from every other hash.
+  string source_deposit_domain = 10;
+}
+
+message QueryRouteRequest {
+  // route_id is the stored route ID, for example the Cronos bytes32 route
+  // identifier in 0x-prefixed lowercase hex.
+  string route_id = 1;
+}
+
+message QueryRouteResponse {
+  Route route = 1;
+  // height is the block height of the state that answered the query.
+  int64 height = 2;
+}
+
+// Route is a route configuration with its current state.
+message Route {
+  string route_id = 1;
+  string source_chain_id = 2;
+  repeated string bridge_signers = 3;
+  string guardian = 4;
+  string max_transfer_amount = 5;
+  string daily_limit = 6;
+  string max_outstanding_amount = 7;
+  bool enabled = 8;
+  bool paused = 9;
+  // signer_set_version starts at 1 and increases by one each time a control
+  // action replaces the set of bridge signers.
+  uint64 signer_set_version = 10;
+  // control_nonce is the nonce of the last applied control action.
+  uint64 control_nonce = 11;
+  // outbound_nonce is the nonce of the last outbound transfer.
+  uint64 outbound_nonce = 12;
+}
+
+message QueryOutstandingRequest {}
+
+message QueryOutstandingResponse {
+  string route_id = 1;
+  // outstanding_amount is the bridged supply that outbound burns may still
+  // release, in atomic units.
+  string outstanding_amount = 2;
+  string max_outstanding_amount = 3;
+  // remaining_amount is max_outstanding_amount - outstanding_amount.
+  string remaining_amount = 4;
+  int64 height = 5;
+}
+
+message QueryDailyUsageRequest {}
+
+message QueryDailyUsageResponse {
+  string route_id = 1;
+  // utc_day is the number of whole days between 1970-01-01T00:00:00Z and the
+  // block time of the queried block (the key of the usage bucket).
+  uint64 utc_day = 2;
+  // utc_date is utc_day as YYYY-MM-DD.
+  string utc_date = 3;
+  // used_amount is the sum of inbound mints and outbound burns of that UTC
+  // day, in atomic units.
+  string used_amount = 4;
+  string daily_limit = 5;
+  // remaining_amount is daily_limit - used_amount, or 0 when the limit was
+  // lowered below the usage.
+  string remaining_amount = 6;
+  int64 block_time_unix = 7;
+  int64 height = 8;
+}
+
+// AttestationState distinguishes an attestation ID that no transaction has
+// consumed from one that was processed.
+enum AttestationState {
+  // ATTESTATION_STATE_UNSPECIFIED is never returned.
+  ATTESTATION_STATE_UNSPECIFIED = 0;
+  // ATTESTATION_STATE_ABSENT: no committed transaction has consumed the
+  // replay key at the queried height. It does not mean that no submission is
+  // pending in a mempool or in a later block.
+  ATTESTATION_STATE_ABSENT = 1;
+  // ATTESTATION_STATE_PROCESSED: the deposit was minted; record holds the
+  // approved fields and the processing block and transaction.
+  ATTESTATION_STATE_PROCESSED = 2;
+  // ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD: the replay key was consumed
+  // before processing records were kept (before the
+  // xitcoin-security-hardening-v2 upgrade, or imported from a genesis
+  // processed_source_deposits entry without a record). The deposit must be
+  // treated as minted.
+  ATTESTATION_STATE_PROCESSED_WITHOUT_RECORD = 3;
+}
+
+message QueryAttestationRequest {
+  // attestation_id is 32 bytes of hexadecimal, with or without 0x.
+  string attestation_id = 1;
+}
+
+message QueryAttestationResponse {
+  // attestation_id is the canonical 0x-prefixed lowercase form.
+  string attestation_id = 1;
+  AttestationState status = 2;
+  // processed is true for both processed states.
+  bool processed = 3;
+  // record is set only for ATTESTATION_STATE_PROCESSED.
+  AttestationRecord record = 4;
+  // height is the block height of the state that answered the query.
+  int64 height = 5;
+}
+
+message QuerySourceDepositRequest {
+  // source_chain_id is the canonical decimal EVM chain ID, for example 338.
+  string source_chain_id = 1;
+  // source_ref is the 32-byte deposit reference, with or without 0x.
+  string source_ref = 2;
+}
+
+message QueryOutboundTransferRequest {
+  // request_id is 32 bytes of hexadecimal, with or without 0x.
+  string request_id = 1;
+}
+
+message QueryOutboundTransferResponse {
+  OutboundTransferRecord transfer = 1;
+  int64 height = 2;
 }

@@ -20,6 +20,13 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Query_AttestationStatus_FullMethodName = "/cosmos.evm.bridge.v1.Query/AttestationStatus"
+	Query_Params_FullMethodName            = "/cosmos.evm.bridge.v1.Query/Params"
+	Query_Route_FullMethodName             = "/cosmos.evm.bridge.v1.Query/Route"
+	Query_Outstanding_FullMethodName       = "/cosmos.evm.bridge.v1.Query/Outstanding"
+	Query_DailyUsage_FullMethodName        = "/cosmos.evm.bridge.v1.Query/DailyUsage"
+	Query_Attestation_FullMethodName       = "/cosmos.evm.bridge.v1.Query/Attestation"
+	Query_SourceDeposit_FullMethodName     = "/cosmos.evm.bridge.v1.Query/SourceDeposit"
+	Query_OutboundTransfer_FullMethodName  = "/cosmos.evm.bridge.v1.Query/OutboundTransfer"
 )
 
 // QueryClient is the client API for Query service.
@@ -29,7 +36,29 @@ const (
 // Query exposes canonical, read-only bridge settlement state.
 type QueryClient interface {
 	// AttestationStatus reports whether an attestation replay key was consumed.
+	// Its two-field response is kept unchanged for clients pinned to it; the
+	// Attestation query returns the same flag with the processing evidence.
 	AttestationStatus(ctx context.Context, in *QueryAttestationStatusRequest, opts ...grpc.CallOption) (*QueryAttestationStatusResponse, error)
+	// Params returns the settlement parameters fixed when the application is
+	// wired and the signing domains derived from the chain ID.
+	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Route returns the configuration and state of the route with this route
+	// ID, exactly as stored.
+	Route(ctx context.Context, in *QueryRouteRequest, opts ...grpc.CallOption) (*QueryRouteResponse, error)
+	// Outstanding returns the outstanding amount and the route's cap on it.
+	Outstanding(ctx context.Context, in *QueryOutstandingRequest, opts ...grpc.CallOption) (*QueryOutstandingResponse, error)
+	// DailyUsage returns the route's usage of the daily limit for the UTC day
+	// of the queried block.
+	DailyUsage(ctx context.Context, in *QueryDailyUsageRequest, opts ...grpc.CallOption) (*QueryDailyUsageResponse, error)
+	// Attestation returns whether an attestation ID (source-deposit replay key)
+	// is absent or processed and, when processed, the approved fields and the
+	// block height and transaction hash that processed it.
+	Attestation(ctx context.Context, in *QueryAttestationRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error)
+	// SourceDeposit answers the Attestation query for the replay key of a
+	// source chain ID and source reference (Cronos depositId).
+	SourceDeposit(ctx context.Context, in *QuerySourceDepositRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error)
+	// OutboundTransfer returns the burn recorded for an outbound request ID.
+	OutboundTransfer(ctx context.Context, in *QueryOutboundTransferRequest, opts ...grpc.CallOption) (*QueryOutboundTransferResponse, error)
 }
 
 type queryClient struct {
@@ -50,6 +79,76 @@ func (c *queryClient) AttestationStatus(ctx context.Context, in *QueryAttestatio
 	return out, nil
 }
 
+func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryParamsResponse)
+	err := c.cc.Invoke(ctx, Query_Params_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Route(ctx context.Context, in *QueryRouteRequest, opts ...grpc.CallOption) (*QueryRouteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryRouteResponse)
+	err := c.cc.Invoke(ctx, Query_Route_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Outstanding(ctx context.Context, in *QueryOutstandingRequest, opts ...grpc.CallOption) (*QueryOutstandingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryOutstandingResponse)
+	err := c.cc.Invoke(ctx, Query_Outstanding_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) DailyUsage(ctx context.Context, in *QueryDailyUsageRequest, opts ...grpc.CallOption) (*QueryDailyUsageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryDailyUsageResponse)
+	err := c.cc.Invoke(ctx, Query_DailyUsage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Attestation(ctx context.Context, in *QueryAttestationRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryAttestationResponse)
+	err := c.cc.Invoke(ctx, Query_Attestation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SourceDeposit(ctx context.Context, in *QuerySourceDepositRequest, opts ...grpc.CallOption) (*QueryAttestationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryAttestationResponse)
+	err := c.cc.Invoke(ctx, Query_SourceDeposit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) OutboundTransfer(ctx context.Context, in *QueryOutboundTransferRequest, opts ...grpc.CallOption) (*QueryOutboundTransferResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryOutboundTransferResponse)
+	err := c.cc.Invoke(ctx, Query_OutboundTransfer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility.
@@ -57,7 +156,29 @@ func (c *queryClient) AttestationStatus(ctx context.Context, in *QueryAttestatio
 // Query exposes canonical, read-only bridge settlement state.
 type QueryServer interface {
 	// AttestationStatus reports whether an attestation replay key was consumed.
+	// Its two-field response is kept unchanged for clients pinned to it; the
+	// Attestation query returns the same flag with the processing evidence.
 	AttestationStatus(context.Context, *QueryAttestationStatusRequest) (*QueryAttestationStatusResponse, error)
+	// Params returns the settlement parameters fixed when the application is
+	// wired and the signing domains derived from the chain ID.
+	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Route returns the configuration and state of the route with this route
+	// ID, exactly as stored.
+	Route(context.Context, *QueryRouteRequest) (*QueryRouteResponse, error)
+	// Outstanding returns the outstanding amount and the route's cap on it.
+	Outstanding(context.Context, *QueryOutstandingRequest) (*QueryOutstandingResponse, error)
+	// DailyUsage returns the route's usage of the daily limit for the UTC day
+	// of the queried block.
+	DailyUsage(context.Context, *QueryDailyUsageRequest) (*QueryDailyUsageResponse, error)
+	// Attestation returns whether an attestation ID (source-deposit replay key)
+	// is absent or processed and, when processed, the approved fields and the
+	// block height and transaction hash that processed it.
+	Attestation(context.Context, *QueryAttestationRequest) (*QueryAttestationResponse, error)
+	// SourceDeposit answers the Attestation query for the replay key of a
+	// source chain ID and source reference (Cronos depositId).
+	SourceDeposit(context.Context, *QuerySourceDepositRequest) (*QueryAttestationResponse, error)
+	// OutboundTransfer returns the burn recorded for an outbound request ID.
+	OutboundTransfer(context.Context, *QueryOutboundTransferRequest) (*QueryOutboundTransferResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -70,6 +191,27 @@ type UnimplementedQueryServer struct{}
 
 func (UnimplementedQueryServer) AttestationStatus(context.Context, *QueryAttestationStatusRequest) (*QueryAttestationStatusResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AttestationStatus not implemented")
+}
+func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Params not implemented")
+}
+func (UnimplementedQueryServer) Route(context.Context, *QueryRouteRequest) (*QueryRouteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Route not implemented")
+}
+func (UnimplementedQueryServer) Outstanding(context.Context, *QueryOutstandingRequest) (*QueryOutstandingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Outstanding not implemented")
+}
+func (UnimplementedQueryServer) DailyUsage(context.Context, *QueryDailyUsageRequest) (*QueryDailyUsageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DailyUsage not implemented")
+}
+func (UnimplementedQueryServer) Attestation(context.Context, *QueryAttestationRequest) (*QueryAttestationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Attestation not implemented")
+}
+func (UnimplementedQueryServer) SourceDeposit(context.Context, *QuerySourceDepositRequest) (*QueryAttestationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SourceDeposit not implemented")
+}
+func (UnimplementedQueryServer) OutboundTransfer(context.Context, *QueryOutboundTransferRequest) (*QueryOutboundTransferResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method OutboundTransfer not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 func (UnimplementedQueryServer) testEmbeddedByValue()               {}
@@ -110,6 +252,132 @@ func _Query_AttestationStatus_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Params_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Route_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRouteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Route(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Route_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Route(ctx, req.(*QueryRouteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Outstanding_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOutstandingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Outstanding(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Outstanding_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Outstanding(ctx, req.(*QueryOutstandingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_DailyUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDailyUsageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).DailyUsage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_DailyUsage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).DailyUsage(ctx, req.(*QueryDailyUsageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Attestation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAttestationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Attestation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Attestation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Attestation(ctx, req.(*QueryAttestationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SourceDeposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySourceDepositRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SourceDeposit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_SourceDeposit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SourceDeposit(ctx, req.(*QuerySourceDepositRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_OutboundTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOutboundTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).OutboundTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_OutboundTransfer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).OutboundTransfer(ctx, req.(*QueryOutboundTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -120,6 +388,34 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AttestationStatus",
 			Handler:    _Query_AttestationStatus_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Route",
+			Handler:    _Query_Route_Handler,
+		},
+		{
+			MethodName: "Outstanding",
+			Handler:    _Query_Outstanding_Handler,
+		},
+		{
+			MethodName: "DailyUsage",
+			Handler:    _Query_DailyUsage_Handler,
+		},
+		{
+			MethodName: "Attestation",
+			Handler:    _Query_Attestation_Handler,
+		},
+		{
+			MethodName: "SourceDeposit",
+			Handler:    _Query_SourceDeposit_Handler,
+		},
+		{
+			MethodName: "OutboundTransfer",
+			Handler:    _Query_OutboundTransfer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
