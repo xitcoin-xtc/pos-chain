@@ -146,8 +146,8 @@ func (p Precompile) Execute(ctx sdk.Context, stateDB vm.StateDB, contract *vm.Co
 	// EOA and will not be possible to recover funds sent to an instance of
 	// them.This check is a safety measure because currently funds cannot be
 	// received due to the lack of a fallback handler.
-	if value := contract.Value(); value.Sign() == 1 {
-		return nil, fmt.Errorf(ErrCannotReceiveFunds, contract.Value().String())
+	if value := cmn.CallValue(contract); value.Sign() == 1 {
+		return nil, fmt.Errorf(ErrCannotReceiveFunds, value.String())
 	}
 
 	method, args, err := cmn.SetupABI(p.ABI, contract, readOnly, p.IsTransaction)

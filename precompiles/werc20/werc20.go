@@ -108,7 +108,7 @@ func (p Precompile) Execute(ctx sdk.Context, stateDB vm.StateDB, contract *vm.Co
 	// Only deposit, receive and the fallback are payable. Value sent with any
 	// other method would stay at the precompile address, where nothing can
 	// spend it (Deposit returns exactly the value of its own call).
-	if value := contract.Value(); value != nil && value.Sign() == 1 && !method.IsPayable() {
+	if value := cmn.CallValue(contract); value.Sign() == 1 && !method.IsPayable() {
 		return nil, fmt.Errorf(erc20.ErrCannotReceiveFunds, value.String())
 	}
 	if !p.IsTransaction(method) {
