@@ -11,7 +11,10 @@ fi
 
 # shellcheck source=../.env
 # shellcheck disable=SC1091
-source ../.env
+# The suite runner may export these variables instead (COMPAT_LOCAL_KEYS).
+if [ -f ../.env ]; then
+	source ../.env
+fi
 CONTRACT=$1
 TO=$2
 AMOUNT=$3 # e.g. 100000000000000000000 for 100 tokens (18 decimals)
