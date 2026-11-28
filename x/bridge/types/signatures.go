@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -66,7 +65,7 @@ func configuredSigners(signers []string) (map[common.Address]struct{}, error) {
 	}
 	allowed := make(map[common.Address]struct{}, MaxBridgeSigners)
 	for _, signer := range signers {
-		if !common.IsHexAddress(strings.TrimSpace(signer)) {
+		if !common.IsHexAddress(signer) {
 			return nil, errors.New("invalid configured bridge signer")
 		}
 		address := common.HexToAddress(signer)

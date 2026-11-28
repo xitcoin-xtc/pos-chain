@@ -60,7 +60,7 @@ func GuardianPauseDigest(action GuardianPauseAction, chainID string) (common.Has
 
 // VerifyGuardianPause verifies a single signature from the dedicated guardian.
 func VerifyGuardianPause(action GuardianPauseAction, chainID, guardian string, signature []byte) (common.Address, error) {
-	if !common.IsHexAddress(strings.TrimSpace(guardian)) {
+	if !common.IsHexAddress(guardian) {
 		return common.Address{}, errors.New("invalid bridge guardian")
 	}
 	digest, err := GuardianPauseDigest(action, chainID)

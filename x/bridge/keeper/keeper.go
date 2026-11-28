@@ -45,9 +45,9 @@ func NewSettlementKeeper(storeKey storetypes.StoreKey, bankKeeper BankKeeper, na
 	if err := sdk.ValidateDenom(nativeDenom); err != nil {
 		return Keeper{}, err
 	}
-	limit, ok := sdkmath.NewIntFromString(maxSupply)
-	if !ok || !limit.IsPositive() {
-		return Keeper{}, errors.New("bridge maximum supply must be positive")
+	limit, err := types.ParseAmount(maxSupply)
+	if err != nil {
+		return Keeper{}, errors.New("bridge maximum supply must be a canonical positive decimal integer")
 	}
 	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
 		return Keeper{}, errors.New("bridge authority must be a valid account address")

@@ -210,6 +210,18 @@ func (s msgServer) InitiateOutboundTransfer(goCtx context.Context, req *types.Ms
 	if err != nil {
 		return nil, err
 	}
+	// The event carries the values the keeper burned and hashed into the
+	// request ID, never the raw request strings: the relayer refuses a
+	// non-canonical amount or an address ethers cannot parse for the whole
+	// block, which would stall every later release.
+	amount, err := types.ParseAmount(req.Amount)
+	if err != nil {
+		return nil, err
+	}
+	destination, err := types.ValidateCronosDestination(req.Destination)
+	if err != nil {
+		return nil, err
+	}
 	id, nonce, err := s.keeper.InitiateOutboundTransfer(ctx, config, sender, req.Destination, req.Amount)
 	if err != nil {
 		return nil, err
@@ -220,8 +232,8 @@ func (s msgServer) InitiateOutboundTransfer(goCtx context.Context, req *types.Ms
 		sdk.NewAttribute("request_id", requestID),
 		sdk.NewAttribute("route_id", config.RouteID),
 		sdk.NewAttribute("sender", sender.String()),
-		sdk.NewAttribute("destination", req.Destination),
-		sdk.NewAttribute("amount", req.Amount),
+		sdk.NewAttribute("destination", destination.Hex()),
+		sdk.NewAttribute("amount", amount.String()),
 		sdk.NewAttribute("nonce", fmt.Sprintf("%d", nonce)),
 	))
 	return &types.MsgInitiateOutboundTransferResponse{RequestId: requestID, Nonce: nonce}, nil

@@ -53,16 +53,21 @@ func (k Keeper) SettleInbound(ctx sdk.Context, config types.RouteConfig, attesta
 	if k.bankKeeper.BlockedAddr(recipient) {
 		return ErrBlockedDestination
 	}
-	amount, ok := sdkmath.NewIntFromString(attestation.Amount)
-	if !ok || !amount.IsPositive() {
-		return errors.New("bridge amount must be positive")
+	amount, err := types.ParseAmount(attestation.Amount)
+	if err != nil {
+		return err
 	}
-	outstandingLimit, _ := sdkmath.NewIntFromString(config.MaxOutstandingAmount)
-	nextOutstanding := k.OutstandingAmount(ctx).Add(amount)
-	if nextOutstanding.GT(outstandingLimit) {
+	limits, err := config.Limits()
+	if err != nil {
+		return err
+	}
+	// SafeAdd: a sum beyond 256 bits exceeds every limit instead of panicking.
+	nextOutstanding, err := k.OutstandingAmount(ctx).SafeAdd(amount)
+	if err != nil || nextOutstanding.GT(limits.MaxOutstandingAmount) {
 		return ErrOutstandingLimitExceeded
 	}
-	if k.bankKeeper.GetSupply(ctx, k.nativeDenom).Amount.Add(amount).GT(k.maxSupply) {
+	nextSupply, err := k.bankKeeper.GetSupply(ctx, k.nativeDenom).Amount.SafeAdd(amount)
+	if err != nil || nextSupply.GT(k.maxSupply) {
 		return ErrMaximumSupplyExceeded
 	}
 	coins := sdk.NewCoins(sdk.NewCoin(k.nativeDenom, amount))
@@ -87,11 +92,11 @@ func (k Keeper) InitiateOutboundTransfer(ctx sdk.Context, config types.RouteConf
 	if err != nil {
 		return [32]byte{}, 0, err
 	}
-	amount, ok := sdkmath.NewIntFromString(amountText)
-	if !ok || !amount.IsPositive() {
-		return [32]byte{}, 0, errors.New("bridge amount must be positive")
+	amount, err := types.ParseAmount(amountText)
+	if err != nil {
+		return [32]byte{}, 0, err
 	}
-	if err := k.CheckAndRecordLimits(ctx, config, amountText); err != nil {
+	if err := k.checkAndRecordLimits(ctx, config, amount); err != nil {
 		return [32]byte{}, 0, err
 	}
 	outstanding := k.OutstandingAmount(ctx)

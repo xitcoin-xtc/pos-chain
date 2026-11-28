@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"math/big"
 
 	"github.com/cosmos/cosmos-sdk/types"
 )
@@ -57,9 +56,8 @@ func (m *MsgInitiateOutboundTransfer) ValidateBasic() error {
 	if _, err := ValidateCronosDestination(m.Destination); err != nil {
 		return err
 	}
-	amount, ok := new(big.Int).SetString(m.Amount, 10)
-	if !ok || amount.Sign() <= 0 {
-		return errors.New("amount must be a positive integer in atomic units")
+	if _, err := ParseAmount(m.Amount); err != nil {
+		return err
 	}
 	return nil
 }
