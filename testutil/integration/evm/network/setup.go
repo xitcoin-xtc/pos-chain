@@ -12,6 +12,7 @@ import (
 	"github.com/xitcoin-xtc/pos-chain"
 	"github.com/xitcoin-xtc/pos-chain/testutil"
 	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
+	bridgetypes "github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 	erc20types "github.com/xitcoin-xtc/pos-chain/x/erc20/types"
 	feemarkettypes "github.com/xitcoin-xtc/pos-chain/x/feemarket/types"
 	validatoradmissiontypes "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
@@ -61,6 +62,7 @@ var genesisSetupFunctions = map[string]genSetupFn{
 	minttypes.ModuleName:      genStateSetter[*minttypes.GenesisState](minttypes.ModuleName),
 	banktypes.ModuleName:      setBankGenesisState,
 	authtypes.ModuleName:      setAuthGenesisState,
+	bridgetypes.ModuleName:    setBridgeGenesisState,
 	consensustypes.ModuleName: func(_ evm.EvmApp, genesisState testutil.GenesisState, _ interface{}) (testutil.GenesisState, error) {
 		// no-op. Consensus does not have a genesis state on the application
 		// but the params are used on it
@@ -329,6 +331,24 @@ func setDefaultSlashingGenesisState(cosmosEVMApp evm.EvmApp, genesisState testut
 
 	genesisState[slashingtypes.ModuleName] = cosmosEVMApp.AppCodec().MustMarshalJSON(slashingGen)
 	return genesisState
+}
+
+// setBridgeGenesisState replaces the x/bridge genesis state, which the
+// module encodes with encoding/json rather than protobuf JSON.
+func setBridgeGenesisState(_ evm.EvmApp, genesisState testutil.GenesisState, customGenesis interface{}) (testutil.GenesisState, error) {
+	customGen, ok := customGenesis.(bridgetypes.GenesisState)
+	if !ok {
+		return nil, fmt.Errorf("invalid type %T for bridge module genesis state", customGenesis)
+	}
+	if err := customGen.Validate(); err != nil {
+		return nil, err
+	}
+	encoded, err := json.Marshal(customGen)
+	if err != nil {
+		return nil, err
+	}
+	genesisState[bridgetypes.ModuleName] = encoded
+	return genesisState, nil
 }
 
 // setBankGenesisState updates the bank genesis state with custom genesis state
