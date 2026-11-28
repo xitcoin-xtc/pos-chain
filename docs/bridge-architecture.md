@@ -78,7 +78,10 @@ On Xitcoin (`RouteConfig`, all amounts in `axtc`):
 - `daily_limit`: one bucket per route per UTC day of block time, shared by inbound mints and outbound burns;
 - `max_outstanding_amount`: an inbound mint is rejected if `outstanding_amount` would exceed it;
 - the XTC maximum supply, enforced on every mint;
-- an outbound burn cannot exceed `outstanding_amount`.
+- an outbound burn cannot exceed `outstanding_amount`;
+- `update_route_config` cannot set `max_outstanding_amount` below the current `outstanding_amount`.
+
+Every amount and limit is read by one parser (`types.ParseAmount`) for validation, limits, minting, burning and genesis. It accepts only the canonical decimal form of an integer in `[1, 2^256-1]` (`^[1-9][0-9]*$`, the form the relayer requires); `"010"`, `"+10"`, `" 10"` and `"0x10"` are rejected. `bridge_outbound_burned` carries the burned amount and the EIP-55 destination, not the raw request strings. Route IDs are ASCII `[a-z0-9_-]`, attestation destinations and source references contain no whitespace, and configured signer and guardian addresses are spelled exactly. See [the security hardening v2 migration](migrations/xitcoin-security-hardening-v2.md).
 
 On Cronos, `CronosBridgeVault` limits releases (per release and per day) and, in the version prepared for future deployment, deposits (per deposit, per day and total locked balance). The vault limits should be configured no higher than the chain limits so that a deposit the chain cannot mint is rejected at deposit time. A deposit that is already locked but cannot mint (above a chain limit, or to a blocked module account) is handled by the operational procedure in `bridge-relayer` `docs/OPERATIONS.md` (wait for the next day, raise limits by quorum, or an owner-approved refund).
 
@@ -105,6 +108,10 @@ The escrow's rule that the network stays private until activation is an operatio
 - `xitcoind query bridge route`: route configuration, `paused`, `outstanding_amount`, control and outbound nonces, read from the module store through an ABCI store query at one height.
 
 Typed gRPC queries for the route configuration, outstanding amount and paused state are not yet available; adding them requires a change to `proto/cosmos/evm/bridge/v1/query.proto` and regenerated code.
+
+## Attack simulations
+
+The properties above are checked by Go native fuzz targets in `x/bridge/types/fuzz_test.go` and `x/bridge/keeper/fuzz_test.go`, described in [bridge-attack-simulations.md](bridge-attack-simulations.md).
 
 ## Route configuration fields
 

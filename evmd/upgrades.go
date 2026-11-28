@@ -40,6 +40,19 @@ const BridgeInitialRouteUpgradeName = "xitcoin-bridge-initial-route-v1"
 // (consensus version 2 to 3). It adds or removes no store.
 const SecurityHardeningUpgradeName = "xitcoin-security-hardening-v1"
 
+// SecurityHardeningV2UpgradeName is the coordinated binary upgrade that
+// changes which x/bridge transactions are valid: amounts and route limits
+// must be canonical decimals parsed by one parser for validation, limits,
+// minting and burning; route IDs must be ASCII; attestation destinations and
+// source references must not contain whitespace; route configuration
+// addresses must be spelled exactly; a route update cannot set the
+// outstanding cap below the outstanding amount. Its handler raises
+// min_self_delegation of existing validators to the x/validatoradmission
+// minimum (see MigrateValidatorMinSelfDelegation) and reports a stored bridge
+// route configuration that the new validation rejects. It adds or removes no
+// store.
+const SecurityHardeningV2UpgradeName = "xitcoin-security-hardening-v2"
+
 func (app EVMD) RegisterUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
@@ -104,6 +117,8 @@ func (app EVMD) RegisterUpgradeHandlers() {
 			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 		},
 	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(SecurityHardeningV2UpgradeName, app.securityHardeningV2Handler)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {

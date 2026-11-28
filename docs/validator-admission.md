@@ -26,7 +26,10 @@ Amounts are encoded in `axtc`, with 18 decimal places.
 Because `min_self_delegation` is at least the minimum, the staking module itself
 keeps enforcing the minimum after creation: a validator whose self-delegation
 falls below it is jailed. Genesis validators keep the `min_self_delegation` of
-their genesis transactions.
+their genesis transactions until the `xitcoin-security-hardening-v2` upgrade,
+which raises it to the minimum for every validator whose self-delegation covers
+the minimum and reports the others without changing them (see
+[the migration note](migrations/xitcoin-security-hardening-v2.md)).
 
 ## Enforcement paths
 
