@@ -3,12 +3,9 @@ package types
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/big"
 	"strings"
-	"unicode"
 )
 
 const (
@@ -65,12 +62,11 @@ func (a Attestation) Validate() error {
 	if a.Nonce == 0 {
 		return errors.New("nonce must be greater than zero")
 	}
-	if destination := strings.TrimSpace(a.Destination); destination == "" || len(destination) > maxDestinationLen {
+	if !validDestination(a.Destination) {
 		return errors.New("invalid destination")
 	}
-	amount, ok := new(big.Int).SetString(a.Amount, 10)
-	if !ok || amount.Sign() <= 0 {
-		return errors.New("amount must be a positive integer in atomic units")
+	if _, err := ParseAmount(a.Amount); err != nil {
+		return err
 	}
 	if a.DeadlineUnix <= 0 {
 		return errors.New("deadline is required")
@@ -87,7 +83,9 @@ func (a Attestation) ID() ([32]byte, error) {
 }
 
 // SourceDepositKey is sha256(SourceDepositDomain || 0x00 || sourceChainID ||
-// 0x00 || lowercase 64-hex source reference without 0x).
+// 0x00 || lowercase 64-hex source reference without 0x). The source reference
+// may carry a 0x or 0X prefix and any letter case; every such spelling of one
+// deposit maps to the same key. Whitespace and any other byte are rejected.
 func SourceDepositKey(sourceChainID, sourceRef string) ([32]byte, error) {
 	if err := ValidateEVMChainID(sourceChainID); err != nil {
 		return [32]byte{}, err
@@ -103,6 +101,10 @@ func SourceDepositKey(sourceChainID, sourceRef string) ([32]byte, error) {
 // (Xitcoin) chain ID: sha256 of the fields joined with 0x00 in this order:
 // destination chain ID, route ID, direction, source chain ID, source
 // reference (lowercase hex, no 0x), nonce, destination, amount, deadline.
+// Validate guarantees that no field contains 0x00 or whitespace and that the
+// amount is canonical, so the encoding is injective: two attestations share a
+// payload hash only if they are equal up to the spelling of the source
+// reference, which also gives them the same replay key.
 func (a Attestation) PayloadHash(destinationChainID string) ([32]byte, error) {
 	if err := a.Validate(); err != nil {
 		return [32]byte{}, err
@@ -112,7 +114,7 @@ func (a Attestation) PayloadHash(destinationChainID string) ([32]byte, error) {
 	}
 	fields := []string{
 		destinationChainID, a.RouteID, string(a.Direction), a.SourceChainID, normalizeHexReference(a.SourceRef),
-		fmt.Sprintf("%d", a.Nonce), strings.TrimSpace(a.Destination), a.Amount, fmt.Sprintf("%d", a.DeadlineUnix),
+		fmt.Sprintf("%d", a.Nonce), a.Destination, a.Amount, fmt.Sprintf("%d", a.DeadlineUnix),
 	}
 	return sha256.Sum256([]byte(strings.Join(fields, "\x00"))), nil
 }
@@ -137,12 +139,33 @@ func ValidateApprovalSet(signerIDs []string) error {
 	return nil
 }
 
+// validRouteID accepts 1 to 96 ASCII bytes from [a-z0-9_-], the rule the
+// relayer applies. unicode.IsLower and unicode.IsDigit would also accept
+// non-ASCII letters and digits.
 func validRouteID(routeID string) bool {
 	if routeID == "" || len(routeID) > maxRouteIDLength {
 		return false
 	}
-	for _, r := range routeID {
-		if !(unicode.IsLower(r) || unicode.IsDigit(r) || r == '-' || r == '_') {
+	for i := 0; i < len(routeID); i++ {
+		switch c := routeID[i]; {
+		case c >= 'a' && c <= 'z', c >= '0' && c <= '9', c == '-', c == '_':
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+// validDestination accepts 1 to 256 printable ASCII bytes without spaces:
+// bech32 and hexadecimal addresses only use such bytes, and the field is
+// hashed verbatim, so a destination cannot contain a separator or a
+// whitespace variant of another destination.
+func validDestination(destination string) bool {
+	if destination == "" || len(destination) > maxDestinationLen {
+		return false
+	}
+	for i := 0; i < len(destination); i++ {
+		if destination[i] <= ' ' || destination[i] > '~' {
 			return false
 		}
 	}
@@ -150,14 +173,30 @@ func validRouteID(routeID string) bool {
 }
 
 func validHexReference(reference string) bool {
-	normalized := normalizeHexReference(reference)
-	if len(normalized) != 64 {
-		return false
-	}
-	_, err := hex.DecodeString(normalized)
-	return err == nil
+	return len(normalizeHexReference(reference)) == 64
 }
 
+// normalizeHexReference returns the lowercase 64-hex form of a source
+// reference with an optional 0x or 0X prefix, or "" if it is not exactly
+// 32 hexadecimal bytes.
 func normalizeHexReference(reference string) string {
-	return strings.TrimPrefix(strings.ToLower(strings.TrimSpace(reference)), "0x")
+	if len(reference) >= 2 && reference[0] == '0' && (reference[1] == 'x' || reference[1] == 'X') {
+		reference = reference[2:]
+	}
+	if len(reference) != 64 {
+		return ""
+	}
+	normalized := make([]byte, len(reference))
+	for i := 0; i < len(reference); i++ {
+		c := reference[i]
+		switch {
+		case c >= '0' && c <= '9', c >= 'a' && c <= 'f':
+			normalized[i] = c
+		case c >= 'A' && c <= 'F':
+			normalized[i] = c + ('a' - 'A')
+		default:
+			return ""
+		}
+	}
+	return string(normalized)
 }

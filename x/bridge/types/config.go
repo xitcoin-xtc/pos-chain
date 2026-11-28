@@ -2,10 +2,10 @@ package types
 
 import (
 	"errors"
-	"math/big"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+
+	sdkmath "cosmossdk.io/math"
 )
 
 // RouteConfig is the route configuration. Changes after initialization are
@@ -44,7 +44,11 @@ func (c RouteConfig) Validate() error {
 	if _, err := configuredSigners(c.BridgeSigners); err != nil {
 		return err
 	}
-	if !common.IsHexAddress(strings.TrimSpace(c.Guardian)) {
+	// Addresses must be spelled exactly, without surrounding whitespace:
+	// common.HexToAddress does not trim, so " 0x..." would otherwise pass
+	// validation and then resolve to the zero address (or a nibble-shifted
+	// one), silently disabling the guardian or one of the three signers.
+	if !common.IsHexAddress(c.Guardian) {
 		return errors.New("invalid bridge guardian")
 	}
 	guardian := common.HexToAddress(c.Guardian)
@@ -58,19 +62,42 @@ func (c RouteConfig) Validate() error {
 			return err
 		}
 	}
-	if !positiveAmount(c.MaxTransferAmount) {
-		return errors.New("max transfer amount must be positive")
+	if _, err := ParseAmount(c.MaxTransferAmount); err != nil {
+		return errors.New("max transfer amount must be a canonical positive decimal integer")
 	}
-	if !positiveAmount(c.DailyLimit) {
-		return errors.New("daily limit must be positive")
+	if _, err := ParseAmount(c.DailyLimit); err != nil {
+		return errors.New("daily limit must be a canonical positive decimal integer")
 	}
-	if !positiveAmount(c.MaxOutstandingAmount) {
-		return errors.New("max outstanding amount must be positive")
+	if _, err := ParseAmount(c.MaxOutstandingAmount); err != nil {
+		return errors.New("max outstanding amount must be a canonical positive decimal integer")
 	}
 	return nil
 }
 
-func positiveAmount(value string) bool {
-	amount, ok := new(big.Int).SetString(value, 10)
-	return ok && amount.Sign() > 0
+// RouteLimits are the parsed limits of a valid route configuration.
+type RouteLimits struct {
+	MaxTransferAmount    sdkmath.Int
+	DailyLimit           sdkmath.Int
+	MaxOutstandingAmount sdkmath.Int
+}
+
+// Limits validates the configuration and parses its limits with ParseAmount,
+// so no caller can read a limit with another parser or ignore a parse error.
+func (c RouteConfig) Limits() (RouteLimits, error) {
+	if err := c.Validate(); err != nil {
+		return RouteLimits{}, err
+	}
+	maxTransfer, err := ParseAmount(c.MaxTransferAmount)
+	if err != nil {
+		return RouteLimits{}, err
+	}
+	dailyLimit, err := ParseAmount(c.DailyLimit)
+	if err != nil {
+		return RouteLimits{}, err
+	}
+	maxOutstanding, err := ParseAmount(c.MaxOutstandingAmount)
+	if err != nil {
+		return RouteLimits{}, err
+	}
+	return RouteLimits{MaxTransferAmount: maxTransfer, DailyLimit: dailyLimit, MaxOutstandingAmount: maxOutstanding}, nil
 }

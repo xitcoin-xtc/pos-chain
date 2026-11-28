@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"math/big"
 )
 
 // ProcessedSourceDeposits lists consumed source-deposit replay keys as
@@ -47,12 +46,15 @@ func (g GenesisState) Validate() error {
 	if g.OutstandingAmount == "" {
 		return nil
 	}
-	outstanding, ok := new(big.Int).SetString(g.OutstandingAmount, 10)
-	if !ok || outstanding.Sign() < 0 {
+	outstanding, err := ParseNonNegativeAmount(g.OutstandingAmount)
+	if err != nil {
 		return errors.New("invalid bridge outstanding amount")
 	}
-	limit, _ := new(big.Int).SetString(g.RouteConfig.MaxOutstandingAmount, 10)
-	if outstanding.Cmp(limit) > 0 {
+	limits, err := g.RouteConfig.Limits()
+	if err != nil {
+		return err
+	}
+	if outstanding.GT(limits.MaxOutstandingAmount) {
 		return errors.New("bridge outstanding amount exceeds route limit")
 	}
 	return nil

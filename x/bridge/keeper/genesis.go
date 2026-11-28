@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
@@ -27,8 +26,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state types.GenesisState) {
 			ctx.KVStore(k.storeKey).Set(routeStateKey, encoded)
 		}
 		if state.OutstandingAmount != "" {
-			amount, ok := sdkmath.NewIntFromString(state.OutstandingAmount)
-			if !ok {
+			amount, err := types.ParseNonNegativeAmount(state.OutstandingAmount)
+			if err != nil {
 				panic("invalid bridge outstanding amount")
 			}
 			k.setOutstandingAmount(ctx, amount)
