@@ -6,11 +6,15 @@ import "google/api/annotations.proto";
 
 option go_package = "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types";
 
+// Query defines the validator admission query service.
 service Query {
+  // Params returns the admission authority, the maximum number of approved
+  // validators and the minimum self-delegation.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/cosmos/evm/validatoradmission/v1/params";
   }
 
+  // Validator returns whether a validator operator address is approved.
   rpc Validator(QueryValidatorRequest) returns (QueryValidatorResponse) {
     option (google.api.http).get =
       "/cosmos/evm/validatoradmission/v1/validators/{validator_address}";

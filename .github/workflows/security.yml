@@ -116,4 +116,3 @@ jobs:
           version: 1.32.0
           advanced-security: false
           annotations: true
-          min-severity: high

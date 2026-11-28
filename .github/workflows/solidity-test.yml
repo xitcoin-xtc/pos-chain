@@ -1,29 +1,26 @@
 name: Solidity Test
+
 on:
+  schedule:
+    - cron: '0 3 * * 0' # weekly, Sunday
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   test-solidity:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
+
       - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
         with:
           go-version-file: go.mod
-          check-latest: true
-      - uses: technote-space/get-diff-action@f27caffdd0fb9b13f4fc191c016bb4e0632844af # v6.1.2
-        with:
-          PATTERNS: |
-            **/**.sol
-            **/**.go
-            go.mod
-            go.sum
-            *.toml
+
       - name: Test Solidity
-        run: |
-          make test-solidity
-        if: env.GIT_DIFF
+        run: make test-solidity
