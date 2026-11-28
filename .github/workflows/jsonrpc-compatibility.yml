@@ -1,72 +1,38 @@
 name: JSON-RPC Compatibility Test
+
 on:
+  schedule:
+    - cron: '30 2 * * 0' # weekly, Sunday
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
-  cleanup-runs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: rokroskar/workflow-run-cleanup-action@c631227427d0452af4994af0940d7655ebc50c7c # master
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    if: ${{ !startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main' }}
-
   jsonrpc-compatibility-test:
-    runs-on: depot-ubuntu-22.04-8
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
         with:
           go-version-file: go.mod
-          check-latest: true
-
-      - uses: technote-space/get-diff-action@f27caffdd0fb9b13f4fc191c016bb4e0632844af # v6.1.2
-        with:
-          PATTERNS: |
-            .github/workflows/jsonrpc-compatibility.yml
-            tests/jsonrpc/**
-            rpc/**
-            evmd/**
-            **/**.go
-            go.mod
-            go.sum
-            evmd/go.mod
-            evmd/go.sum
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
-        if: ${{ env.GIT_DIFF }}
 
       - name: Run JSON-RPC compatibility tests
         run: |
-          echo "🧪 Running JSON-RPC compatibility tests using containerized environment..."
-
-          # Run the containerized test suite
-          make test-rpc-compat > test_output.log 2>&1 || {
-            echo "⚠️ Test exited with non-zero code, checking results..."
-          }
-
-          # Display the test output
+          # The suite reports "Not Implemented", "Legacy" and "Skipped" cases;
+          # only "Failed" cases fail the job.
+          make test-rpc-compat > test_output.log 2>&1 || echo 'Test command exited non-zero; checking results'
           cat test_output.log
-
-          # Check for failure criterion: count of "Failed" tests > 0
           failed_count=$(grep -o "Failed:.*[0-9]" test_output.log | grep -o "[0-9]\+" | head -1 || echo "0")
-
-          echo "📊 Test Results Summary:"
-          echo "  Failed tests: $failed_count"
-
-          if [ "$failed_count" -gt 0 ]; then
-            echo "❌ CI FAILURE: Found $failed_count failed tests"
-            echo "   Criterion: CI fails when any test has status 'Failed' (not 'Not Implemented', 'Legacy', or 'Skipped')"
+          echo "Failed tests: ${failed_count:-0}"
+          if [ "${failed_count:-0}" -gt 0 ]; then
             exit 1
-          else
-            echo "✅ CI PASS: No failed tests found"
-            echo "   Note: 'Not Implemented', 'Legacy', and 'Skipped' tests are acceptable and don't cause CI failure"
           fi
-        if: ${{ env.GIT_DIFF }}

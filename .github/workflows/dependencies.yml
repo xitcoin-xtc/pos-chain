@@ -95,6 +95,8 @@ jobs:
       - name: Test chain-specific precompiles on disposable node
         if: matrix.suite == 'precompiles' || matrix.suite == 'revert_cases'
         shell: bash
+        env:
+          SUITE: ${{ matrix.suite }}
         run: |
           set -euo pipefail
           ./local_node.sh -y --no-install > /tmp/evmd.log 2>&1 &
@@ -103,8 +105,8 @@ jobs:
           source scripts/tests_compatibility_common.sh
           wait_for_node 10
           load_test_evm_chain_id
-          if [[ '${{ matrix.suite }}' == precompiles ]]; then
+          if [[ "$SUITE" == precompiles ]]; then
             load_test_validator_address
           fi
-          cd tests/solidity/suites/${{ matrix.suite }}
+          cd "tests/solidity/suites/$SUITE"
           yarn test-cosmos
