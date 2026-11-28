@@ -19,3 +19,25 @@ x/erc20/types/proposal_test.go:generic-api-key:181
 # Malformed armor header used as a negative test vector in the September 2026
 # SDK armor patch (no key material).
 4f53683a0b4ce12feab0ce329e687762a65aeb60:docs/security-remediation-20260913/sdk-armor.patch:private-key:86
+
+# Initial source release (e9d829e):
+# - a Solidity inheritance list read as a generic key (still in the tree);
+e9d829ea1f73b4867bf62eca43d87996739a6209:contracts/solidity/ERC20WithNativeTransfers.sol:generic-api-key:25
+contracts/solidity/ERC20WithNativeTransfers.sol:generic-api-key:25
+# - the published mnemonics and keys of the retired test accounts, in the
+#   former denylist of verify-xitcoin-release-state.py and in two Hardhat
+#   configurations of the Solidity test suites.
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:34
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:35
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:36
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:37
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:38
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:39
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:40
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:41
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:42
+e9d829ea1f73b4867bf62eca43d87996739a6209:scripts/verify-xitcoin-release-state.py:legacy-test-account:43
+e9d829ea1f73b4867bf62eca43d87996739a6209:tests/solidity/suites/precompiles/hardhat.config.js:legacy-test-account:21
+e9d829ea1f73b4867bf62eca43d87996739a6209:tests/solidity/suites/precompiles/hardhat.config.js:legacy-test-account:22
+e9d829ea1f73b4867bf62eca43d87996739a6209:tests/solidity/suites/revert_cases/hardhat.config.js:legacy-test-account:21
+e9d829ea1f73b4867bf62eca43d87996739a6209:tests/solidity/suites/revert_cases/hardhat.config.js:legacy-test-account:22

@@ -1,52 +1,36 @@
 name: Protobuf
-# Protobuf runs buf (https://buf.build/) lint and check-breakage
-# This workflow is only run when a .proto file has been changed
-on:
-  workflow_dispatch:
 
-permissions: read-all
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'proto/**'
+      - 'buf.work.yaml'
+      - '.github/workflows/proto.yml'
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  buf:
+    name: buf lint and breaking
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          submodules: recursive
-      - uses: technote-space/get-diff-action@f27caffdd0fb9b13f4fc191c016bb4e0632844af # v6.1.2
-        id: git_diff
-        with:
-          PATTERNS: |
-            **/**.proto
-            **/buf.yaml
-            buf.work.yaml
-            buf.gen.yaml
-      - run: |
-          make proto-gen
-        if: env.GIT_DIFF
+          persist-credentials: false
 
-  lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Lint (proto/buf.yaml) and check wire/API compatibility against the
+      # base branch. Add the "buf skip breaking" label for an intended break.
+      - uses: bufbuild/buf-action@37ac33d8960807670a6e9719080e885197b09cc6 # v1.7.0
         with:
-          submodules: recursive
-      - uses: bufbuild/buf-setup-action@a47c93e0b1648d5651a065437926377d060baa99 # v1.50.0
-      - uses: bufbuild/buf-lint-action@06f9dd823d873146471cfaaf108a993fe00e5325 # v1
-        with:
-          input: "proto"
-
-  break-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
-      - uses: bufbuild/buf-setup-action@a47c93e0b1648d5651a065437926377d060baa99 # v1.50.0
-      - uses: bufbuild/buf-breaking-action@c57b3d842a5c3f3b454756ef65305a50a587c5ba # v1
-        with:
-          input: "proto"
-          against: "https://github.com/${{ github.repository }}.git#branch=${{ github.event.pull_request.base.ref }},ref=HEAD~1,subdir=proto"
+          version: 1.72.0
+          input: proto
+          lint: true
+          format: false
+          breaking: ${{ !contains(github.event.pull_request.labels.*.name, 'buf skip breaking') }}
+          breaking_against: ${{ github.event.repository.clone_url }}#format=git,commit=${{ github.event.pull_request.base.sha }},subdir=proto
+          push: false
+          archive: false
+          pr_comment: false
