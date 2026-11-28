@@ -17,7 +17,11 @@ async function main() {
   }
   const { createRequire } = require('node:module');
   const tooling = createRequire(join(__dirname, '../../contracts/package.json'));
-  assert.equal(JSON.parse(readFileSync(join(__dirname, '../../contracts/node_modules/hardhat/package.json'))).version, '3.14.0');
+  // The suites run on Hardhat 3, never the retired Hardhat 2. The patched
+  // Zod/Hardhat combination is checked by "npm run test:tooling" in contracts/
+  // (scripts/check-hardhat-zod.mjs), on every pull request.
+  const hardhatVersion = JSON.parse(readFileSync(join(__dirname, '../../contracts/node_modules/hardhat/package.json'))).version;
+  assert.match(hardhatVersion, /^3\./, `Hardhat ${hardhatVersion} is not Hardhat 3`);
   const ethers = tooling('ethers');
   const wallet = ethers.Wallet.createRandom();
   const message = 'Offline synthetic security regression';
