@@ -9,6 +9,9 @@ source "$SCRIPT_DIR/tests_compatibility_common.sh"
 
 SUITES=(basic eip1559 exception opcode precompiles revert_cases)
 
+# Build first: local_node.sh reinstalls, which is then quick, before the
+# node has to reach block 10 within the wait_for_node timeout.
+make -C "$ROOT" install
 (cd "$ROOT/contracts" && npm ci)
 (cd "$ROOT/tests/solidity" && yarn install --frozen-lockfile --non-interactive)
 
