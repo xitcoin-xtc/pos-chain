@@ -88,6 +88,23 @@ load_test_validator_address() {
 	export TEST_VALIDATOR_ADDRESS
 }
 
+# Keys of the disposable node created by start_node (local_node.sh): the
+# validator key as deployer and dev1 as recipient. Used when a suite has no
+# .env file; never point this at a live keyring.
+load_local_test_keys() {
+	local home="${1:-$HOME/.evmd}" key
+	load_test_evm_chain_id "$home/config/app.toml" || return 1
+	key="$(evmd keys unsafe-export-eth-key mykey --keyring-backend test --home "$home")" || return 1
+	PRIVATE_KEY="0x${key#0x}"
+	key="$(evmd keys unsafe-export-eth-key dev1 --keyring-backend test --home "$home")" || return 1
+	ACCOUNT_1="$(cast wallet address --private-key "$PRIVATE_KEY")" || return 1
+	ACCOUNT_2="$(cast wallet address --private-key "0x${key#0x}")" || return 1
+	unset key
+	CHAIN_ID="$EXPECTED_EVM_CHAIN_ID"
+	CUSTOM_RPC="http://127.0.0.1:8545"
+	export PRIVATE_KEY ACCOUNT_1 ACCOUNT_2 CHAIN_ID CUSTOM_RPC
+}
+
 # Stop the node
 cleanup_node() {
 	if [ -n "${NODE_PID:-}" ]; then
