@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/tracing"
 	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/holiman/uint256"
 
 	"github.com/xitcoin-xtc/pos-chain/x/vm/statedb"
 
@@ -177,6 +178,16 @@ func SetupABI(
 	return method, args, nil
 }
 
+// CallValue returns the value sent with a precompile call. The EVM runs a
+// precompile reached through DELEGATECALL with a nil value; it is zero here,
+// so that callers never dereference a nil pointer.
+func CallValue(contract *vm.Contract) *uint256.Int {
+	if value := contract.Value(); value != nil {
+		return value
+	}
+	return new(uint256.Int)
+}
+
 // QueryContext returns the context on which a stateful precompile runs one
 // of its query (view) methods, and a function that discards every write made
 // on it; the caller defers that function. Some Cosmos SDK queriers write to
@@ -237,7 +248,7 @@ func (p *Precompile) SetAddress(addr common.Address) {
 func emptyCallData(api abi.ABI, contract *vm.Contract) (method *abi.Method, err error) {
 	switch {
 	// Case 1.1: Send call or transfer tx - 'receive' is called if present and value is transferred
-	case contract.Value().Sign() > 0 && api.HasReceive():
+	case CallValue(contract).Sign() > 0 && api.HasReceive():
 		return &api.Receive, nil
 	// Case 1.2: Either 'receive' is not present, or no value is transferred - call 'fallback' if present
 	case api.HasFallback():

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/vm"
 
+	cmn "github.com/xitcoin-xtc/pos-chain/precompiles/common"
 	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	"cosmossdk.io/math"
@@ -30,7 +31,7 @@ func (p Precompile) Deposit(
 	stateDB vm.StateDB,
 ) ([]byte, error) {
 	caller := contract.Caller()
-	depositedAmount := contract.Value()
+	depositedAmount := cmn.CallValue(contract)
 
 	callerAccAddress := sdk.AccAddress(caller.Bytes())
 	precompileAccAddr := sdk.AccAddress(p.Address().Bytes())
