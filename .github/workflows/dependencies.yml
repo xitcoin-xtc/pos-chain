@@ -107,6 +107,7 @@ jobs:
           load_test_evm_chain_id
           if [[ "$SUITE" == precompiles ]]; then
             load_test_validator_address
+            load_test_validator_cons_address
           fi
           cd "tests/solidity/suites/$SUITE"
           yarn test-cosmos

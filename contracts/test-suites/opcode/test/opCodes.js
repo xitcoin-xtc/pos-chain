@@ -13,7 +13,11 @@ describe('OpCodes', function () {
     expect((await (await contractInstance.test_stop()).wait()).status).to.equal(1);
   });
   it('Should throw invalid op code', async function () {
-    await assert.rejects(contractInstance.test_invalid(), /invalid opcode|revert|VM Exception/i);
+    // On a node the transaction is mined and fails; await its receipt.
+    await assert.rejects(
+      (async () => (await contractInstance.test_invalid()).wait())(),
+      /invalid opcode|revert|VM Exception/i,
+    );
   });
   it('Should revert', async function () {
     await expect(contractInstance.test_revert()).to.revert(ethers);

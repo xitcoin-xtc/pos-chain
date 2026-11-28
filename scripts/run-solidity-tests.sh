@@ -1,26 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Run the six Solidity suites against a disposable local node
+# (local_node.sh). Needs Go, Node.js 24 and Yarn 1.
+set -euo pipefail
 
-export GOPATH="$HOME"/go
-export PATH="$PATH":"$GOPATH"/bin
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/tests_compatibility_common.sh
+source "$SCRIPT_DIR/tests_compatibility_common.sh"
 
-# remove existing data
-rm -rf "$HOME"/.tmp-evmd-solidity-tests
+SUITES=(basic eip1559 exception opcode precompiles revert_cases)
 
-# used to exit on first error (any non-zero exit code)
-set -e
+(cd "$ROOT/contracts" && npm ci)
+(cd "$ROOT/tests/solidity" && yarn install --frozen-lockfile --non-interactive)
 
-# build evmd binary
-make install
+# local_node.sh installs the binary and creates a fresh $HOME/.evmd.
+start_node
+trap cleanup_node EXIT
+wait_for_node 10
 
-cd tests/solidity || exit
+load_test_evm_chain_id
+load_test_validator_address
+load_test_validator_cons_address
 
-if command -v yarn &>/dev/null; then
-	yarn install
-else
-	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-	echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-	sudo apt update && sudo apt install yarn
-	yarn install
-fi
-
-yarn test --network cosmos "$@"
+for suite in "${SUITES[@]}"; do
+	echo "--- Solidity suite: $suite"
+	(cd "$ROOT/tests/solidity/suites/$suite" && yarn test-cosmos)
+done

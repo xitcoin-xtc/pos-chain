@@ -4,7 +4,7 @@ import matchers from '@nomicfoundation/hardhat-ethers-chai-matchers';
 import mocha from '@nomicfoundation/hardhat-mocha';
 import { fileURLToPath } from 'node:url';
 
-// All six Solidity suites share the same audited toolchain.
+// All six Solidity suites share the same toolchain.
 export function soliditySuiteConfig(suite, version) {
   const directory = fileURLToPath(new URL(`../test-suites/${suite}/`, import.meta.url));
   return defineConfig({
