@@ -112,6 +112,29 @@ writes belong to the transaction and roll back with it.
 - The existing `AttestationStatus` query keeps its path and two-field
   response, so clients pinned to it are unaffected.
 
+## Precompile execution changes
+
+The release also changes how some EVM calls to the precompiles execute, so
+these too take effect for every validator at the upgrade height. They apply
+only where the precompile is active: on xitcoin-testnet-v2-1 only the native
+WERC20 precompile (`0xEeee...EEeE`) is; `evmd`'s default genesis activates
+every static precompile. Details: `docs/precompile-attack-simulations.md`.
+
+- The query (view) methods of every stateful precompile run on a context
+  whose writes are reverted. Before, gov `getTallyResult` on a proposal in
+  its voting period deleted the votes it counted, and distribution
+  `delegationRewards` and `delegationTotalRewards` incremented validator
+  periods, even from a STATICCALL. No migration: the extra validator periods
+  are valid accounting; deleted votes cannot be restored.
+- ICS-02 `updateClient` with an empty client message reverts instead of
+  panicking (the panic aborted the transaction).
+- The WERC20 precompile rejects value sent with a method that is not payable
+  (only `deposit`, receive and the fallback are). Value sent that way before
+  the upgrade stays at the WERC20 address.
+- A DELEGATECALL to a stateful precompile no longer panics on its missing
+  call value: with empty calldata it reverts, and ERC-20 precompile methods
+  run read-only.
+
 ## Validator `min_self_delegation` migration
 
 Genesis transactions are exempt from the admission minimum, so the four
