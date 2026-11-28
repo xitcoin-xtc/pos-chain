@@ -346,18 +346,13 @@ test-rpc-compat-stop:
 
 .PHONY: localnet-start localnet-stop localnet-build-env localnet-build-nodes test-rpc-compat test-rpc-compat-stop mocks
 
-test-system: build-v06 build
+# The system test framework names the node home after the binary; the
+# testnet command of this binary writes it as "evmd".
+test-system: build
 	mkdir -p ./tests/systemtests/binaries/
-	cp $(BUILDDIR)/evmd ./tests/systemtests/binaries/
+	cp $(BUILDDIR)/$(EXAMPLE_BINARY) ./tests/systemtests/binaries/evmd
 	cd tests/systemtests/Counter && forge build
 	$(MAKE) -C tests/systemtests test
-
-build-v06:
-	mkdir -p ./tests/systemtests/binaries/v0.6
-	git checkout v0.6.0
-	make build
-	cp $(BUILDDIR)/evmd ./tests/systemtests/binaries/v0.6
-	git checkout -
 
 mocks:
 	@echo "--> generating mocks"
