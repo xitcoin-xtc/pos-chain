@@ -10,6 +10,7 @@ on:
       - 'go.mod'
       - 'go.sum'
       - 'evmd/**'
+      - 'tools/**'
       - 'networks/xitcoin-testnet-v2-1/**'
       - 'scripts/verify-xitcoin-release-state.py'
   push:
@@ -22,6 +23,7 @@ on:
       - 'go.mod'
       - 'go.sum'
       - 'evmd/**'
+      - 'tools/**'
       - 'networks/xitcoin-testnet-v2-1/**'
       - 'scripts/verify-xitcoin-release-state.py'
 
@@ -67,11 +69,11 @@ jobs:
           mkdir -p dist
           make BUILDDIR="$GITHUB_WORKSPACE/dist" COSMOS_BUILD_OPTIONS=nostrip build-linux
 
-      - name: Scan the actual symbol-bearing release artifact
+      - name: Scan the release binary with govulncheck
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
-          go tool nm dist/xitcoind > /dev/null
-          bash scripts/run-govulncheck.sh -mode=binary dist/xitcoind
+          go tool nm dist/xitcoind > /dev/null # fails if the binary is stripped
+          go -C tools install golang.org/x/vuln/cmd/govulncheck
+          govulncheck -mode=binary dist/xitcoind
 
       - name: Verify and package release
         shell: bash
@@ -114,6 +116,8 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      id-token: write # build provenance attestation
+      attestations: write
     steps:
       - name: Download verified release artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -132,6 +136,13 @@ jobs:
           grep -F "commit: $GITHUB_SHA" dist/version-long.txt
           grep -F "version: ${GITHUB_REF_NAME#v}" dist/version-long.txt
           test "$(jq -r '.chain_id' dist/genesis.json)" = "xitcoin-testnet-v2-1"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            dist/xitcoind
+            dist/genesis.json
 
       - name: Publish prerelease
         env:

@@ -374,7 +374,7 @@ replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// Xitcoin-maintained Cosmos Geth; immutable revision.
-	// Upstream provenance is recorded in docs/go-fork-provenance.json.
+	// Base, patches and rebase steps: docs/forks.md.
 	github.com/ethereum/go-ethereum => github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4
 	// Security Advisory https://github.com/advisories/GHSA-h395-qcrw-5vmq
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
