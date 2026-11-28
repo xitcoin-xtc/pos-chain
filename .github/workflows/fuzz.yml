@@ -1,9 +1,9 @@
-name: Bridge fuzzing
+name: Attack-simulation fuzzing
 
-# Nightly, time-boxed exploration of the x/bridge attack simulations
-# (docs/bridge-attack-simulations.md). The seed corpora already run in every
-# `go test`. This workflow commits nothing: a failing input is uploaded as an
-# artifact and the job fails.
+# Nightly, time-boxed exploration of the attack simulations
+# (docs/*-attack-simulations.md: x/bridge, validator admission, ...). The seed
+# corpora already run in every `go test`. This workflow commits nothing: a
+# failing input is uploaded as an artifact and the job fails.
 
 on:
   schedule:
@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: bridge-fuzzing
+  group: attack-simulation-fuzzing
   cancel-in-progress: false
 
 jobs:
@@ -41,6 +41,7 @@ jobs:
           - { package: x/bridge/types, target: FuzzMessageDecoding }
           - { package: x/bridge/keeper, target: FuzzAmountAgreement }
           - { package: x/bridge/keeper, target: FuzzBridgeOperationSequence }
+          - { package: x/validatoradmission, target: FuzzAdmissionAnteHandler }
 
     steps:
       - name: Check out source
