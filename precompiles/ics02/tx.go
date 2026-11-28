@@ -55,6 +55,11 @@ func (p *Precompile) UpdateClient(
 	if err != nil {
 		return nil, err
 	}
+	// An empty Any (empty bytes, or an Any without a type URL) decodes to a
+	// nil client message without an error.
+	if clientMsg == nil {
+		return nil, errorsmod.Wrap(clienttypes.ErrInvalidHeader, "empty client message")
+	}
 
 	if err := clientMsg.ValidateBasic(); err != nil {
 		return nil, err
