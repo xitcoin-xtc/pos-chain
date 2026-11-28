@@ -5,7 +5,8 @@ Upgrade name: `xitcoin-security-hardening-v2`
 This coordinated binary upgrade changes which `x/bridge` transactions are
 valid and what they write, so every validator must switch binaries at the same
 height. Its handler also raises the `min_self_delegation` of existing
-validators to the `x/validatoradmission` minimum and stores the bridge signer
+validators to the `x/validatoradmission` minimum, removes validator approvals
+stored under a non-canonical operator spelling and stores the bridge signer
 set version. It adds three keys to the existing bridge store (see
 [Bridge processing records](#bridge-processing-records)), adds or removes no
 store, and the bridge consensus version is unchanged.
@@ -147,6 +148,39 @@ it self-delegates the slashed amount again. Checklist step 2 is therefore
 required. (A double-sign slash tombstones the validator, which no margin
 changes.)
 
+## Validator admission changes
+
+Found by the validator admission attack simulations
+([validator-admission-attack-simulations.md](../validator-admission-attack-simulations.md)).
+
+- Approvals are stored and looked up under the canonical (lower-case bech32)
+  operator address. The bech32 decoder also accepts the upper-case spelling of
+  an address, and approvals used to be stored under the spelling given: a
+  `MsgRevokeValidator` spelling the operator in upper case jailed its
+  validator but deleted nothing, so the lower-case approval stayed and the
+  validator could unjail at once, while an approval spelled in upper case
+  approved nobody (the staking hook checks the canonical address). From the
+  upgrade, an approval or revocation acts on the operator it names, whatever
+  the spelling, and `MsgUnjail` or `MsgCreateValidator` spelled in upper case
+  is judged as the operator it names. The handler removes every approval
+  stored under another spelling (an upper-case or malformed address) with an
+  error log and a `xitcoin_validator_approval_removed` event giving the stored
+  spelling and its canonical form. Such an entry never matches again from this
+  release, so its removal changes no admission decision; the authority
+  approves the operator again (any spelling) if it meant to.
+- A `MsgCreateValidator` whose `value` has no amount is rejected by the
+  admission ante handler. Before, the comparison with the minimum panicked
+  for an approved operator: the transaction failed either way, but a block
+  proposer could include it and get a panic result code instead of an
+  admission error.
+- A governance proposal cannot carry a restricted message (validator creation
+  or unjail, mint parameters, a grant for them, at any depth of `MsgExec` or
+  nested proposals): the ante handler checks the messages of a proposal, and
+  an `x/gov` hook checks every new proposal, whatever the path (transaction,
+  `MsgExec`, governance precompile). Release binaries keep executable proposals
+  disabled, so this changes nothing on the testnet or mainnet today; the hook
+  also rejects every proposal while they are disabled.
+
 ## Operator checklist
 
 1. Before proposing the upgrade height, run `xitcoind query bridge route` and
@@ -178,6 +212,10 @@ changes.)
    `curl <api>/xitcoin/bridge/v1/routes/0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`
    or `xitcoind query bridge route-config 0x21121c16b53a726056a6683f00c7eb4da5501ce8a2abc8a4677e06f1e94b5cd9`,
    and report `signer_set_version` `1`.
+6. After the upgrade, look for `xitcoin_validator_approval_removed` events in
+   the upgrade block. The admission authority approves again any operator it
+   meant to approve (the testnet approvals are expected to be canonical, in
+   which case there is none).
 
 ## Known issue outside this upgrade: relayer route ID
 

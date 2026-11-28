@@ -43,10 +43,19 @@ the minimum and reports the others without changing them (see
   testnet.
 - Mint parameter changes and governance proposals (gov v1 and v1beta1) are
   rejected at top level and inside `MsgExec`.
+- Executable governance proposals are disabled in release binaries. Where they
+  are enabled (the legacy integration suites), a proposal cannot carry a
+  restricted message or a grant for one, at any depth: `x/gov` executes the
+  messages of a passed proposal without the ante handler, so the ante handler
+  checks them like the messages of a `MsgExec`, and an `x/gov` hook checks
+  every new proposal whatever the submission path (including the governance
+  precompile). The hook rejects every proposal while proposals are disabled.
 
 ## Revocation
 
 Revocation removes the operator from the approval set. An existing validator is jailed and cannot unjail until it is approved again, whether it sends `MsgUnjail` directly, through `MsgExec` or through the slashing precompile.
+
+Approvals are stored and looked up under the canonical (lower-case bech32) operator address, so an approval or a revocation acts on the operator it names whatever the spelling (the bech32 decoder also accepts the upper-case form).
 
 ## Policy updates
 
