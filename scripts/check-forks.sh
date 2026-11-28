@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Check the Go forks used by the node (see docs/forks.md):
-#   1. root and evmd replace cosmos-sdk and go-ethereum with the xitcoin-xtc
-#      forks, at the same version in both modules;
+#   1. root, evmd and the test modules that build the node (tests/speedtest,
+#      tests/systemtests) replace cosmos-sdk and go-ethereum with the
+#      xitcoin-xtc forks, at the same version everywhere;
 #   2. each fork commit is reachable from a tag or a protected branch of the
 #      fork repository, so it cannot silently disappear or be rewritten;
 #   3. root and evmd have no local or unversioned replace directive, except
@@ -29,11 +30,12 @@ forks='github.com/cosmos/cosmos-sdk github.com/xitcoin-xtc/cosmos-sdk
 github.com/ethereum/go-ethereum github.com/xitcoin-xtc/go-ethereum'
 fork_versions=""  # lines: upstream fork version
 
-for module in . evmd; do
+for module in . evmd tests/speedtest tests/systemtests; do
   replaces="$(cd "$repo_root/$module" && go mod edit -json | jq -r '.Replace // [] | .[] | [.Old.Path, .New.Path, (.New.Version // "")] | @tsv')"
 
+  # Test modules replace the root module and evmd by local paths.
   while IFS=$'\t' read -r old new version; do
-    [[ -n "$old" ]] || continue
+    [[ -n "$old" && "$module" != tests/* ]] || continue
     if [[ -z "$version" ]]; then
       if [[ "$module" == evmd && "$old" == github.com/xitcoin-xtc/pos-chain && "$new" == ../ ]]; then
         continue

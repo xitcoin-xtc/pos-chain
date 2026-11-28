@@ -129,8 +129,9 @@ go.sum: go.mod
 	go mod tidy
 
 vulncheck:
-	@go install golang.org/x/vuln/cmd/govulncheck@latest
+	@go -C tools install golang.org/x/vuln/cmd/govulncheck
 	@govulncheck ./...
+	@cd evmd && govulncheck ./...
 
 ###############################################################################
 ###                           Tests & Simulation                            ###

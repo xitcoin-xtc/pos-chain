@@ -29,17 +29,13 @@ jobs:
           cache-dependency-path: |
             go.sum
             evmd/go.sum
+            tools/go.sum
 
       - name: Verify canonical release state
         run: python3 scripts/verify-xitcoin-release-state.py
 
       - name: Verify immutable GitHub Actions
         run: bash scripts/verify-actions-pinned.sh
-
-      - name: Run Go vulnerability analysis
-        run: |
-          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
-          bash scripts/run-govulncheck.sh ./...
 
       - name: Run Go tests
         run: go test -tags=test ./...
@@ -50,44 +46,19 @@ jobs:
         working-directory: evmd
         run: go test -tags=test ./...
 
-      - name: Run evmd vulnerability analysis
-        working-directory: evmd
-        run: bash ../scripts/run-govulncheck.sh ./...
-
       - name: Build xitcoind
-        # Scan and publish the same symbol-bearing artifact. A stripped binary
-        # makes govulncheck fall back to all module advisories without attribution.
+        # Keep symbols: a stripped binary hides which functions govulncheck
+        # can attribute findings to.
         run: make build COSMOS_BUILD_OPTIONS=nostrip
         env:
           GOFLAGS: -trimpath
 
-      - name: Scan the release binary
-        run: |
-          go tool nm build/xitcoind > /dev/null
-          bash scripts/run-govulncheck.sh -mode=binary build/xitcoind
+      - name: Check the binary
+        run: ./build/xitcoind version --long
 
-      - name: Package Linux release artifact
-        shell: bash
+      # Source scans of every module run in security.yml.
+      - name: Scan the binary with govulncheck
         run: |
-          set -euo pipefail
-          test -x build/xitcoind
-          test -f networks/xitcoin-testnet-v2-1/genesis.json
-          install -m 0644 networks/xitcoin-testnet-v2-1/genesis.json build/genesis.json
-          printf '%s\n' "$GITHUB_SHA" > build/COMMIT
-          (
-            cd build
-            sha256sum xitcoind genesis.json COMMIT > MANIFEST.sha256
-          )
-          ./build/xitcoind version --long
-
-      - name: Upload Linux release artifact
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: xitcoin-linux-amd64-${{ github.sha }}
-          path: |
-            build/xitcoind
-            build/genesis.json
-            build/COMMIT
-            build/MANIFEST.sha256
-          if-no-files-found: error
-          retention-days: 30
+          go tool nm build/xitcoind > /dev/null # fails if the binary is stripped
+          go -C tools install golang.org/x/vuln/cmd/govulncheck
+          govulncheck -mode=binary build/xitcoind
