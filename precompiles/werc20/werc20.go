@@ -2,6 +2,7 @@ package werc20
 
 import (
 	"bytes"
+	"fmt"
 	"slices"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -103,6 +104,12 @@ func (p Precompile) Execute(ctx sdk.Context, stateDB vm.StateDB, contract *vm.Co
 	method, args, err := cmn.SetupABI(p.ABI, contract, readOnly, p.IsTransaction)
 	if err != nil {
 		return nil, err
+	}
+	// Only deposit, receive and the fallback are payable. Value sent with any
+	// other method would stay at the precompile address, where nothing can
+	// spend it (Deposit returns exactly the value of its own call).
+	if value := contract.Value(); value != nil && value.Sign() == 1 && !method.IsPayable() {
+		return nil, fmt.Errorf(erc20.ErrCannotReceiveFunds, value.String())
 	}
 	if !p.IsTransaction(method) {
 		var discardWrites func()
