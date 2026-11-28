@@ -2,6 +2,7 @@ package evmd
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 
 	testconstants "github.com/xitcoin-xtc/pos-chain/testutil/constants"
 	bridgetypes "github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+	validatoradmissiontypes "github.com/xitcoin-xtc/pos-chain/x/validatoradmission/types"
 	evmtypes "github.com/xitcoin-xtc/pos-chain/x/vm/types"
 
 	coreheader "cosmossdk.io/core/header"
@@ -250,4 +252,40 @@ func TestSecurityHardeningV2StoresTheBridgeSignerSetVersion(t *testing.T) {
 	require.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1}, store.Get(bridgetypes.KeySignerSetVersion))
 	MigrateBridgeSignerSetVersion(ctx, app.BridgeKeeper)
 	require.Equal(t, uint64(1), app.BridgeKeeper.SignerSetVersion(ctx))
+}
+
+func TestSecurityHardeningV2RemovesNonCanonicalValidatorApprovals(t *testing.T) {
+	app, ctx, _ := upgradeTestApp(t)
+	store := ctx.KVStore(app.GetKey(validatoradmissiontypes.StoreKey))
+	approved := sdk.ValAddress(bytes.Repeat([]byte{7}, 20)).String()
+	revoked := sdk.ValAddress(bytes.Repeat([]byte{8}, 20)).String()
+	app.ValidatorAdmissionKeeper.SetApprovedValidator(ctx, approved, true)
+	// Entries an earlier binary stored as spelled: an upper-case duplicate of
+	// an approved operator, the upper-case approval of an operator whose
+	// canonical approval was revoked (it could still unjail by spelling its
+	// address in upper case), and a malformed address.
+	for _, spelling := range []string{strings.ToUpper(approved), strings.ToUpper(revoked), "not-an-operator"} {
+		store.Set(append(append([]byte{}, validatoradmissiontypes.KeyApprovedValidatorPrefix...), spelling...), []byte{1})
+	}
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+
+	_, err := app.securityHardeningV2Handler(ctx, upgradetypes.Plan{Name: SecurityHardeningV2UpgradeName, Height: ctx.BlockHeight()}, app.ModuleManager.GetVersionMap())
+	require.NoError(t, err)
+
+	removed := eventsOfType(ctx, EventTypeValidatorApprovalRemoved)
+	require.Len(t, removed, 3)
+	require.Equal(t, revoked, removed[strings.ToUpper(revoked)]["canonical"])
+	require.Equal(t, "", removed["not-an-operator"]["canonical"])
+	require.True(t, app.ValidatorAdmissionKeeper.IsApprovedValidator(ctx, approved))
+	require.True(t, app.ValidatorAdmissionKeeper.IsApprovedValidator(ctx, strings.ToUpper(approved)))
+	require.False(t, app.ValidatorAdmissionKeeper.IsApprovedValidator(ctx, revoked))
+	require.False(t, app.ValidatorAdmissionKeeper.IsApprovedValidator(ctx, strings.ToUpper(revoked)))
+	for _, spelling := range app.ValidatorAdmissionKeeper.ExportGenesis(ctx).ApprovedValidators {
+		operator, err := sdk.ValAddressFromBech32(spelling)
+		require.NoError(t, err)
+		require.Equal(t, operator.String(), spelling)
+	}
+
+	// Idempotent.
+	require.Empty(t, RemoveNonCanonicalValidatorApprovals(ctx, app.ValidatorAdmissionKeeper))
 }
