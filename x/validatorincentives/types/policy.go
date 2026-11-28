@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"math/big"
 
 	sdkmath "cosmossdk.io/math"
 )
@@ -24,9 +25,11 @@ func AnnualizedRewardCapacity(
 		return sdkmath.Int{}, errors.New("treasury release rate exceeds 100 percent")
 	}
 
-	return treasuryBalance.
-		MulRaw(int64(releaseRateBasisPoints)).
-		QuoRaw(int64(BasisPointDenominator)), nil
+	return mulDivFloor(
+		treasuryBalance,
+		new(big.Int).SetUint64(uint64(releaseRateBasisPoints)),
+		new(big.Int).SetUint64(uint64(BasisPointDenominator)),
+	)
 }
 
 func PeriodProvision(
@@ -47,9 +50,11 @@ func PeriodProvision(
 		return sdkmath.Int{}, errors.New("calculation period cannot exceed one year")
 	}
 
-	return annualizedCapacity.
-		Mul(sdkmath.NewIntFromUint64(periodBlocks)).
-		Quo(sdkmath.NewIntFromUint64(blocksPerYear)), nil
+	return mulDivFloor(
+		annualizedCapacity,
+		new(big.Int).SetUint64(periodBlocks),
+		new(big.Int).SetUint64(blocksPerYear),
+	)
 }
 
 func DerivedAPYBasisPoints(
@@ -66,9 +71,11 @@ func DerivedAPYBasisPoints(
 		return sdkmath.ZeroInt(), nil
 	}
 
-	return annualizedCapacity.
-		MulRaw(int64(BasisPointDenominator)).
-		Quo(eligibleBonded), nil
+	return mulDivFloor(
+		annualizedCapacity,
+		new(big.Int).SetUint64(uint64(BasisPointDenominator)),
+		eligibleBonded.BigInt(),
+	)
 }
 
 func CumulativeProvision(
@@ -86,7 +93,25 @@ func CumulativeProvision(
 		return sdkmath.Int{}, errors.New("elapsed blocks exceed the calculation period")
 	}
 
-	return periodProvision.
-		Mul(sdkmath.NewIntFromUint64(elapsedBlocks)).
-		Quo(sdkmath.NewIntFromUint64(periodBlocks)), nil
+	return mulDivFloor(
+		periodProvision,
+		new(big.Int).SetUint64(elapsedBlocks),
+		new(big.Int).SetUint64(periodBlocks),
+	)
+}
+
+// mulDivFloor returns floor(value * numerator / denominator) for a
+// non-negative value and positive denominator. The product is computed
+// exactly with big.Int, so no intermediate value can overflow: the result is
+// the same as sdkmath.Int's Mul followed by Quo whenever those do not panic.
+// Only a result that does not fit in an sdkmath.Int (256 bits) is an error.
+// AnnualizedRewardCapacity, PeriodProvision and CumulativeProvision multiply
+// by a ratio of at most one, so their result always fits.
+func mulDivFloor(value sdkmath.Int, numerator, denominator *big.Int) (sdkmath.Int, error) {
+	product := new(big.Int).Mul(value.BigInt(), numerator)
+	quotient := product.Quo(product, denominator)
+	if quotient.BitLen() > sdkmath.MaxBitLen {
+		return sdkmath.Int{}, errors.New("result exceeds the 256-bit amount range")
+	}
+	return sdkmath.NewIntFromBigInt(quotient), nil
 }
