@@ -8,7 +8,7 @@ Do not open a public issue for an undisclosed vulnerability.
 
 ## Current Go dependency review
 
-[Current review](docs/security-review-2026-11-27.md) is an internal,
+[Current review](docs/security-review-2026-11-28.md) is an internal,
 non-independent review of current main: source and binary scans, full tests and
 known open findings. [The 2026-11-04 review](docs/security-review-2026-11-04.md)
 records PR55's published-module binary evidence. The gate accepts no scanner advisory exceptions. It retains exact source,

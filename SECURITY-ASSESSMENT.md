@@ -1,6 +1,6 @@
 # SECURITY-ASSESSMENT
 
-> **Current review:** [internal review of 2026-11-27](docs/security-review-2026-11-27.md)
+> **Current review:** [internal review of 2026-11-28](docs/security-review-2026-11-28.md)
 > (record: [docs/security-assessment.json](docs/security-assessment.json)). The text
 > below is the September 2026 assessment of the six advisory dispositions; it is
 > kept unchanged as history, apart from the organisation name.

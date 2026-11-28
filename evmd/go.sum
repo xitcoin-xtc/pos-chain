@@ -1056,8 +1056,8 @@ github.com/tendermint/go-amino v0.16.0 h1:GyhmgQKvqF82e2oZeuMSp9JTN0N09emoSZlb2l
 github.com/tendermint/go-amino v0.16.0/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoMC9Sphe2ZwGME=
 github.com/test-go/testify v1.1.4 h1:Tf9lntrKUMHiXQ07qBScBTSA0dhYQlu83hswqelv1iE=
 github.com/test-go/testify v1.1.4/go.mod h1:rH7cfJo/47vWGdi4GPj16x3/t1xGOj2YxzmNQzk2ghU=
-github.com/tidwall/gjson v1.20.5 h1:OV4dBDripDl7ZK0GJIxWe1pn2zD6VB8vX+6hq6fLmuw=
-github.com/tidwall/gjson v1.20.5/go.mod h1:jV1Xkr7LRLVFhesDFU/nInoQ+MjVlnuqkUreTWMveUo=
+github.com/tidwall/gjson v1.20.6 h1:Wk62aj5eK6e5MC+hn9fkRb4KndcvFWAtKIMVN/naHxQ=
+github.com/tidwall/gjson v1.20.6/go.mod h1:jV1Xkr7LRLVFhesDFU/nInoQ+MjVlnuqkUreTWMveUo=
 github.com/tidwall/match v1.2.0 h1:0pt8FlkOwjN2fPt4bIl4BoNxb98gGHN2ObFEDkrfZnM=
 github.com/tidwall/match v1.2.0/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
 github.com/tidwall/pretty v1.3.0 h1:DZmEzADnMIbThFXXslDgq9C0LCC/xzMrONm7iM77RM0=
@@ -1088,8 +1088,8 @@ github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20261121191520-bb5933a0bf0d h1:sPbBY
 github.com/xitcoin-xtc/cosmos-sdk v0.54.5-0.20261121191520-bb5933a0bf0d/go.mod h1:H0Gf65d9OmM+lboj6M4fjtxYc6Rf9VEcoJX/HtVJTDY=
 github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4 h1:9k4Qh3iIr8gxPK6qvgEYaDrb3vMkrH+ullN4vuNQuD4=
 github.com/xitcoin-xtc/go-ethereum v1.17.2-cosmos-0.0.20260913233706-e09f79643cd4/go.mod h1:QtIPOaMKuz4zDZoQQ72nJJ9i5njr+MyRMl2tv7XteJQ=
-github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261127035027-caab55b4c1b6 h1:/zIhYsHMFgTetckR91KDMc/6iEnSggWfiMGrMe3lMek=
-github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.4.0.20261127035027-caab55b4c1b6/go.mod h1:RibuPS7fGQaoWBhmcfAG5mpQwtHaYwnR9mB8ip9ojnI=
+github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.5.0.20261128025345-303b2325e443 h1:GNR1G49AvHPk7O/MAhnc4hoayth2SN3SWwKVHYx2pbU=
+github.com/xitcoin-xtc/pos-chain v0.1.0-testnet.5.0.20261128025345-303b2325e443/go.mod h1:ZPmEiWLZBsLWEAycfLgZw1blIUKCyStL21APd5pJlec=
 github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342 h1:FnBeRrxr7OU4VvAzt5X7s6266i6cSVkkFPS0TuXWbIg=
 github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342/go.mod h1:Ohn+xnUBiLI6FVj/9LpzZWtj1/D6lUovWYBkxHVV3aM=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

@@ -88,7 +88,7 @@ go test -tags=test ./x/bridge/...
 
 Root and `evmd/` are separate Go modules; root `./...` does not test evmd.
 CI runs both on every push and pull request. The current internal security
-review is [docs/security-review-2026-11-27.md](docs/security-review-2026-11-27.md);
+review is [docs/security-review-2026-11-28.md](docs/security-review-2026-11-28.md);
 the September dependency dispositions are in
 [SECURITY-ASSESSMENT.md](SECURITY-ASSESSMENT.md).
 
