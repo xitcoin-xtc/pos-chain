@@ -2,12 +2,13 @@ package types
 
 import (
 	"crypto/sha256"
-	"errors"
 	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 // GuardianPauseAction can request a suspension only. It cannot change limits,
@@ -20,13 +21,13 @@ type GuardianPauseAction struct {
 
 func (a GuardianPauseAction) Validate() error {
 	if !validRouteID(a.RouteID) {
-		return errors.New("invalid route ID")
+		return ErrInvalidRouteID
 	}
 	if a.Nonce == 0 {
-		return errors.New("guardian pause nonce must be positive")
+		return errorsmod.Wrap(ErrInvalidGuardianPause, "guardian pause nonce must be positive")
 	}
 	if a.ExpiresUnix <= 0 {
-		return errors.New("guardian pause expiry must be positive")
+		return errorsmod.Wrap(ErrInvalidGuardianPause, "guardian pause expiry must be positive")
 	}
 	return nil
 }
@@ -61,7 +62,7 @@ func GuardianPauseDigest(action GuardianPauseAction, chainID string) (common.Has
 // VerifyGuardianPause verifies a single signature from the dedicated guardian.
 func VerifyGuardianPause(action GuardianPauseAction, chainID, guardian string, signature []byte) (common.Address, error) {
 	if !common.IsHexAddress(guardian) {
-		return common.Address{}, errors.New("invalid bridge guardian")
+		return common.Address{}, errorsmod.Wrap(ErrInvalidRouteConfig, "invalid bridge guardian")
 	}
 	digest, err := GuardianPauseDigest(action, chainID)
 	if err != nil {
@@ -72,7 +73,7 @@ func VerifyGuardianPause(action GuardianPauseAction, chainID, guardian string, s
 		return common.Address{}, err
 	}
 	if recovered != common.HexToAddress(guardian) {
-		return common.Address{}, errors.New("pause approval is not from the configured guardian")
+		return common.Address{}, errorsmod.Wrap(ErrInvalidApprovals, "pause approval is not from the configured guardian")
 	}
 	return recovered, nil
 }

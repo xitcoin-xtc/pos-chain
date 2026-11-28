@@ -13,10 +13,6 @@ import (
 // rejects, so a rotation from MaxSignerSetVersion fails.
 const MaxSignerSetVersion uint64 = math.MaxUint64 - 1
 
-// ErrSignerSetVersionExhausted rejects a signer rotation once the signer set
-// version has reached MaxSignerSetVersion.
-var ErrSignerSetVersionExhausted = errors.New("bridge signer set version cannot be increased")
-
 // NextSignerSetVersion returns the version after current, or an error when
 // it would exceed MaxSignerSetVersion.
 func NextSignerSetVersion(current uint64) (uint64, error) {

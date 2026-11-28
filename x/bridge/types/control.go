@@ -2,13 +2,13 @@ package types
 
 import (
 	"crypto/sha256"
-	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 // Control actions with an on-chain handler. Pausing is a guardian action
@@ -36,21 +36,21 @@ type ControlAction struct {
 
 func (a ControlAction) Validate() error {
 	if !validRouteID(a.RouteID) {
-		return errors.New("invalid route ID")
+		return ErrInvalidRouteID
 	}
 	switch a.Action {
 	case ActionUpdateRouteConfig, ActionResumeRoute:
 	default:
-		return errors.New("invalid bridge control action")
+		return ErrInvalidControlAction
 	}
 	if !common.IsHexHash(strings.TrimSpace(a.PayloadHash)) {
-		return errors.New("invalid bridge control payload hash")
+		return errorsmod.Wrap(ErrInvalidControlAction, "invalid bridge control payload hash")
 	}
 	if a.Nonce == 0 {
-		return errors.New("bridge control nonce must be positive")
+		return errorsmod.Wrap(ErrInvalidControlAction, "bridge control nonce must be positive")
 	}
 	if a.NotBeforeUnix <= 0 || a.ExpiresUnix <= a.NotBeforeUnix {
-		return errors.New("invalid bridge control validity window")
+		return errorsmod.Wrap(ErrInvalidControlAction, "invalid bridge control validity window")
 	}
 	return nil
 }
@@ -98,7 +98,7 @@ func VerifyControlApprovals(action ControlAction, chainID string, bridgeSigners 
 		return nil, err
 	}
 	if len(signatures) < RequiredApprovals || len(signatures) > MaxBridgeSigners {
-		return nil, fmt.Errorf("signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
+		return nil, errorsmod.Wrapf(ErrInvalidApprovals, "signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
 	}
 	digest, err := ControlDigest(action, chainID)
 	if err != nil {
@@ -113,10 +113,10 @@ func VerifyControlApprovals(action ControlAction, chainID string, bridgeSigners 
 			return nil, err
 		}
 		if _, ok := allowed[address]; !ok {
-			return nil, errors.New("approval is not from a configured bridge signer")
+			return nil, errorsmod.Wrap(ErrInvalidApprovals, "approval is not from a configured bridge signer")
 		}
 		if _, exists := seen[address]; exists {
-			return nil, errors.New("duplicate signer approval")
+			return nil, errorsmod.Wrap(ErrInvalidApprovals, "duplicate signer approval")
 		}
 		seen[address] = struct{}{}
 		recovered = append(recovered, address)

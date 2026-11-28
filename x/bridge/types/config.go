@@ -1,10 +1,9 @@
 package types
 
 import (
-	"errors"
-
 	"github.com/ethereum/go-ethereum/common"
 
+	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 )
 
@@ -39,7 +38,7 @@ func (c RouteConfig) EffectiveSourceChainID(xitcoinChainID string) string {
 
 func (c RouteConfig) Validate() error {
 	if !validRouteID(c.RouteID) {
-		return errors.New("invalid route ID")
+		return ErrInvalidRouteID
 	}
 	if _, err := configuredSigners(c.BridgeSigners); err != nil {
 		return err
@@ -49,12 +48,12 @@ func (c RouteConfig) Validate() error {
 	// validation and then resolve to the zero address (or a nibble-shifted
 	// one), silently disabling the guardian or one of the three signers.
 	if !common.IsHexAddress(c.Guardian) {
-		return errors.New("invalid bridge guardian")
+		return errorsmod.Wrap(ErrInvalidRouteConfig, "invalid bridge guardian")
 	}
 	guardian := common.HexToAddress(c.Guardian)
 	for _, signer := range c.BridgeSigners {
 		if guardian == common.HexToAddress(signer) {
-			return errors.New("bridge guardian must use a distinct address")
+			return errorsmod.Wrap(ErrInvalidRouteConfig, "bridge guardian must use a distinct address")
 		}
 	}
 	if c.SourceChainID != "" {
@@ -63,13 +62,13 @@ func (c RouteConfig) Validate() error {
 		}
 	}
 	if _, err := ParseAmount(c.MaxTransferAmount); err != nil {
-		return errors.New("max transfer amount must be a canonical positive decimal integer")
+		return errorsmod.Wrap(ErrInvalidRouteConfig, "max transfer amount must be a canonical positive decimal integer")
 	}
 	if _, err := ParseAmount(c.DailyLimit); err != nil {
-		return errors.New("daily limit must be a canonical positive decimal integer")
+		return errorsmod.Wrap(ErrInvalidRouteConfig, "daily limit must be a canonical positive decimal integer")
 	}
 	if _, err := ParseAmount(c.MaxOutstandingAmount); err != nil {
-		return errors.New("max outstanding amount must be a canonical positive decimal integer")
+		return errorsmod.Wrap(ErrInvalidRouteConfig, "max outstanding amount must be a canonical positive decimal integer")
 	}
 	return nil
 }

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"encoding/binary"
-	"errors"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 
@@ -11,7 +10,7 @@ import (
 
 // ErrControlNonceGap rejects a control action whose nonce skips ahead of the
 // next sequential control nonce.
-var ErrControlNonceGap = errors.New("bridge control nonce is not the next sequential nonce")
+var ErrControlNonceGap = types.ErrControlNonceGap
 
 // ControlNonce returns the nonce of the last applied 2-of-3 control action
 // (update_route_config or resume_route); zero before the first one.

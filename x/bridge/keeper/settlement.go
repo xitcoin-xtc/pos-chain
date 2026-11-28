@@ -2,24 +2,24 @@ package keeper
 
 import (
 	"encoding/binary"
-	"errors"
-	"fmt"
 	"math/big"
 	"strings"
 
-	sdkmath "cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
-	ErrSettlementUnavailable    = errors.New("bridge settlement is unavailable")
-	ErrSettlementDirection      = errors.New("bridge attestation is not an inbound Cronos transfer")
-	ErrOutstandingLimitExceeded = errors.New("bridge outstanding limit exceeded")
-	ErrInsufficientOutstanding  = errors.New("bridge outstanding amount is insufficient")
-	ErrMaximumSupplyExceeded    = errors.New("XTC maximum supply exceeded")
-	ErrBlockedDestination       = errors.New("bridge destination is a blocked module account")
+	ErrSettlementUnavailable    = types.ErrSettlementUnavailable
+	ErrSettlementDirection      = types.ErrSettlementDirection
+	ErrOutstandingLimitExceeded = types.ErrOutstandingLimitExceeded
+	ErrInsufficientOutstanding  = types.ErrInsufficientOutstanding
+	ErrMaximumSupplyExceeded    = types.ErrMaximumSupplyExceeded
+	ErrBlockedDestination       = types.ErrBlockedDestination
 )
 
 func (k Keeper) OutstandingAmount(ctx sdk.Context) sdkmath.Int {
@@ -47,7 +47,7 @@ func (k Keeper) SettleInbound(ctx sdk.Context, config types.RouteConfig, attesta
 	}
 	recipient, err := sdk.AccAddressFromBech32(strings.TrimSpace(attestation.Destination))
 	if err != nil {
-		return fmt.Errorf("invalid Xitcoin destination: %w", err)
+		return errorsmod.Wrap(types.ErrInvalidXitcoinDestination, err.Error())
 	}
 	if k.bankKeeper.BlockedAddr(recipient) {
 		return ErrBlockedDestination

@@ -4,13 +4,16 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+
+	errorsmod "cosmossdk.io/errors"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type msgServer struct {
@@ -29,7 +32,7 @@ func NewMsgServer(k Keeper) types.MsgServer {
 // transfer action.
 func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgInitializeRouteConfig) (*types.MsgInitializeRouteConfigResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty initial route configuration")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "initial route configuration")
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if err := sdk.ValidateAuthority(ctx, s.keeper.authority, req.Authority); err != nil {
@@ -41,7 +44,7 @@ func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgIn
 	if _, found, err := s.keeper.GetRouteConfig(ctx); err != nil {
 		return nil, err
 	} else if found {
-		return nil, errors.New("bridge: initial route configuration already exists")
+		return nil, types.ErrRouteAlreadyInitialized
 	}
 	config := req.RouteConfig()
 	config.SourceChainID = types.DefaultSourceChainID(ctx.ChainID())
@@ -62,7 +65,7 @@ func (s msgServer) InitializeRouteConfig(goCtx context.Context, req *types.MsgIn
 // route configuration or asset state.
 func (s msgServer) EmergencyPauseRoute(goCtx context.Context, req *types.MsgEmergencyPauseRoute) (*types.MsgEmergencyPauseRouteResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty emergency pause")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "emergency pause")
 	}
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
@@ -85,7 +88,7 @@ func (s msgServer) EmergencyPauseRoute(goCtx context.Context, req *types.MsgEmer
 // ResumeRoute applies a time-bounded 2-of-3 approval and clears only Paused.
 func (s msgServer) ResumeRoute(goCtx context.Context, req *types.MsgResumeRoute) (*types.MsgResumeRouteResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty route resume")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "route resume")
 	}
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
@@ -114,7 +117,7 @@ func (s msgServer) ResumeRoute(goCtx context.Context, req *types.MsgResumeRoute)
 // signers. Administration never mints, burns, reserves, or transfers assets.
 func (s msgServer) UpdateRouteConfig(goCtx context.Context, req *types.MsgUpdateRouteConfig) (*types.MsgUpdateRouteConfigResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty route configuration update")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "route configuration update")
 	}
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
@@ -151,7 +154,7 @@ func (s msgServer) UpdateRouteConfig(goCtx context.Context, req *types.MsgUpdate
 // SubmitAttestation validates and settles one inbound Cronos transfer.
 func (s msgServer) SubmitAttestation(goCtx context.Context, req *types.MsgSubmitAttestation) (*types.MsgSubmitAttestationResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty attestation submission")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "attestation submission")
 	}
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
@@ -191,7 +194,7 @@ func (s msgServer) SubmitAttestation(goCtx context.Context, req *types.MsgSubmit
 
 func (s msgServer) InitiateOutboundTransfer(goCtx context.Context, req *types.MsgInitiateOutboundTransfer) (*types.MsgInitiateOutboundTransferResponse, error) {
 	if req == nil {
-		return nil, errors.New("bridge: empty outbound transfer")
+		return nil, errorsmod.Wrap(types.ErrEmptyRequest, "outbound transfer")
 	}
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
@@ -209,7 +212,7 @@ func (s msgServer) InitiateOutboundTransfer(goCtx context.Context, req *types.Ms
 	}
 	sender, err := sdk.AccAddressFromBech32(req.Sender)
 	if err != nil {
-		return nil, err
+		return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err)
 	}
 	// The event carries the values the keeper burned and hashed into the
 	// request ID, never the raw request strings: the relayer skips an event

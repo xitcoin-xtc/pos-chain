@@ -1,17 +1,20 @@
 package types
 
 import (
-	"errors"
+	errorsmod "cosmossdk.io/errors"
 
 	"github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ types.Msg = &MsgSubmitAttestation{}
-var _ types.Msg = &MsgInitiateOutboundTransfer{}
-var _ types.Msg = &MsgInitializeRouteConfig{}
-var _ types.Msg = &MsgEmergencyPauseRoute{}
-var _ types.Msg = &MsgResumeRoute{}
-var _ types.Msg = &MsgUpdateRouteConfig{}
+var (
+	_ types.Msg = &MsgSubmitAttestation{}
+	_ types.Msg = &MsgInitiateOutboundTransfer{}
+	_ types.Msg = &MsgInitializeRouteConfig{}
+	_ types.Msg = &MsgEmergencyPauseRoute{}
+	_ types.Msg = &MsgResumeRoute{}
+	_ types.Msg = &MsgUpdateRouteConfig{}
+)
 
 // Attestation returns the internal attestation represented by this message.
 func (m MsgSubmitAttestation) Attestation() Attestation {
@@ -30,10 +33,10 @@ func (m MsgSubmitAttestation) Attestation() Attestation {
 // ValidateBasic validates the submitting account and unsigned message fields.
 func (m *MsgSubmitAttestation) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty attestation submission")
+		return errorsmod.Wrap(ErrEmptyRequest, "attestation submission")
 	}
 	if _, err := types.AccAddressFromBech32(m.Submitter); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid submitter address: %s", err)
 	}
 	return m.Attestation().Validate()
 }
@@ -45,13 +48,13 @@ func (m MsgSubmitAttestation) GetSignBytes() []byte {
 
 func (m *MsgInitiateOutboundTransfer) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty outbound transfer")
+		return errorsmod.Wrap(ErrEmptyRequest, "outbound transfer")
 	}
 	if _, err := types.AccAddressFromBech32(m.Sender); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address: %s", err)
 	}
 	if !validRouteID(m.RouteId) {
-		return errors.New("invalid route ID")
+		return ErrInvalidRouteID
 	}
 	if _, err := ValidateCronosDestination(m.Destination); err != nil {
 		return err
@@ -76,10 +79,10 @@ func (m *MsgInitializeRouteConfig) RouteConfig() RouteConfig {
 
 func (m *MsgInitializeRouteConfig) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty initial route configuration")
+		return errorsmod.Wrap(ErrEmptyRequest, "initial route configuration")
 	}
 	if _, err := types.AccAddressFromBech32(m.Authority); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address: %s", err)
 	}
 	return m.RouteConfig().Validate()
 }
@@ -94,16 +97,16 @@ func (m *MsgEmergencyPauseRoute) Action() GuardianPauseAction {
 
 func (m *MsgEmergencyPauseRoute) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty emergency pause")
+		return errorsmod.Wrap(ErrEmptyRequest, "emergency pause")
 	}
 	if _, err := types.AccAddressFromBech32(m.Submitter); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid submitter address: %s", err)
 	}
 	if err := m.Action().Validate(); err != nil {
 		return err
 	}
 	if len(m.GuardianSignature) != 65 {
-		return errors.New("guardian signature must be 65 bytes")
+		return errorsmod.Wrap(ErrInvalidSignature, "guardian signature must be 65 bytes")
 	}
 	return nil
 }
@@ -116,13 +119,13 @@ func (m *MsgResumeRoute) Action(payloadHash string) ControlAction {
 
 func (m *MsgResumeRoute) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty route resume")
+		return errorsmod.Wrap(ErrEmptyRequest, "route resume")
 	}
 	if _, err := types.AccAddressFromBech32(m.Submitter); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid submitter address: %s", err)
 	}
 	if !validRouteID(m.RouteId) || m.Nonce == 0 || m.NotBeforeUnix <= 0 || m.ExpiresUnix <= m.NotBeforeUnix {
-		return errors.New("invalid route resume action")
+		return errorsmod.Wrap(ErrInvalidControlAction, "invalid route resume action")
 	}
 	return validateControlSignatures(m.Signatures)
 }
@@ -139,16 +142,16 @@ func (m *MsgUpdateRouteConfig) Action(payloadHash string) ControlAction {
 
 func (m *MsgUpdateRouteConfig) ValidateBasic() error {
 	if m == nil {
-		return errors.New("bridge: empty route configuration update")
+		return errorsmod.Wrap(ErrEmptyRequest, "route configuration update")
 	}
 	if _, err := types.AccAddressFromBech32(m.Submitter); err != nil {
-		return err
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid submitter address: %s", err)
 	}
 	if err := m.RouteConfig().Validate(); err != nil {
 		return err
 	}
 	if m.Nonce == 0 || m.NotBeforeUnix <= 0 || m.ExpiresUnix <= m.NotBeforeUnix {
-		return errors.New("invalid route configuration update action")
+		return errorsmod.Wrap(ErrInvalidControlAction, "invalid route configuration update action")
 	}
 	return validateControlSignatures(m.Signatures)
 }
@@ -157,11 +160,11 @@ func (m MsgUpdateRouteConfig) GetSignBytes() []byte { return AminoCdc.MustMarsha
 
 func validateControlSignatures(signatures [][]byte) error {
 	if len(signatures) < RequiredApprovals || len(signatures) > MaxBridgeSigners {
-		return errors.New("invalid bridge control signature count")
+		return errorsmod.Wrap(ErrInvalidApprovals, "invalid bridge control signature count")
 	}
 	for _, signature := range signatures {
 		if len(signature) != 65 {
-			return errors.New("bridge control signatures must be 65 bytes")
+			return errorsmod.Wrap(ErrInvalidSignature, "bridge control signatures must be 65 bytes")
 		}
 	}
 	return nil

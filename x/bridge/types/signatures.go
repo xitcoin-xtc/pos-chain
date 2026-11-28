@@ -1,12 +1,12 @@
 package types
 
 import (
-	"errors"
-	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 // SigningDigest is keccak256(AttestationDomain(chainID) || PayloadHash(chainID)).
@@ -33,7 +33,7 @@ func VerifyApprovals(attestation Attestation, chainID string, bridgeSigners []st
 		return nil, err
 	}
 	if len(signatures) < RequiredApprovals || len(signatures) > MaxBridgeSigners {
-		return nil, fmt.Errorf("signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
+		return nil, errorsmod.Wrapf(ErrInvalidApprovals, "signature count must be between %d and %d", RequiredApprovals, MaxBridgeSigners)
 	}
 	digest, err := SigningDigest(attestation, chainID)
 	if err != nil {
@@ -48,10 +48,10 @@ func VerifyApprovals(attestation Attestation, chainID string, bridgeSigners []st
 			return nil, err
 		}
 		if _, ok := allowed[address]; !ok {
-			return nil, errors.New("approval is not from a configured bridge signer")
+			return nil, errorsmod.Wrap(ErrInvalidApprovals, "approval is not from a configured bridge signer")
 		}
 		if _, exists := seen[address]; exists {
-			return nil, errors.New("duplicate signer approval")
+			return nil, errorsmod.Wrap(ErrInvalidApprovals, "duplicate signer approval")
 		}
 		seen[address] = struct{}{}
 		recovered = append(recovered, address)
@@ -61,16 +61,16 @@ func VerifyApprovals(attestation Attestation, chainID string, bridgeSigners []st
 
 func configuredSigners(signers []string) (map[common.Address]struct{}, error) {
 	if len(signers) != MaxBridgeSigners {
-		return nil, fmt.Errorf("exactly %d bridge signers are required", MaxBridgeSigners)
+		return nil, errorsmod.Wrapf(ErrInvalidRouteConfig, "exactly %d bridge signers are required", MaxBridgeSigners)
 	}
 	allowed := make(map[common.Address]struct{}, MaxBridgeSigners)
 	for _, signer := range signers {
 		if !common.IsHexAddress(signer) {
-			return nil, errors.New("invalid configured bridge signer")
+			return nil, errorsmod.Wrap(ErrInvalidRouteConfig, "invalid configured bridge signer")
 		}
 		address := common.HexToAddress(signer)
 		if _, exists := allowed[address]; exists {
-			return nil, errors.New("duplicate configured bridge signer")
+			return nil, errorsmod.Wrap(ErrInvalidRouteConfig, "duplicate configured bridge signer")
 		}
 		allowed[address] = struct{}{}
 	}
@@ -79,23 +79,23 @@ func configuredSigners(signers []string) (map[common.Address]struct{}, error) {
 
 func recoverSigner(digest common.Hash, signature []byte) (common.Address, error) {
 	if len(signature) != crypto.SignatureLength {
-		return common.Address{}, errors.New("invalid signature length")
+		return common.Address{}, errorsmod.Wrap(ErrInvalidSignature, "invalid signature length")
 	}
 	sig := append([]byte(nil), signature...)
 	if sig[64] == 27 || sig[64] == 28 {
 		sig[64] -= 27
 	}
 	if sig[64] > 1 {
-		return common.Address{}, errors.New("invalid signature recovery ID")
+		return common.Address{}, errorsmod.Wrap(ErrInvalidSignature, "invalid signature recovery ID")
 	}
 	r := new(big.Int).SetBytes(sig[:32])
 	s := new(big.Int).SetBytes(sig[32:64])
 	if !crypto.ValidateSignatureValues(sig[64], r, s, true) {
-		return common.Address{}, errors.New("invalid signature values")
+		return common.Address{}, errorsmod.Wrap(ErrInvalidSignature, "invalid signature values")
 	}
 	pub, err := crypto.SigToPub(digest.Bytes(), sig)
 	if err != nil {
-		return common.Address{}, fmt.Errorf("recover signer: %w", err)
+		return common.Address{}, errorsmod.Wrapf(ErrInvalidSignature, "recover signer: %s", err)
 	}
 	return crypto.PubkeyToAddress(*pub), nil
 }

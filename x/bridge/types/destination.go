@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -10,8 +9,6 @@ import (
 // CronosDeadAddress is refused as a release recipient by CronosBridgeVault
 // (_isValidRecipient), together with the zero address.
 var CronosDeadAddress = common.HexToAddress("0x000000000000000000000000000000000000dEaD")
-
-var ErrInvalidCronosDestination = errors.New("invalid Cronos destination: the vault cannot release to the zero or dead address")
 
 // ValidateCronosDestination accepts exactly the recipients that
 // CronosBridgeVault.release accepts, so the chain never burns native XTC for

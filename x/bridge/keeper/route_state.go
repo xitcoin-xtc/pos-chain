@@ -2,15 +2,15 @@ package keeper
 
 import (
 	"encoding/json"
-	"errors"
+
+	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
 )
 
 var (
-	ErrRoutePaused        = errors.New("bridge route is paused")
-	ErrRouteAlreadyPaused = errors.New("bridge route is already paused")
+	ErrRoutePaused        = types.ErrRoutePaused
+	ErrRouteAlreadyPaused = types.ErrRouteAlreadyPaused
 )
 
 var (
@@ -58,13 +58,13 @@ func (k Keeper) PauseRoute(ctx sdk.Context, config types.RouteConfig, action typ
 		return err
 	}
 	if action.RouteID != config.RouteID {
-		return errors.New("guardian pause route does not match configuration")
+		return types.ErrGuardianPauseRouteMismatch
 	}
 	if err := action.Validate(); err != nil {
 		return err
 	}
 	if ctx.BlockTime().Unix() >= action.ExpiresUnix {
-		return errors.New("guardian pause action has expired")
+		return types.ErrGuardianPauseExpired
 	}
 	id, err := action.ID(ctx.ChainID())
 	if err != nil {

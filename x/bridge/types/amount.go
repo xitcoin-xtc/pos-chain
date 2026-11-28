@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
@@ -9,11 +8,6 @@ import (
 
 // maxAmountDigits is the number of decimal digits of 2^256-1.
 const maxAmountDigits = 78
-
-var (
-	ErrNonCanonicalAmount = errors.New("amount must be a canonical positive decimal integer in atomic units")
-	ErrAmountOutOfRange   = errors.New("amount exceeds the 256-bit range")
-)
 
 // ParseAmount is the only parser of bridge amounts and route limits. It
 // accepts exactly the canonical decimal form of an integer in [1, 2^256-1]:

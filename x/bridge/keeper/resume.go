@@ -3,16 +3,16 @@ package keeper
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"errors"
 	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var ErrRouteNotPaused = errors.New("bridge route is not paused")
+var ErrRouteNotPaused = types.ErrRouteNotPaused
 
 // RouteStatePayloadHash binds a governance signature to its exact intended
 // state and current configuration.

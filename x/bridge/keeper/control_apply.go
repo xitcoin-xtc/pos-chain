@@ -1,20 +1,20 @@
 package keeper
 
 import (
-	"errors"
 	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/xitcoin-xtc/pos-chain/x/bridge/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
-	ErrControlActionNotActive = errors.New("bridge control action is not active")
-	ErrControlActionProcessed = errors.New("bridge control action already processed")
-	ErrControlPayloadMismatch = errors.New("bridge control payload does not match route configuration")
-	ErrCapBelowOutstanding    = errors.New("bridge max outstanding amount cannot be set below the current outstanding amount")
+	ErrControlActionNotActive = types.ErrControlActionNotActive
+	ErrControlActionProcessed = types.ErrControlActionProcessed
+	ErrControlPayloadMismatch = types.ErrControlPayloadMismatch
+	ErrCapBelowOutstanding    = types.ErrCapBelowOutstanding
 )
 
 // ApplyRouteConfigUpdate accepts a configuration only after two distinct
